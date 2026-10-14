@@ -74,7 +74,7 @@ Lives in `lib/plan.ts` (cards, columns, suggestion), the plan store in `lib/stor
 - [x] Part of export, import, wipe and "What Spool remembers"
 
 ### 6. Homepage: a thread becomes a row as you scroll
-Lives in `components/landing/BuildRow.tsx` and `build.module.css`, with `SignSway.tsx` and the hero light in `Hero.tsx`. Inspired by the scroll-built cabinet on virostl.vercel.app; Spool's version builds one row of its own departures board, with no 3D library (CSS 3D boxes driven by scroll).
+Replaced by the redesign in item 7; kept here as the record of what shipped then. Lived in `components/landing/BuildRow.tsx` and `build.module.css`, with `SignSway.tsx` and the hero light in `Hero.tsx`. Inspired by the scroll-built cabinet on virostl.vercel.app; Spool's version builds one row of its own departures board, with no 3D library (CSS 3D boxes driven by scroll).
 
 - [x] "How a thread becomes a row": the parts of one sample row lie flat on a sign-yellow mat and lift into place in five steps, one for each thing Spool works out (thread, carrier, title, who moves next, status)
 - [x] Each flap tile clatters to its letter as it lands, through the real flap engine (with sound when it's on)
@@ -86,6 +86,36 @@ Lives in `components/landing/BuildRow.tsx` and `build.module.css`, with `SignSwa
 - [x] Smooth scrolling: native scroll in place of Lenis; idle flap tiles no longer hold GPU layers (about 3,460 layers down to about 300); sections stop re-rendering when the nav face changes; the sample day's rows re-render only when they change; the build's 3D scene is skipped while off screen
 - [x] The hero sits side by side: what Spool does and both actions on the left, the WHO MOVES / NEXT? board on the right, in a band that takes only the height it needs; they stack on narrow screens
 - [x] The hero leads with a headline that says what Spool is ("The open source manager that knows whose move it is."), then what it tracks: PRs, issues, review requests and mentions
+
+### 7. Redesign: the flight strip bay
+Chosen with impeccable's direction round (seed 04a12bd9) after "too dark and heavy, hard to scan, the theme overdone". Every thread is a printed strip in a black holder; bays say whose move it is. Landing and app share one world, documented in `DESIGN.md`.
+
+- [x] New kit: `Strip` (callsign, title, last move, silence), `Bay` with designator plates, `Callsign`, grease-pencil `StateMark` and ring, strip-shaped actions
+- [x] The print engine replaces the flap engine: fields retype left to right from one shared loop; condensed Martian Mono for anything printed, Archivo for anything read
+- [x] Night shift by default, light day shift as an option (nav, footer, Settings), set before first paint
+- [x] Hero: headline and actions beside a live sample bay that hands strips between Your move and Their move, one event at a time
+- [x] "How a thread becomes a strip": one strip prints field by field as you scroll, then lands in the stalled bay
+- [x] The sample day, stalled limit, callsigns, fresh repos, programs schedule and sign-on form rebuilt as bays and strips
+- [x] App: the board's groups are bays of strips; pin, snooze, priority and open ride on the holder; pinned strips are cocked; new strips get a corner dot; every other screen moved to the new palette, print face and strip-shaped actions
+- [x] The "delayed" status reads "stalled" everywhere
+
+### 8. The field: every PR is a flight
+A 3D airfield under the hero, so the strips have a world to stand for. Built with three.js, loaded only as the section comes near.
+
+- [x] PRs fly under their repo's callsign and number, in low-poly planes folded from strip paper with the repo's livery on the tail; radar tags print their status
+- [x] Review is a stacked hold; the bottom of the stack is cleared, flies an amber branch down to the runway called MAIN and lands: the merge. The branch folds back into main and the centreline flashes
+- [x] "Clear #N to land" brings the next one in at once; a phase rail maps Holding, Cleared, Final, Landed to In review, Approved, Merge queue, Merged; landed strips slide into a Landed rack
+- [x] A stalled PR circles alone with a pencil ring; drafts wait at the stand; new PRs arrive out of the haze
+- [x] Night and day shifts, a closer camera on phones, pause, and a steppable still for reduced motion; without WebGL the deck still walks through a landing
+
+### 9. Google Summer of Code, stop by stop
+GSoC moved out of the Programs card into a section of its own, interactive and drawn by scroll.
+
+- [x] The season on one line, on a true time scale: the line draws up to today as you scroll, passed stops fill in and print their dates as it reaches them, and the you-are-here marker drops on last
+- [x] Every stop is pickable and shows below as a strip with its date and days to go or days ago; the next stop is picked by default
+- [x] Small, Medium and Large place that project size's midterm, final week and completion on the line, and slide them when you switch
+- [x] The ten most common tech tags are bars that grow on scroll; picking one filters this year's organisations, which you can also search by name, tech or topic, with links to each org's GSoC page and ideas list
+- [x] Phones get a vertical line that draws downward; reduced motion shows it drawn
 
 ---
 
@@ -108,15 +138,15 @@ Lives in `components/landing/BuildRow.tsx` and `build.module.css`, with `SignSwa
 
 ### Plan follow-ups
 - [ ] Add a shortlisted repo or saved GSoC organisation to the plan as a card
-- [ ] Due dates on your own tasks, feeding the deadline strip (item 7)
-- [ ] Plan cards in Cmd+K (item 11)
+- [ ] Due dates on your own tasks, feeding the deadline strip (item 8)
+- [ ] Plan cards in Cmd+K (item 12)
 
-### 7. Deadline reminders
+### 10. Deadline reminders
 - [ ] Follow programs (YC, each GSoC milestone, Hacktoberfest) in Settings
 - [ ] A strip on the board when a followed deadline is within 14 days
 - [ ] Browser notification at 7 days and 1 day, if notifications are on
 
-### 8. Is this repo worth contributing to?
+### 11. Is this repo worth contributing to?
 Signals on each discovered or shortlisted repo, read from public data:
 
 - [ ] Median time for maintainers to answer an outside PR (last 20 merged or closed PRs from non-members)
@@ -125,7 +155,7 @@ Signals on each discovered or shortlisted repo, read from public data:
 - [ ] Count of good first issues that are still unassigned
 - [ ] Licence
 
-### 9. More programs
+### 12. More programs
 Each one links to its own site, and shows dates only where that site publishes them in a form we can read reliably.
 
 - [ ] Outreachy
@@ -134,12 +164,12 @@ Each one links to its own site, and shows dates only where that site publishes t
 - [ ] Google Season of Docs
 - [ ] Summer of Bitcoin and other GSoC-style programs, if they publish dates
 
-### 10. Your logbook
+### 13. Your logbook
 - [ ] Merged PRs over time, repos contributed to, first and latest contribution
 - [ ] A streak measured in weeks, not days, so a quiet weekend doesn't break it
 - [ ] A downloadable image card of your year
 
-### 11. Jump anywhere (Cmd+K)
+### 14. Jump anywhere (Cmd+K)
 - [ ] Search threads, repos, saved orgs and pages from anywhere in the app
 - [ ] Shortcut-key hints for the actions that already have keys
 

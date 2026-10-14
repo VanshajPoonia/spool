@@ -1,6 +1,6 @@
 # Spool
 
-Your open source work on one departures board. Spool collects every PR, issue and comment thread you have open on GitHub and sorts them by who owes the next reply: **arrivals** are waiting on you, **departures** are waiting on someone else. It also tracks repo-by-repo progress, finds young repos and good first issues in your interests, and puts GSoC, YC, Hacktoberfest and Product Hunt dates on the same wall.
+The open source manager that knows whose move it is. Spool puts every PR, issue, review request and mention you have open on GitHub in one bay of printed strips, sorted by who owes the next reply: **your move** when someone answered, **their move** when you're waiting, **stalled** when nobody has spoken for too long. It also tracks repo-by-repo progress, finds young repos and good first issues in your interests, and puts GSoC, YC, Hacktoberfest and Product Hunt dates on the same wall.
 
 ## Run it
 
@@ -27,13 +27,13 @@ Open `/board?demo=1` to explore with sample data, or paste a GitHub token on the
 
 | Route | What it does |
 | --- | --- |
-| `/` | Landing page: split-flap hero, a sample day you can scrub and open row by row, stalled-thread limit, carrier codes, live repo discovery, live GSoC/YC/Product Hunt wall, boarding-pass token form |
-| `/board` | Arrivals (on you) and departures (on them), watching, snoozed, departed. Pin, snooze, notes, detail drawer with the GitHub timeline |
+| `/` | Landing page: a live sample bay in the hero, a 3D airfield where sample PRs hold in review and land on main when they merge, a strip printed field by field as you scroll, a sample day you can scrub and open strip by strip, the stalled limit, callsigns, live repo discovery, the live GSoC/YC/Product Hunt schedule, the GSoC season drawn as you scroll with a filterable list of this year's organisations, the sign-on form |
+| `/board` | Your move and Their move bays, then Watching, Snoozed and Landed. Pin, snooze, priorities, notes, detail drawer with the GitHub timeline |
 | `/board/repos` | Every repo you've contributed to: opened, merged, closed, merge rate, median time to merge, your own repos |
 | `/board/repos/[owner]/[name]` | One repo's timetable |
 | `/board/discover` | Young repos and unclaimed good first issues for your interests, plus a shortlist |
 | `/board/programs` | GSoC timeline and orgs matching your interests, YC deadline, your October PRs, Product Hunt launches |
-| `/board/settings` | Token, board rules, interests, motion and sound, export/import/erase |
+| `/board/settings` | Token, board rules, interests, light theme, motion and sound, export/import/erase |
 
 Keyboard on the board: `j`/`k` move, `Enter` opens details, `o` opens on GitHub, `p` pins, `s` snoozes a day, `/` filters, `Shift E` marks everything seen, `?` lists shortcuts.
 
@@ -59,5 +59,6 @@ Public feeds are fetched on the server and cached for hours (`src/lib/programs.t
 
 - Built single-user first. All persistence goes through `src/lib/store.ts`, so moving to server-side accounts later means replacing that module.
 - Sample data (landing sections and `?demo=1`) is invented and labelled as such on the page. Files: `src/lib/sample-*.ts`.
-- The split-flap engine is `src/components/flap/engine.ts`: one shared animation loop for every tile, Web Animations for the leaves, synthesized clatter (off by default).
+- The strip printer is `src/components/print/engine.ts`: one shared animation loop types every printed field left to right when it changes, with a synthesized printer tick (off by default). Strips and bays are `src/components/kit/Strip.tsx`; the design system is in `DESIGN.md`.
+- Dark (the night shift) is the default; the light day shift is a switch in the nav, footer and Settings, stored in this browser.
 - Motion respects `prefers-reduced-motion`, and the footer and Settings both have a reduce-motion toggle.

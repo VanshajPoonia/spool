@@ -1,939 +1,710 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-13T12:14:26+00:00",
+  "generatedAt": "2026-10-14T19:41:16.264055+00:00",
   "title": "Design System: Spool",
   "extensions": {
     "colorMeta": {
-      "sign": {
-        "role": "primary",
-        "displayName": "Sign Yellow",
-        "canonical": "#ffcf00",
-        "oklch": "oklch(87.1% 0.178 91.8)",
-        "tonalRamp": [
-          "#100b00",
-          "#2f2400",
-          "#514002",
-          "#765e02",
-          "#9d7f00",
-          "#c6a108",
-          "#f1c406",
-          "#ffeebb"
-        ]
-      },
-      "sign-ink": {
-        "role": "primary",
-        "displayName": "Sign Ink",
-        "canonical": "#111111",
-        "oklch": "oklch(17.8% 0.000 89.9)",
-        "tonalRamp": [
-          "#0b0b0b",
-          "#252525",
-          "#424242",
-          "#616161",
-          "#828282",
-          "#a5a5a5",
-          "#c9c9c9",
-          "#eeeeee"
-        ]
-      },
-      "housing": {
+      "console": {
         "role": "neutral",
-        "displayName": "Housing Graphite",
-        "canonical": "#101113",
-        "oklch": "oklch(17.7% 0.004 264.5)",
+        "displayName": "Console",
+        "canonical": "#14181d",
+        "oklch": "oklch(20.7% 0.012 254.1)",
         "tonalRamp": [
-          "#0a0b0d",
-          "#242527",
-          "#414244",
-          "#606164",
-          "#818285",
-          "#a4a5a8",
-          "#c8c9cc",
-          "#edeef1"
+          "#080b10",
+          "#20242a",
+          "#3c4046",
+          "#595e64",
+          "#797e84",
+          "#9a9fa6",
+          "#bcc1c8",
+          "#e9eff6"
         ]
       },
-      "housing-2": {
+      "bay": {
         "role": "neutral",
-        "displayName": "Housing Raised",
-        "canonical": "#16181b",
-        "oklch": "oklch(20.8% 0.007 258.4)",
+        "displayName": "Bay",
+        "canonical": "#1a1f26",
+        "oklch": "oklch(23.7% 0.015 256.8)",
         "tonalRamp": [
-          "#090b0e",
-          "#232528",
-          "#404246",
-          "#5f6165",
-          "#808286",
-          "#a2a5a9",
-          "#c6c9ce",
-          "#eceff3"
+          "#070b12",
+          "#1f242c",
+          "#3b4048",
+          "#585e66",
+          "#777e87",
+          "#989fa8",
+          "#bbc1cb",
+          "#e8eff9"
         ]
       },
-      "housing-3": {
+      "bay-2": {
         "role": "neutral",
-        "displayName": "Housing Lifted",
-        "canonical": "#1d1f23",
-        "oklch": "oklch(23.9% 0.008 264.4)",
+        "displayName": "Bay 2",
+        "canonical": "#212831",
+        "oklch": "oklch(27.4% 0.020 254.8)",
         "tonalRamp": [
-          "#090b0f",
-          "#232529",
-          "#404246",
-          "#5f6166",
-          "#808287",
-          "#a2a5aa",
-          "#c6c9cf",
-          "#eceef4"
+          "#060c13",
+          "#1e252d",
+          "#39404a",
+          "#565e69",
+          "#767e89",
+          "#969fab",
+          "#b9c2ce",
+          "#e6effc"
         ]
       },
-      "rail": {
+      "bay-3": {
         "role": "neutral",
-        "displayName": "Rail",
-        "canonical": "#2a2d32",
-        "oklch": "oklch(29.6% 0.010 260.7)",
+        "displayName": "Bay 3",
+        "canonical": "#2a323c",
+        "oklch": "oklch(31.4% 0.021 254.1)",
         "tonalRamp": [
-          "#090b0f",
-          "#22252a",
-          "#3f4247",
-          "#5e6167",
-          "#7f8288",
-          "#a1a5ab",
-          "#c5c9d0",
-          "#ebeff5"
+          "#060c14",
+          "#1d252e",
+          "#38414b",
+          "#565e6a",
+          "#757e8a",
+          "#969fac",
+          "#b8c2cf",
+          "#e5f0fd"
         ]
       },
       "rule": {
         "role": "neutral",
         "displayName": "Rule",
-        "canonical": "#2f3238",
-        "oklch": "oklch(31.7% 0.011 264.4)",
+        "canonical": "#2b333d",
+        "oklch": "oklch(31.8% 0.021 254.1)",
         "tonalRamp": [
-          "#090b10",
-          "#22252b",
-          "#3f4248",
-          "#5e6168",
-          "#7f8289",
-          "#a1a5ac",
-          "#c5c9d1",
-          "#ebeff6"
+          "#060c14",
+          "#1d252e",
+          "#38414b",
+          "#565e6a",
+          "#757e8a",
+          "#969fac",
+          "#b8c2cf",
+          "#e5f0fd"
         ]
       },
-      "panel": {
+      "rule-2": {
         "role": "neutral",
-        "displayName": "Panel",
-        "canonical": "#17191c",
-        "oklch": "oklch(21.3% 0.007 258.4)",
+        "displayName": "Rule 2",
+        "canonical": "#3b4551",
+        "oklch": "oklch(38.6% 0.024 253.1)",
         "tonalRamp": [
-          "#090b0e",
-          "#232528",
-          "#404246",
-          "#5f6165",
-          "#808286",
-          "#a2a5a9",
-          "#c6c9cd",
-          "#eceff3"
-        ]
-      },
-      "panel-deep": {
-        "role": "neutral",
-        "displayName": "Panel Deep",
-        "canonical": "#131416",
-        "oklch": "oklch(19.1% 0.004 264.5)",
-        "tonalRamp": [
-          "#0a0b0d",
-          "#242527",
-          "#414244",
-          "#606164",
-          "#818285",
-          "#a4a5a8",
-          "#c8c9cc",
-          "#edeef1"
-        ]
-      },
-      "bezel": {
-        "role": "neutral",
-        "displayName": "Bezel Black",
-        "canonical": "#0b0c0d",
-        "oklch": "oklch(15.4% 0.003 248.0)",
-        "tonalRamp": [
-          "#0a0b0c",
-          "#242526",
-          "#414243",
-          "#606163",
-          "#818284",
-          "#a4a5a7",
-          "#c8c9cb",
-          "#edeff0"
-        ]
-      },
-      "plate": {
-        "role": "neutral",
-        "displayName": "Plate Black",
-        "canonical": "#060606",
-        "oklch": "oklch(12.2% 0.000 89.9)",
-        "tonalRamp": [
-          "#0b0b0b",
-          "#252525",
-          "#424242",
-          "#616161",
-          "#828282",
-          "#a5a5a5",
-          "#c9c9c9",
-          "#eeeeee"
-        ]
-      },
-      "carrier-plate": {
-        "role": "neutral",
-        "displayName": "Carrier Plate",
-        "canonical": "#24262a",
-        "oklch": "oklch(26.8% 0.008 264.4)",
-        "tonalRamp": [
-          "#090b0f",
-          "#232529",
-          "#404246",
-          "#5f6166",
-          "#808287",
-          "#a2a5aa",
-          "#c6c9ce",
-          "#eceef4"
-        ]
-      },
-      "chip": {
-        "role": "neutral",
-        "displayName": "Chip",
-        "canonical": "#1f2125",
-        "oklch": "oklch(24.7% 0.008 264.4)",
-        "tonalRamp": [
-          "#090b0f",
-          "#232529",
-          "#404246",
-          "#5f6166",
-          "#808287",
-          "#a2a5aa",
-          "#c6c9cf",
-          "#eceef4"
+          "#050c15",
+          "#1c2530",
+          "#37414d",
+          "#545f6b",
+          "#737e8c",
+          "#94a0ae",
+          "#b6c2d1",
+          "#e3f0ff"
         ]
       },
       "ink": {
         "role": "neutral",
-        "displayName": "Warm Ink",
-        "canonical": "#f3f0e7",
-        "oklch": "oklch(95.5% 0.012 91.5)",
+        "displayName": "Ink",
+        "canonical": "#eef1f3",
+        "oklch": "oklch(95.6% 0.004 236.5)",
         "tonalRamp": [
-          "#0d0b06",
-          "#27251e",
-          "#44423b",
-          "#646159",
-          "#85827a",
-          "#a8a59c",
-          "#ccc9c0",
-          "#f1eee5"
+          "#0a0b0d",
+          "#222426",
+          "#3e4042",
+          "#5b5e60",
+          "#7b7e7f",
+          "#9c9fa1",
+          "#bec1c3",
+          "#eceff1"
         ]
       },
       "ink-2": {
         "role": "neutral",
         "displayName": "Ink 2",
-        "canonical": "#bdb9ae",
-        "oklch": "oklch(78.6% 0.016 90.3)",
+        "canonical": "#b3bcc6",
+        "oklch": "oklch(79.1% 0.017 250.9)",
         "tonalRamp": [
-          "#0e0b04",
-          "#28251c",
-          "#454239",
-          "#656157",
-          "#868278",
-          "#a9a59a",
-          "#cdc9be",
-          "#f2eee3"
+          "#060c12",
+          "#1e252c",
+          "#394149",
+          "#575f67",
+          "#767e88",
+          "#979fa9",
+          "#b9c2cc",
+          "#e6f0fa"
         ]
       },
       "ink-3": {
         "role": "neutral",
         "displayName": "Ink 3",
-        "canonical": "#8d8a82",
-        "oklch": "oklch(63.4% 0.012 89.8)",
+        "canonical": "#8b96a2",
+        "oklch": "oklch(66.8% 0.022 250.5)",
         "tonalRamp": [
-          "#0d0b06",
-          "#27251e",
-          "#44423b",
-          "#646159",
-          "#85827a",
-          "#a8a59d",
-          "#ccc9c0",
-          "#f2eee5"
+          "#050c14",
+          "#1c252e",
+          "#37414b",
+          "#555f6a",
+          "#747f8a",
+          "#95a0ac",
+          "#b7c2cf",
+          "#e4f0fd"
         ]
       },
-      "flap-top": {
-        "role": "flap",
-        "displayName": "Flap Top Leaf",
-        "canonical": "#2b2d32",
-        "oklch": "oklch(29.7% 0.009 268.4)",
-        "tonalRamp": [
-          "#090b0f",
-          "#23252a",
-          "#404247",
-          "#5f6167",
-          "#808288",
-          "#a2a5ab",
-          "#c6c9cf",
-          "#eceef5"
-        ]
-      },
-      "flap-top-2": {
-        "role": "flap",
-        "displayName": "Flap Top Leaf, Lower",
-        "canonical": "#25272b",
-        "oklch": "oklch(27.2% 0.008 264.4)",
-        "tonalRamp": [
-          "#090b0f",
-          "#232529",
-          "#404246",
-          "#5f6166",
-          "#808287",
-          "#a2a5aa",
-          "#c6c9ce",
-          "#eceef4"
-        ]
-      },
-      "flap-bot": {
-        "role": "flap",
-        "displayName": "Flap Bottom Leaf",
-        "canonical": "#222428",
-        "oklch": "oklch(26.0% 0.008 264.4)",
-        "tonalRamp": [
-          "#090b0f",
-          "#232529",
-          "#404246",
-          "#5f6166",
-          "#808287",
-          "#a2a5aa",
-          "#c6c9ce",
-          "#eceef4"
-        ]
-      },
-      "flap-bot-2": {
-        "role": "flap",
-        "displayName": "Flap Bottom Leaf, Lower",
-        "canonical": "#1c1e21",
-        "oklch": "oklch(23.4% 0.007 258.4)",
+      "holder": {
+        "role": "neutral",
+        "displayName": "Holder",
+        "canonical": "#0c0f12",
+        "oklch": "oklch(16.6% 0.008 248.3)",
         "tonalRamp": [
           "#090b0e",
-          "#232528",
-          "#404245",
-          "#5f6165",
-          "#808286",
-          "#a2a5a9",
-          "#c6c9cd",
-          "#eceff3"
+          "#212428",
+          "#3d4044",
+          "#5a5e62",
+          "#7a7e82",
+          "#9b9fa3",
+          "#bdc1c6",
+          "#eaeff4"
         ]
       },
-      "flap-hinge": {
-        "role": "flap",
-        "displayName": "Hinge",
-        "canonical": "#070708",
-        "oklch": "oklch(12.9% 0.003 286.0)",
+      "holder-lip": {
+        "role": "neutral",
+        "displayName": "Holder Lip",
+        "canonical": "#303843",
+        "oklch": "oklch(33.8% 0.022 256.4)",
         "tonalRamp": [
-          "#0b0b0c",
-          "#252526",
-          "#424243",
-          "#616163",
-          "#828284",
-          "#a5a5a7",
-          "#c9c9cb",
-          "#eeeef0"
+          "#060b14",
+          "#1d252f",
+          "#38404c",
+          "#565e6a",
+          "#757e8b",
+          "#969fad",
+          "#b8c2d0",
+          "#e5effe"
         ]
       },
-      "flap-ink": {
-        "role": "flap",
-        "displayName": "Flap Ink",
-        "canonical": "#f2eee3",
-        "oklch": "oklch(94.9% 0.015 90.2)",
+      "holder-ink": {
+        "role": "neutral",
+        "displayName": "Holder Ink",
+        "canonical": "#c3ccd5",
+        "oklch": "oklch(84.1% 0.016 248.0)",
         "tonalRamp": [
-          "#0e0b05",
-          "#28251d",
-          "#454239",
-          "#646158",
-          "#868278",
-          "#a9a59b",
-          "#cdc9be",
-          "#f2eee3"
+          "#060c12",
+          "#1e252c",
+          "#394148",
+          "#575f66",
+          "#767e87",
+          "#97a0a8",
+          "#b9c2cb",
+          "#e6f0f9"
         ]
       },
-      "flap-ink-dim": {
-        "role": "flap",
-        "displayName": "Flap Ink Dim",
-        "canonical": "#a09c92",
-        "oklch": "oklch(69.3% 0.015 88.7)",
+      "strip-pr": {
+        "role": "secondary",
+        "displayName": "PR Buff",
+        "canonical": "#f1dfa6",
+        "oklch": "oklch(90.5% 0.076 92.6)",
         "tonalRamp": [
-          "#0e0b05",
-          "#28251d",
-          "#454239",
-          "#656158",
-          "#868278",
-          "#a9a59b",
-          "#cdc9be",
-          "#f2eee3"
+          "#160800",
+          "#312200",
+          "#4e3e00",
+          "#6d5c26",
+          "#8d7c46",
+          "#af9e67",
+          "#d2c088",
+          "#ffeeb4"
         ]
       },
-      "flap-ink-go": {
-        "role": "flap",
-        "displayName": "Flap Ink Go",
-        "canonical": "#7fe0a6",
-        "oklch": "oklch(83.2% 0.124 156.2)",
+      "strip-issue": {
+        "role": "secondary",
+        "displayName": "Issue Blue",
+        "canonical": "#b6d3f0",
+        "oklch": "oklch(85.5% 0.051 248.4)",
         "tonalRamp": [
-          "#000f05",
-          "#002e17",
-          "#03502d",
-          "#037444",
-          "#339862",
-          "#5bbc84",
-          "#80e1a7",
-          "#c4ffd9"
+          "#000b1f",
+          "#0e263b",
+          "#29425a",
+          "#476079",
+          "#66809b",
+          "#86a2bd",
+          "#a8c4e1",
+          "#d5f2ff"
         ]
       },
-      "flap-ink-wait": {
-        "role": "flap",
-        "displayName": "Flap Ink Wait",
-        "canonical": "#ffc169",
-        "oklch": "oklch(85.0% 0.127 74.2)",
+      "strip-review": {
+        "role": "secondary",
+        "displayName": "Review Pink",
+        "canonical": "#f3c1cd",
+        "oklch": "oklch(85.8% 0.059 2.4)",
         "tonalRamp": [
-          "#130900",
-          "#352001",
-          "#5a3b02",
-          "#835704",
-          "#af7506",
-          "#d4983d",
-          "#fabc64",
-          "#ffebd2"
+          "#1d0009",
+          "#3b1622",
+          "#5a323d",
+          "#7a4f5b",
+          "#9c6f7a",
+          "#bf8f9b",
+          "#e3b2bd",
+          "#ffdfeb"
         ]
       },
-      "flap-ink-stop": {
-        "role": "flap",
-        "displayName": "Flap Ink Stop",
-        "canonical": "#ff8f7a",
-        "oklch": "oklch(76.6% 0.140 31.7)",
+      "strip-talk": {
+        "role": "secondary",
+        "displayName": "Talk Green",
+        "canonical": "#c5e5c4",
+        "oklch": "oklch(89.0% 0.056 144.3)",
         "tonalRamp": [
-          "#1e0100",
-          "#4b0500",
-          "#7b1404",
-          "#a13b2a",
-          "#c85e4b",
-          "#ef816d",
-          "#feb4a5",
-          "#fee9e5"
+          "#001100",
+          "#112b12",
+          "#2d482d",
+          "#4a664a",
+          "#698668",
+          "#8aa889",
+          "#accbab",
+          "#d9f9d7"
         ]
       },
-      "lamp-go": {
-        "role": "state",
-        "displayName": "Lamp Go",
-        "canonical": "#46c37b",
-        "oklch": "oklch(73.0% 0.152 154.4)",
+      "strip-plain": {
+        "role": "secondary",
+        "displayName": "Plain Paper",
+        "canonical": "#e6eaee",
+        "oklch": "oklch(93.5% 0.007 247.9)",
         "tonalRamp": [
-          "#001005",
-          "#002e16",
-          "#01502a",
-          "#037540",
-          "#079b57",
-          "#43c078",
-          "#6de69c",
-          "#c6ffd7"
+          "#090b0e",
+          "#212427",
+          "#3d4043",
+          "#5b5e61",
+          "#7a7e81",
+          "#9b9fa3",
+          "#bdc1c5",
+          "#ebeff3"
         ]
       },
-      "lamp-wait": {
-        "role": "state",
-        "displayName": "Lamp Wait",
-        "canonical": "#ffa62b",
-        "oklch": "oklch(79.6% 0.162 68.5)",
+      "strip-ink": {
+        "role": "secondary",
+        "displayName": "Strip Ink",
+        "canonical": "#15181c",
+        "oklch": "oklch(20.8% 0.009 255.6)",
         "tonalRamp": [
-          "#140800",
-          "#361f01",
-          "#5e3801",
-          "#885404",
-          "#b57102",
-          "#e39008",
-          "#ffb969",
-          "#feebd7"
+          "#090b0f",
+          "#212429",
+          "#3d4045",
+          "#5a5e63",
+          "#7a7e83",
+          "#9b9fa4",
+          "#bdc1c7",
+          "#eaeff5"
         ]
       },
-      "lamp-stop": {
-        "role": "state",
-        "displayName": "Lamp Stop",
-        "canonical": "#ff5b41",
-        "oklch": "oklch(68.6% 0.204 31.6)",
-        "tonalRamp": [
-          "#1e0000",
-          "#4b0500",
-          "#7d1001",
-          "#b31b01",
-          "#e23f26",
-          "#ff745c",
-          "#feb4a5",
-          "#fee9e5"
-        ]
-      },
-      "lamp-idle": {
-        "role": "state",
-        "displayName": "Lamp Idle",
-        "canonical": "#e9e5d8",
-        "oklch": "oklch(92.1% 0.018 92.7)",
-        "tonalRamp": [
-          "#0e0b04",
-          "#28251b",
-          "#454237",
-          "#656156",
-          "#868276",
-          "#a9a599",
-          "#cdc9bc",
-          "#f2eee1"
-        ]
-      },
-      "paper": {
-        "role": "paper",
-        "displayName": "Pass Paper",
-        "canonical": "#f4f1e8",
-        "oklch": "oklch(95.8% 0.012 91.5)",
-        "tonalRamp": [
-          "#0d0b06",
-          "#27251e",
-          "#44423b",
-          "#646159",
-          "#85827a",
-          "#a8a59c",
-          "#ccc9c0",
-          "#f1eee5"
-        ]
-      },
-      "paper-2": {
-        "role": "paper",
-        "displayName": "Paper 2",
-        "canonical": "#e9e5d9",
-        "oklch": "oklch(92.2% 0.017 91.6)",
-        "tonalRamp": [
-          "#0e0b04",
-          "#28251c",
-          "#454238",
-          "#656157",
-          "#868277",
-          "#a9a59a",
-          "#cdc9bd",
-          "#f2eee2"
-        ]
-      },
-      "paper-ink": {
-        "role": "paper",
-        "displayName": "Paper Ink",
-        "canonical": "#16171a",
-        "oklch": "oklch(20.5% 0.006 271.1)",
+      "strip-ink-2": {
+        "role": "secondary",
+        "displayName": "Strip Ink 2",
+        "canonical": "#45474a",
+        "oklch": "oklch(39.7% 0.006 258.3)",
         "tonalRamp": [
           "#0a0b0e",
-          "#242528",
-          "#414245",
-          "#606165",
-          "#818286",
-          "#a3a5a9",
-          "#c7c9cd",
-          "#edeef3"
+          "#222427",
+          "#3e4043",
+          "#5c5e61",
+          "#7b7d81",
+          "#9c9ea2",
+          "#bfc1c5",
+          "#eceff2"
         ]
       },
-      "paper-ink-2": {
-        "role": "paper",
-        "displayName": "Paper Ink 2",
-        "canonical": "#55524a",
-        "oklch": "oklch(43.9% 0.013 89.8)",
+      "move": {
+        "role": "primary",
+        "displayName": "Move Amber",
+        "canonical": "#ffb21e",
+        "oklch": "oklch(81.7% 0.166 76.3)",
         "tonalRamp": [
-          "#0d0b05",
-          "#28251e",
-          "#45423a",
-          "#646159",
-          "#858279",
-          "#a8a59c",
-          "#ccc9c0",
-          "#f2eee5"
+          "#240000",
+          "#421400",
+          "#6e2900",
+          "#904a00",
+          "#b36b00",
+          "#d78d00",
+          "#fdb019",
+          "#ffe48f"
         ]
       },
-      "fault-surface": {
-        "role": "error",
-        "displayName": "Fault Surface",
-        "canonical": "#2a1512",
-        "oklch": "oklch(22.4% 0.035 28.9)",
+      "move-ink": {
+        "role": "primary",
+        "displayName": "Move Ink",
+        "canonical": "#1d1404",
+        "oklch": "oklch(19.8% 0.032 81.6)",
         "tonalRamp": [
-          "#170504",
-          "#341e1b",
-          "#533b37",
-          "#745a56",
-          "#967b76",
-          "#ba9d99",
-          "#dfc1bc",
-          "#fee9e6"
+          "#120900",
+          "#2c2211",
+          "#483e2c",
+          "#675c49",
+          "#877c68",
+          "#a99d88",
+          "#ccbfaa",
+          "#faedd7"
         ]
       },
-      "fault-edge": {
-        "role": "error",
-        "displayName": "Fault Edge",
-        "canonical": "#5a2a22",
-        "oklch": "oklch(34.8% 0.073 30.9)",
+      "pencil": {
+        "role": "tertiary",
+        "displayName": "Grease Pencil",
+        "canonical": "#d0352a",
+        "oklch": "oklch(56.7% 0.193 28.9)",
         "tonalRamp": [
-          "#1f0000",
-          "#42140d",
-          "#63322a",
-          "#865148",
-          "#a97268",
-          "#cf948a",
-          "#f5b8ad",
-          "#ffe9e5"
+          "#2d0000",
+          "#4f0000",
+          "#8a0000",
+          "#b10707",
+          "#d83e31",
+          "#ff6453",
+          "#ff8875",
+          "#ffd0c0"
         ]
       },
-      "fault-ink": {
-        "role": "error",
-        "displayName": "Fault Ink",
-        "canonical": "#ffd2c9",
-        "oklch": "oklch(90.0% 0.052 31.3)",
+      "alert": {
+        "role": "tertiary",
+        "displayName": "Alert Coral",
+        "canonical": "#ff7c6d",
+        "oklch": "oklch(73.5% 0.162 28.3)",
         "tonalRamp": [
-          "#1c0201",
-          "#3b1a15",
-          "#5b3731",
-          "#7c564f",
-          "#9f776f",
-          "#c49991",
-          "#e9bdb4",
-          "#ffe9e5"
+          "#2d0000",
+          "#4f0000",
+          "#800000",
+          "#a62922",
+          "#cc4e42",
+          "#f37162",
+          "#ff9484",
+          "#ffd0c1"
+        ]
+      },
+      "landed": {
+        "role": "tertiary",
+        "displayName": "Landed Green",
+        "canonical": "#6fd59a",
+        "oklch": "oklch(79.6% 0.129 156.5)",
+        "tonalRamp": [
+          "#001600",
+          "#003306",
+          "#005220",
+          "#00723e",
+          "#25935d",
+          "#4fb67d",
+          "#74da9e",
+          "#a9ffcd"
+        ]
+      },
+      "console-day": {
+        "role": "neutral",
+        "displayName": "Console (day shift)",
+        "canonical": "#e3e7eb",
+        "oklch": "oklch(92.6% 0.007 247.9)",
+        "tonalRamp": [
+          "#090b0e",
+          "#212427",
+          "#3d4043",
+          "#5b5e61",
+          "#7a7e81",
+          "#9b9fa3",
+          "#bdc1c5",
+          "#ebeff3"
+        ]
+      },
+      "bay-day": {
+        "role": "neutral",
+        "displayName": "Bay (day shift)",
+        "canonical": "#f3f5f7",
+        "oklch": "oklch(96.9% 0.003 247.9)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#232426",
+          "#3e4041",
+          "#5c5e5f",
+          "#7c7d7f",
+          "#9d9fa0",
+          "#bfc1c3",
+          "#edeff1"
+        ]
+      },
+      "ink-day": {
+        "role": "neutral",
+        "displayName": "Ink (day shift)",
+        "canonical": "#13171c",
+        "oklch": "oklch(20.3% 0.012 254.1)",
+        "tonalRamp": [
+          "#080b10",
+          "#20242a",
+          "#3c4046",
+          "#595e64",
+          "#797e84",
+          "#999fa6",
+          "#bcc1c9",
+          "#e9eff6"
+        ]
+      },
+      "ink-2-day": {
+        "role": "neutral",
+        "displayName": "Ink 2 (day shift)",
+        "canonical": "#434d58",
+        "oklch": "oklch(41.6% 0.022 250.9)",
+        "tonalRamp": [
+          "#050c14",
+          "#1c252f",
+          "#37414b",
+          "#545f6a",
+          "#747f8b",
+          "#94a0ac",
+          "#b7c2cf",
+          "#e4f0fe"
+        ]
+      },
+      "ink-3-day": {
+        "role": "neutral",
+        "displayName": "Ink 3 (day shift)",
+        "canonical": "#5a6571",
+        "oklch": "oklch(50.2% 0.023 250.6)",
+        "tonalRamp": [
+          "#050c15",
+          "#1c252f",
+          "#37414c",
+          "#545f6b",
+          "#737f8b",
+          "#94a0ad",
+          "#b6c2d0",
+          "#e3f0fe"
+        ]
+      },
+      "holder-day": {
+        "role": "neutral",
+        "displayName": "Holder (day shift)",
+        "canonical": "#283039",
+        "oklch": "oklch(30.5% 0.020 251.5)",
+        "tonalRamp": [
+          "#060c13",
+          "#1d252d",
+          "#38414a",
+          "#565f69",
+          "#757e89",
+          "#96a0ab",
+          "#b8c2ce",
+          "#e5f0fc"
         ]
       }
     },
     "typographyMeta": {
       "display": {
-        "displayName": "Flap",
-        "purpose": "Every split-flap character; size follows the tile (0.8 of its height)."
+        "displayName": "Display",
+        "purpose": "The landing H1 only."
       },
       "headline": {
-        "displayName": "Plate Headline",
-        "purpose": "H2 on a hanging sign plate."
+        "displayName": "Headline",
+        "purpose": "Section H2s and app page titles."
       },
       "title": {
         "displayName": "Title",
-        "purpose": "Board titles, app panel and group headings."
-      },
-      "lede": {
-        "displayName": "Lede",
-        "purpose": "Paragraph under a sign plate, max 60ch, in Ink 2."
+        "purpose": "Strip titles, record and panel headings."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Default reading text."
+        "purpose": "App copy; landing ledes run 17 to 19px."
       },
       "label": {
-        "displayName": "Sign Label",
-        "purpose": "Text on sign links."
+        "displayName": "Label",
+        "purpose": "Bay designator plates; 10px for strip kind labels and box units."
       },
-      "column-label": {
-        "displayName": "Column Label",
-        "purpose": "Uppercase board column heads and field labels only; never a kicker."
-      },
-      "data": {
-        "displayName": "Data",
-        "purpose": "Refs, timestamps, ages, tokens, org tags."
-      },
-      "carrier-code": {
-        "displayName": "Carrier Code",
-        "purpose": "Two-letter code on a carrier tag; same voice for the gate number and wordmark."
+      "print": {
+        "displayName": "Print",
+        "purpose": "What the strip printer sets: callsigns, numbers, times, statuses, counts, faces."
       }
     },
     "shadows": [
       {
-        "name": "housing",
-        "value": "inset 0 1px 0 rgba(255,255,255,0.09), inset 0 -2px 0 rgba(0,0,0,0.55), 0 30px 60px -30px rgba(0,0,0,0.9)",
-        "purpose": "Painted board housings lit from above."
-      },
-      {
-        "name": "bezel-recess",
-        "value": "inset 0 3px 8px rgba(0,0,0,0.85), inset 0 0 0 1px rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.08)",
-        "purpose": "Black recess under flap modules and boards."
-      },
-      {
-        "name": "hanging-plate",
-        "value": "inset 0 1px 0 rgba(255,255,255,0.08), 0 22px 34px -22px rgba(0,0,0,0.9)",
-        "purpose": "Section sign plates hanging forward."
-      },
-      {
-        "name": "panel",
-        "value": "inset 0 1px 0 rgba(255,255,255,0.05), inset 0 0 0 1px rgba(255,255,255,0.025)",
-        "purpose": "App panels and groups."
-      },
-      {
-        "name": "tile",
-        "value": "0 1px 0 rgba(255,255,255,0.03), 0 calc(var(--fh) * 0.04) calc(var(--fh) * 0.12) rgba(0,0,0,0.55)",
-        "purpose": "Every flap tile, scaled to its height."
-      },
-      {
-        "name": "hinge-stack",
-        "value": "0 1px 0 rgba(255,255,255,0.035), 0 -2px 0 rgba(0,0,0,0.32), 0 -3px 0 rgba(255,255,255,0.025), 0 -4px 0 rgba(0,0,0,0.22)",
-        "purpose": "Card edges stacked behind the top leaf, on the hinge line."
-      },
-      {
-        "name": "lamp",
-        "value": "0 0 0 2px rgba(0,0,0,0.55), 0 0 10px color-mix(in oklab, var(--c) 55%, transparent)",
-        "purpose": "Status lamps only; the only glow in the system."
-      },
-      {
-        "name": "fresh-lamp",
-        "value": "0 1px 2px rgba(0,0,0,0.7)",
-        "purpose": "The 8px what-changed lamp; no glow."
+        "name": "console",
+        "value": "0 30px 60px -36px rgba(0, 0, 0, 0.7)",
+        "purpose": "The hero's console panel only."
       },
       {
         "name": "menu",
-        "value": "inset 0 0 0 1px rgba(255,255,255,0.08), 0 18px 40px rgba(0,0,0,0.55)",
+        "value": "0 18px 40px rgba(0, 0, 0, 0.45)",
         "purpose": "Popover menus."
       },
       {
-        "name": "drawer",
-        "value": "inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 0 1px rgba(255,255,255,0.04), -30px 0 80px -30px rgba(0,0,0,0.85)",
-        "purpose": "Thread detail drawer."
+        "name": "strip-in-flight",
+        "value": "0 18px 30px -12px rgba(0, 0, 0, 0.55)",
+        "purpose": "The middle of a strip's slide between bays."
       },
       {
-        "name": "focus",
-        "value": "outline: 2px solid var(--sign); outline-offset: 3px",
-        "purpose": "Global focus-visible ring; inset 2px yellow ring on fields and rows."
+        "name": "holder-ring",
+        "value": "0 0 0 3px var(--holder)",
+        "purpose": "Puts paper (an action, a chip, a code) in its holder; 2px to 4px."
       }
     ],
     "motion": [
       {
         "name": "ease-out",
         "value": "cubic-bezier(0.16, 1, 0.3, 1)",
-        "purpose": "Default for state transitions (180 to 420ms)."
+        "purpose": "State transitions and pencil marks drawing on."
       },
       {
-        "name": "ease-in-out",
-        "value": "cubic-bezier(0.65, 0, 0.35, 1)",
-        "purpose": "Looping markers (the GSoC current-stop pulse)."
+        "name": "ease-slide",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Paper sliding along its holder; strips changing bays (460ms within a bay, 760ms across)."
       },
       {
-        "name": "flap-fall",
-        "value": "cubic-bezier(0.55, 0, 1, 0.55)",
-        "purpose": "Top leaf falling, half the card step, darkening to 42% brightness."
-      },
-      {
-        "name": "flap-land",
-        "value": "cubic-bezier(0.25, 0.8, 0.35, 1)",
-        "purpose": "Bottom leaf landing with a 7 degree overshoot."
-      },
-      {
-        "name": "flap-step",
-        "value": "62ms",
-        "purpose": "Default time per card; the last card takes 2.1x."
-      },
-      {
-        "name": "flap-stagger",
-        "value": "22ms",
-        "purpose": "Default delay between neighbouring tiles starting."
-      },
-      {
-        "name": "sign-hover",
-        "value": "220ms",
-        "purpose": "Sign link colour inversion; the pictogram square slides 4px over 320ms."
-      },
-      {
-        "name": "reduced-motion",
-        "value": "settle instantly",
-        "purpose": "prefers-reduced-motion or html[data-motion=off] sets tiles without flipping and clamps all transitions."
+        "name": "print",
+        "value": "26ms per character",
+        "purpose": "A printed field retyping left to right."
       }
     ],
     "breakpoints": [
       {
-        "name": "drawer-reserve",
-        "value": "1500px"
+        "name": "strip-narrow",
+        "value": "540px (holder container)"
       },
       {
-        "name": "board-columns",
-        "value": "1180px"
+        "name": "bay-narrow",
+        "value": "460px (bay container)"
       },
       {
-        "name": "programs-stack",
-        "value": "1100px"
-      },
-      {
-        "name": "band-stack",
-        "value": "1080px"
-      },
-      {
-        "name": "app-header",
-        "value": "860px"
-      },
-      {
-        "name": "pass-stack",
-        "value": "820px"
-      },
-      {
-        "name": "section-stack",
-        "value": "760px"
-      },
-      {
-        "name": "hero-narrow",
+        "name": "phone",
         "value": "720px"
       },
       {
-        "name": "board-thread (container)",
-        "value": "980px"
+        "name": "nav",
+        "value": "860px"
       },
       {
-        "name": "board-number (container)",
-        "value": "560px"
+        "name": "stack",
+        "value": "940px to 1180px by surface"
       }
     ]
   },
   "components": [
     {
-      "name": "Sign Link",
+      "name": "Flight strip",
+      "kind": "custom",
+      "refersTo": "strip-pr",
+      "description": "A thread as a printed strip in its holder: callsign, title, last move, silence.",
+      "html": "<div class=\"ds-holder\" data-state=\"stalled\"><div class=\"ds-paper\"><span class=\"ds-cs\"><b>LU</b> 881<small>ISSUE</small></span><span class=\"ds-body\"><span class=\"ds-title\">Popover loses focus on scroll</span><span class=\"ds-note\">Nobody has replied in 19 days</span></span><span class=\"ds-quiet\"><b>19</b><small>DAYS</small></span></div></div>",
+      "css": ".ds-holder{position:relative;display:flex;padding:3px 3px 3px 9px;border-radius:5px;background:var(--holder,#0c0f12);box-shadow:inset 0 1px 0 var(--holder-lip,#303843);max-width:560px}.ds-holder::before{content:'';position:absolute;left:2px;top:3px;bottom:3px;width:4px;border-radius:2px;background:var(--pencil,#d0352a)}.ds-paper{display:grid;grid-template-columns:6.4em minmax(0,1fr) 4.4em;flex:1;min-height:50px;border-radius:3px;background:var(--strip-issue,#b6d3f0);color:var(--strip-ink,#15181c);transition:transform 260ms cubic-bezier(0.22,1,0.36,1)}.ds-paper:hover{transform:translateX(4px)}.ds-paper>*+*{border-left:1px solid rgba(21,24,28,.22)}.ds-cs{display:grid;align-content:center;padding:5px 8px 5px 10px;font-family:'Martian Mono',ui-monospace,monospace;font-variation-settings:'wdth' 78;font-size:13px}.ds-cs small{margin-top:3px;font:700 10px/1 Archivo,sans-serif;letter-spacing:.12em;color:#45474a}.ds-body{display:grid;align-content:center;padding:6px 12px;min-width:0}.ds-title{font:600 15px/1.25 Archivo,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ds-note{font:400 13px/1.3 Archivo,sans-serif;color:#45474a}.ds-quiet{display:grid;justify-items:center;align-content:center;line-height:1}.ds-quiet b{font:700 19px 'Martian Mono',monospace;font-variation-settings:'wdth' 78}.ds-quiet small{margin-top:4px;font:700 10px Archivo,sans-serif;letter-spacing:.1em;color:#45474a}"
+    },
+    {
+      "name": "Strip action",
       "kind": "button",
-      "refersTo": "sign-link",
-      "description": "The primary wayfinding action: sign yellow, black humanist label, inked pictogram square; inverts on hover.",
-      "html": "<a class=\"ds-sign\" href=\"#\"><span>Connect GitHub</span><span class=\"ds-sign-icon\"><svg viewBox=\"0 0 32 32\" aria-hidden=\"true\" fill=\"currentColor\"><path d=\"M4 13.6h16.4l-5.6-5.6 3.4-3.4L29.6 16 18.2 27.4l-3.4-3.4 5.6-5.6H4v-4.8Z\"/></svg></span></a>",
-      "css": ".ds-sign { display: inline-flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 56px; padding: 0 18px 0 22px; background: var(--sign, #ffcf00); color: var(--sign-ink, #111111); font-family: var(--font-sign, \"Atkinson Hyperlegible Next\", \"Atkinson Hyperlegible\", system-ui, sans-serif); font-weight: 700; font-size: 18px; letter-spacing: -0.01em; text-decoration: none; border-radius: 4px; transition: background-color 220ms cubic-bezier(0.16, 1, 0.3, 1), color 220ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-sign-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 3px; background: var(--sign-ink, #111111); color: var(--sign, #ffcf00); transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-sign-icon svg { width: 18px; height: 18px; } .ds-sign:hover { background: var(--sign-ink, #111111); color: var(--sign, #ffcf00); } .ds-sign:hover .ds-sign-icon { background: var(--sign, #ffcf00); color: var(--sign-ink, #111111); transform: translateX(4px); } .ds-sign:focus-visible { outline: 2px solid var(--sign, #ffcf00); outline-offset: 3px; }"
+      "refersTo": "strip-link-primary",
+      "description": "The primary action: a strip in its holder that slides when pulled.",
+      "html": "<a class=\"ds-strip-link\" href=\"#\"><span class=\"ds-strip-link-paper\">Connect GitHub<span class=\"ds-strip-link-icon\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></span></span></a>",
+      "css": ".ds-strip-link{display:inline-flex;padding:3px 3px 3px 9px;border-radius:5px;background:var(--holder,#0c0f12);box-shadow:inset 0 1px 0 var(--holder-lip,#303843);color:var(--strip-ink,#15181c);text-decoration:none}.ds-strip-link-paper{display:flex;align-items:center;gap:18px;min-height:52px;padding:0 8px 0 18px;border-radius:3px;background:var(--strip-pr,#f1dfa6);font:700 17px Archivo,sans-serif;transition:transform 260ms cubic-bezier(0.22,1,0.36,1)}.ds-strip-link-icon{display:grid;place-items:center;width:34px;height:34px;border-left:1px solid rgba(21,24,28,.22)}.ds-strip-link:hover .ds-strip-link-paper{transform:translateX(6px)}.ds-strip-link:focus-visible{outline:2px solid var(--focus,#ffb21e);outline-offset:3px}"
     },
     {
-      "name": "Sign Band Actions",
+      "name": "Quiet strip action",
       "kind": "button",
-      "refersTo": "sign-link-ink",
-      "description": "On a yellow band the primary becomes an inked panel and the secondary an outlined cell.",
-      "html": "<div class=\"ds-band\"><a class=\"ds-sign-ink\" href=\"#\"><span>Connect GitHub</span><span class=\"ds-sign-ink-icon\"><svg viewBox=\"0 0 32 32\" aria-hidden=\"true\" fill=\"currentColor\"><path d=\"M4 13.6h16.4l-5.6-5.6 3.4-3.4L29.6 16 18.2 27.4l-3.4-3.4 5.6-5.6H4v-4.8Z\"/></svg></span></a><a class=\"ds-sign-cell\" href=\"#\"><span>Sample board</span><span class=\"ds-sign-cell-icon\"><svg viewBox=\"0 0 32 32\" aria-hidden=\"true\" fill=\"currentColor\"><path d=\"M4 13.6h16.4l-5.6-5.6 3.4-3.4L29.6 16 18.2 27.4l-3.4-3.4 5.6-5.6H4v-4.8Z\"/></svg></span></a></div>",
-      "css": ".ds-band { display: inline-flex; gap: 10px; padding: 10px; border-radius: 4px; background: var(--sign, #ffcf00); } .ds-sign-ink, .ds-sign-cell { display: inline-flex; align-items: center; gap: 18px; min-height: 64px; padding: 0 18px 0 22px; border-radius: 4px; font-family: var(--font-sign, \"Atkinson Hyperlegible Next\", \"Atkinson Hyperlegible\", system-ui, sans-serif); font-weight: 700; font-size: 18px; letter-spacing: -0.01em; text-decoration: none; transition: background-color 220ms cubic-bezier(0.16, 1, 0.3, 1), color 220ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-sign-ink { background: var(--sign-ink, #111111); color: var(--sign, #ffcf00); } .ds-sign-cell { background: transparent; color: var(--sign-ink, #111111); box-shadow: inset 0 0 0 2px var(--sign-ink, #111111); } .ds-sign-ink-icon, .ds-sign-cell-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 3px; } .ds-sign-ink-icon { background: var(--sign, #ffcf00); color: var(--sign-ink, #111111); } .ds-sign-cell-icon { background: var(--sign-ink, #111111); color: var(--sign, #ffcf00); } .ds-band svg { width: 18px; height: 18px; } .ds-sign-ink:hover { background: #000; color: #fff; } .ds-sign-ink:hover .ds-sign-ink-icon { background: #fff; color: #000; } .ds-sign-cell:hover { background: var(--sign-ink, #111111); color: var(--sign, #ffcf00); } .ds-sign-cell:hover .ds-sign-cell-icon { background: var(--sign, #ffcf00); color: var(--sign-ink, #111111); } .ds-band a:focus-visible { outline: 2px solid var(--sign-ink, #111111); outline-offset: 3px; }"
+      "refersTo": "strip-link-quiet",
+      "description": "The secondary action: an empty holder outline.",
+      "html": "<a class=\"ds-strip-quiet\" href=\"#\">Open the sample board</a>",
+      "css": ".ds-strip-quiet{display:inline-flex;align-items:center;min-height:58px;padding:0 20px;border-radius:5px;box-shadow:inset 0 0 0 1px var(--rule-2,#3b4551);color:var(--ink,#eef1f3);font:700 17px Archivo,sans-serif;text-decoration:none}.ds-strip-quiet:hover{background:var(--bay-2,#212831)}.ds-strip-quiet:focus-visible{outline:2px solid var(--focus,#ffb21e);outline-offset:3px}"
     },
     {
-      "name": "App Buttons",
-      "kind": "button",
-      "refersTo": "button",
-      "description": "Default graphite button and the one yellow sign button for the action that moves the user on.",
-      "html": "<div class=\"ds-btns\"><button class=\"ds-btn\">Sync now</button><button class=\"ds-btn ds-btn-sign\">Open on GitHub</button></div>",
-      "css": ".ds-btns { display: inline-flex; gap: 8px; padding: 16px; background: var(--housing, #101113); } .ds-btn { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border: 0; border-radius: 4px; background: var(--housing-3, #1d1f23); color: var(--ink, #f3f0e7); font-family: var(--font-sign, \"Atkinson Hyperlegible Next\", \"Atkinson Hyperlegible\", system-ui, sans-serif); font-weight: 600; font-size: 14px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07); cursor: pointer; } .ds-btn:hover { background: #2a2d32; } .ds-btn-sign { background: var(--sign, #ffcf00); color: var(--sign-ink, #111111); box-shadow: none; font-weight: 700; } .ds-btn-sign:hover { background: var(--sign-ink, #111111); color: var(--sign, #ffcf00); box-shadow: inset 0 0 0 2px var(--sign, #ffcf00); } .ds-btn:focus-visible { outline: 2px solid var(--sign, #ffcf00); outline-offset: 3px; }"
-    },
-    {
-      "name": "Search Field",
-      "kind": "input",
-      "refersTo": "input-search",
-      "description": "Inset graphite field; focus swaps the rule outline for a 2px yellow ring.",
-      "html": "<label class=\"ds-search\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-4-4\"/></svg><input placeholder=\"Filter threads\" /></label>",
-      "css": ".ds-search { display: flex; align-items: center; gap: 8px; width: 320px; height: 40px; padding: 0 8px 0 12px; border-radius: 4px; background: var(--housing-2, #16181b); box-shadow: inset 0 0 0 1px var(--rule, #2f3238); color: var(--ink-3, #8d8a82); } .ds-search svg { width: 16px; height: 16px; flex: none; } .ds-search:focus-within { box-shadow: inset 0 0 0 2px var(--sign, #ffcf00); } .ds-search input { flex: 1; min-width: 0; height: 100%; border: 0; background: transparent; color: var(--ink, #f3f0e7); font-family: var(--font-sign, \"Atkinson Hyperlegible Next\", \"Atkinson Hyperlegible\", system-ui, sans-serif); font-size: 15px; outline: none; caret-color: var(--sign, #ffcf00); } .ds-search input::placeholder { color: var(--ink-3, #8d8a82); }"
-    },
-    {
-      "name": "App Tabs",
-      "kind": "nav",
-      "refersTo": "tab-active",
-      "description": "Tab rail in the app header; the current tab fills warm ink, the yellow badge counts threads on you.",
-      "html": "<nav class=\"ds-tabs\"><a class=\"ds-tab\" aria-current=\"page\" href=\"#\">Board <span class=\"ds-badge\">4</span></a><a class=\"ds-tab\" href=\"#\">Repos</a><a class=\"ds-tab\" href=\"#\">Programs</a><a class=\"ds-tab\" href=\"#\">Discover</a></nav>",
-      "css": ".ds-tabs { display: inline-flex; gap: 2px; padding: 4px; border-radius: 6px; background: var(--housing-2, #16181b); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04); } .ds-tab { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 4px; color: var(--ink-2, #bdb9ae); font-family: var(--font-sign, \"Atkinson Hyperlegible Next\", \"Atkinson Hyperlegible\", system-ui, sans-serif); font-weight: 600; font-size: 15px; text-decoration: none; transition: color 180ms cubic-bezier(0.16, 1, 0.3, 1), background-color 180ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-tab:hover { color: var(--ink, #f3f0e7); background: var(--housing-3, #1d1f23); } .ds-tab[aria-current=\"page\"] { background: var(--ink, #f3f0e7); color: var(--housing, #101113); } .ds-tab:focus-visible { outline: 2px solid var(--sign, #ffcf00); outline-offset: 3px; } .ds-badge { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--sign, #ffcf00); color: var(--sign-ink, #111111); font-size: 12px; font-weight: 700; line-height: 20px; text-align: center; }"
-    },
-    {
-      "name": "Chips and Data Tags",
+      "name": "Bay plate",
       "kind": "chip",
-      "refersTo": "chip",
-      "description": "Filter chips (selected fills warm ink) and the dashed sample tag beside the solid live tag.",
-      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\" data-on>rust</button><button class=\"ds-chip\">typescript</button><span class=\"ds-tag\">Sample data</span><span class=\"ds-tag ds-tag-live\">Live feed</span></div>",
-      "css": ".ds-chips { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 16px; background: var(--housing, #101113); font-family: var(--font-sign, \"Atkinson Hyperlegible Next\", \"Atkinson Hyperlegible\", system-ui, sans-serif); } .ds-chip { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border: 0; border-radius: 14px; background: #1f2125; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06); color: var(--ink-2, #bdb9ae); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; } .ds-chip:hover { color: var(--ink, #f3f0e7); } .ds-chip[data-on] { background: var(--ink, #f3f0e7); color: var(--housing, #101113); } .ds-chip:focus-visible { outline: 2px solid var(--sign, #ffcf00); outline-offset: 3px; } .ds-tag { display: inline-flex; align-items: center; padding: 3px 8px; border: 1px dashed #5b5850; border-radius: 3px; color: var(--ink-2, #bdb9ae); font-size: 12px; font-weight: 600; } .ds-tag-live { border-style: solid; border-color: color-mix(in oklab, var(--lamp-go, #46c37b) 60%, transparent); color: #9fe7bd; }"
+      "refersTo": "bay-plate-you",
+      "description": "The designator printed on a bay's header; amber only for Your move.",
+      "html": "<span class=\"ds-plate\">Your move</span> <span class=\"ds-plate ds-plate-them\">Their move</span> <span class=\"ds-plate ds-plate-stalled\">Stalled</span>",
+      "css": ".ds-plate{display:inline-block;padding:4px 9px 3px;border-radius:3px;background:var(--move,#ffb21e);color:var(--move-ink,#1d1404);font:800 13px/1.2 Archivo,sans-serif;font-variation-settings:'wdth' 78;letter-spacing:.12em;text-transform:uppercase}.ds-plate-them{background:var(--bay-3,#2a323c);color:var(--ink,#eef1f3)}.ds-plate-stalled{background:var(--pencil,#d0352a);color:#fff}"
     },
     {
-      "name": "Flap Tiles",
-      "kind": "custom",
-      "refersTo": "flap-tile",
-      "description": "Two-leaf split-flap tiles with hinge gap and pins, warm-white condensed characters, in a recessed bezel.",
-      "html": "<div class=\"ds-bezel\"><span class=\"ds-flaps\"><span class=\"ds-flap\"><span class=\"ds-fh ds-fh-t\"><span class=\"ds-fc\">N</span></span><span class=\"ds-fh ds-fh-b\"><span class=\"ds-fc\">N</span></span></span><span class=\"ds-flap\"><span class=\"ds-fh ds-fh-t\"><span class=\"ds-fc\">E</span></span><span class=\"ds-fh ds-fh-b\"><span class=\"ds-fc\">E</span></span></span><span class=\"ds-flap\"><span class=\"ds-fh ds-fh-t\"><span class=\"ds-fc\">X</span></span><span class=\"ds-fh ds-fh-b\"><span class=\"ds-fc\">X</span></span></span><span class=\"ds-flap\"><span class=\"ds-fh ds-fh-t\"><span class=\"ds-fc\">T</span></span><span class=\"ds-fh ds-fh-b\"><span class=\"ds-fc\">T</span></span></span><span class=\"ds-flap\"><span class=\"ds-fh ds-fh-t\"><span class=\"ds-fc\">?</span></span><span class=\"ds-fh ds-fh-b\"><span class=\"ds-fc\">?</span></span></span></span></div>",
-      "css": ".ds-bezel { display: inline-block; padding: 16px; border-radius: 6px; background: #0b0c0d; box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.85), inset 0 0 0 1px rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.08); } .ds-flaps { --fh: 64px; display: inline-flex; gap: 4px; line-height: 0; } .ds-flap { position: relative; display: inline-block; width: calc(var(--fh) * 0.66); height: var(--fh); font-family: var(--font-flap, \"Barlow Condensed\", \"Arial Narrow\", sans-serif); font-weight: 600; font-size: calc(var(--fh) * 0.8); color: var(--flap-ink, #f2eee3); text-align: center; border-radius: 3px; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03), 0 calc(var(--fh) * 0.04) calc(var(--fh) * 0.12) rgba(0, 0, 0, 0.55); transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-fh { position: absolute; left: 0; right: 0; height: 50%; overflow: hidden; } .ds-fh-t { top: 0; border-radius: 3px 3px 0 0; background: linear-gradient(180deg, var(--flap-top, #2b2d32), var(--flap-top-2, #25272b)); } .ds-fh-b { bottom: 0; border-radius: 0 0 3px 3px; background: linear-gradient(180deg, var(--flap-bot, #222428), var(--flap-bot-2, #1c1e21)); } .ds-fc { position: absolute; left: 0; right: 0; height: var(--fh); line-height: var(--fh); } .ds-fh-t .ds-fc { top: 0; } .ds-fh-b .ds-fc { bottom: 0; } .ds-flap::after { content: \"\"; position: absolute; z-index: 3; left: 0; right: 0; top: 50%; height: max(1px, calc(var(--fh) * 0.022)); transform: translateY(-50%); background: var(--flap-hinge, #070708); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.035), 0 -2px 0 rgba(0, 0, 0, 0.32), 0 -3px 0 rgba(255, 255, 255, 0.025), 0 -4px 0 rgba(0, 0, 0, 0.22); } .ds-flap::before { content: \"\"; position: absolute; z-index: 4; top: 50%; left: -1px; right: -1px; height: max(3px, calc(var(--fh) * 0.09)); transform: translateY(-50%); background: linear-gradient(90deg, #050506 0 3px, transparent 3px), linear-gradient(270deg, #050506 0 3px, transparent 3px); } .ds-flap:hover { transform: translateY(1px); }"
+      "name": "Callsign",
+      "kind": "chip",
+      "refersTo": "callsign",
+      "description": "A repo's short printed code, unique among the repos on screen.",
+      "html": "<span class=\"ds-callsign\">QR</span>",
+      "css": ".ds-callsign{display:inline-flex;align-items:center;justify-content:center;min-width:3.1em;height:1.9em;padding:0 .45em;border-radius:3px;box-shadow:inset 0 0 0 1px var(--rule-2,#3b4551);color:var(--ink,#eef1f3);font:700 13px 'Martian Mono',monospace;font-variation-settings:'wdth' 78;letter-spacing:.08em}"
     },
     {
-      "name": "Sign Plate",
-      "kind": "custom",
-      "refersTo": "sign-plate",
-      "description": "Section head: a black plate hung from rods with a yellow pictogram square, and the H2 at near-zero tracking. The page's one face lives in the nav wordmark.",
-      "html": "<div class=\"ds-plate-wrap\"><div class=\"ds-plate\"><span class=\"ds-plate-pict\"><svg viewBox=\"0 0 32 32\" aria-hidden=\"true\" fill=\"currentColor\"><path fill-rule=\"evenodd\" d=\"M16 2.5a13.5 13.5 0 1 1 0 27 13.5 13.5 0 0 1 0-27ZM14.4 8v9.2l6.4 4.1 1.7-2.7-4.9-3.1V8h-3.2Z\"/></svg></span><h2 class=\"ds-plate-h2\">A contributor's day</h2><span class=\"ds-plate-arrow\"><svg viewBox=\"0 0 32 32\" aria-hidden=\"true\" fill=\"currentColor\"><path d=\"M4 13.6h16.4l-5.6-5.6 3.4-3.4L29.6 16 18.2 27.4l-3.4-3.4 5.6-5.6H4v-4.8Z\"/></svg></span></div></div>",
-      "css": ".ds-plate-wrap { padding: 30px 16px 16px; background: var(--housing, #101113); } .ds-plate { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 18px; padding: 14px; border-radius: 4px; background: #060606; color: var(--ink, #f3f0e7); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 22px 34px -22px rgba(0, 0, 0, 0.9); } .ds-plate::before, .ds-plate::after { content: \"\"; position: absolute; bottom: 100%; width: 3px; height: 26px; border-radius: 1px; background: linear-gradient(90deg, #3a3d42, #5b5f66 50%, #2b2d31); } .ds-plate::before { left: 12%; } .ds-plate::after { right: 12%; } .ds-plate-pict, .ds-plate-arrow { display: grid; place-items: center; width: 56px; aspect-ratio: 1; border-radius: 3px; } .ds-plate-pict { background: var(--sign, #ffcf00); color: var(--sign-ink, #111111); } .ds-plate-arrow { color: var(--ink, #f3f0e7); box-shadow: inset 0 0 0 2px rgba(243, 240, 231, 0.18); transition: box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-plate-arrow svg { transform: rotate(90deg); } .ds-plate-pict svg, .ds-plate-arrow svg { width: 62%; height: 62%; } .ds-plate:hover .ds-plate-arrow { box-shadow: inset 0 0 0 2px var(--ink, #f3f0e7); } .ds-plate-h2 { margin: 0; font-family: var(--font-sign, \"Atkinson Hyperlegible Next\", \"Atkinson Hyperlegible\", system-ui, sans-serif); font-size: 36px; line-height: 1.04; font-weight: 700; letter-spacing: 0.005em; }"
+      "name": "Picked chip",
+      "kind": "chip",
+      "refersTo": "strip-plain",
+      "description": "A topic or filter that is on: plain paper in a holder ring.",
+      "html": "<button class=\"ds-chip\" aria-pressed=\"false\">rust</button> <button class=\"ds-chip\" aria-pressed=\"true\">typescript</button>",
+      "css": ".ds-chip{height:36px;padding:0 14px;border:0;border-radius:4px;background:var(--bay-2,#212831);box-shadow:inset 0 0 0 1px var(--rule-2,#3b4551);color:var(--ink-2,#b3bcc6);font:600 15px Archivo,sans-serif;cursor:pointer}.ds-chip:hover{background:var(--bay-3,#2a323c);color:var(--ink,#eef1f3)}.ds-chip[aria-pressed=true]{background:var(--strip-plain,#e6eaee);box-shadow:0 0 0 3px var(--holder,#0c0f12);color:var(--strip-ink,#15181c)}.ds-chip:focus-visible{outline:2px solid var(--focus,#ffb21e);outline-offset:3px}"
     },
     {
-      "name": "Status Lamps and Fresh Lamp",
-      "kind": "custom",
-      "refersTo": "lamp-go",
-      "description": "State in shape and colour: go circle, wait diamond, stop square, idle ring; the 8px yellow fresh lamp marks what changed.",
-      "html": "<div class=\"ds-lamps\"><span class=\"ds-lamp\" data-state=\"go\"></span>Go<span class=\"ds-lamp\" data-state=\"wait\"></span>Wait<span class=\"ds-lamp\" data-state=\"stop\"></span>Stop<span class=\"ds-lamp\" data-state=\"idle\"></span>Idle<span class=\"ds-fresh\"></span>Changed</div>",
-      "css": ".ds-lamps { display: inline-flex; align-items: center; gap: 10px; padding: 16px; background: var(--housing, #101113); color: var(--ink-2, #bdb9ae); font-family: var(--font-sign, \"Atkinson Hyperlegible Next\", \"Atkinson Hyperlegible\", system-ui, sans-serif); font-size: 13px; font-weight: 600; } .ds-lamp { --c: var(--lamp-idle, #e9e5d8); display: inline-block; width: 9px; height: 9px; margin-left: 8px; background: var(--c); border-radius: 50%; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.55), 0 0 10px color-mix(in oklab, var(--c) 55%, transparent); } .ds-lamp[data-state=\"go\"] { --c: var(--lamp-go, #46c37b); } .ds-lamp[data-state=\"wait\"] { --c: var(--lamp-wait, #ffa62b); border-radius: 1px; transform: rotate(45deg) scale(0.86); } .ds-lamp[data-state=\"stop\"] { --c: var(--lamp-stop, #ff5b41); border-radius: 1px; } .ds-lamp[data-state=\"idle\"] { background: transparent; box-shadow: inset 0 0 0 2px var(--c), 0 0 0 2px rgba(0, 0, 0, 0.55); } .ds-fresh { width: 8px; height: 8px; margin-left: 8px; border-radius: 50%; background: var(--sign, #ffcf00); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.7); }"
+      "name": "Token field",
+      "kind": "input",
+      "refersTo": "strip-plain",
+      "description": "A blank strip in its holder that the token is typed onto.",
+      "html": "<span class=\"ds-field\"><input placeholder=\"ghp_… or github_pat_…\" /></span>",
+      "css": ".ds-field{display:flex;padding:3px;border-radius:6px;background:var(--holder,#0c0f12);max-width:520px}.ds-field input{flex:1;height:50px;padding:0 14px;border:0;border-radius:4px;background:var(--strip-plain,#e6eaee);color:var(--strip-ink,#15181c);caret-color:var(--strip-ink,#15181c);font:15px 'Martian Mono',monospace;font-variation-settings:'wdth' 78}.ds-field input:focus-visible{outline:2px solid var(--focus,#ffb21e);outline-offset:2px}"
     },
     {
-      "name": "Carrier Tag",
+      "name": "App tabs",
+      "kind": "nav",
+      "refersTo": "strip-plain",
+      "description": "App sections on a bay rail; the current one is a strip pulled out of the rack.",
+      "html": "<nav class=\"ds-tabs\"><a aria-current=\"page\">Bay <span class=\"ds-badge\">8</span></a><a>Plan</a><a>Repos</a><a>Discover</a></nav>",
+      "css": ".ds-tabs{display:inline-flex;gap:2px;padding:4px;border-radius:6px;background:var(--bay-2,#212831);box-shadow:inset 0 0 0 1px var(--rule,#2b333d)}.ds-tabs a{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:4px;color:var(--ink-2,#b3bcc6);font:600 15px Archivo,sans-serif;cursor:pointer}.ds-tabs a:hover{background:var(--bay-3,#2a323c);color:var(--ink,#eef1f3)}.ds-tabs a[aria-current=page]{background:var(--strip-plain,#e6eaee);box-shadow:0 0 0 2px var(--holder,#0c0f12);color:var(--strip-ink,#15181c)}.ds-badge{min-width:20px;height:20px;padding:0 6px;border-radius:3px;background:var(--move,#ffb21e);color:var(--move-ink,#1d1404);font:700 12px/20px 'Martian Mono',monospace;text-align:center}"
+    },
+    {
+      "name": "Field data block",
       "kind": "custom",
-      "refersTo": "carrier-tag",
-      "description": "Two-letter repo code beside a tail fin in the repo's two-colour livery.",
-      "html": "<div class=\"ds-carriers\"><span class=\"ds-carrier\" style=\"--c1:#2f6fe4;--c2:#ffd34d\"><span class=\"ds-fin\"></span><span class=\"ds-code\">RS</span></span><span class=\"ds-carrier\" style=\"--c1:#e8412f;--c2:#f6efe0\"><span class=\"ds-fin\"></span><span class=\"ds-code\">NX</span></span><span class=\"ds-carrier\" style=\"--c1:#17a673;--c2:#0d3b2b\"><span class=\"ds-fin\"></span><span class=\"ds-code\">VT</span></span></div>",
-      "css": ".ds-carriers { display: inline-flex; gap: 8px; padding: 16px; background: var(--housing, #101113); } .ds-carrier { --h: 26px; display: inline-flex; align-items: stretch; height: var(--h); border-radius: 3px; overflow: hidden; background: #24262a; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05); transition: box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-carrier:hover { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18); } .ds-fin { width: calc(var(--h) * 0.62); background: linear-gradient(118deg, transparent 0 34%, var(--c2) 34% 52%, var(--c1) 52% 100%), var(--c1); } .ds-code { display: grid; place-items: center; min-width: calc(var(--h) * 1.05); padding: 0 calc(var(--h) * 0.18); font-family: var(--font-flap, \"Barlow Condensed\", \"Arial Narrow\", sans-serif); font-weight: 700; font-size: calc(var(--h) * 0.66); letter-spacing: 0.04em; color: var(--flap-ink, #f2eee3); line-height: 1; }"
+      "refersTo": "callsign",
+      "description": "The radar tag that rides beside each plane in the 3D field: callsign and PR number, then its status. Amber for the flight being brought in.",
+      "html": "<div class=\"ds-tags\"><span class=\"ds-tag\"><b>FR302</b>IN REVIEW</span><span class=\"ds-tag\" data-focus><b>QR2417</b>MERGING</span><span class=\"ds-tag\" data-tone=\"stop\"><b>QR2398</b><i>STALLED 31D</i></span></div>",
+      "css": ".ds-tags{display:flex;gap:14px;padding:18px;background:var(--console,#14181d)}.ds-tag{display:grid;padding:3px 7px 2px 9px;border-radius:3px;background:var(--console,#14181d);box-shadow:inset 3px 0 0 var(--strip-pr,#f1dfa6),inset 0 0 0 1px var(--rule-2,#3b4551);color:var(--ink-2,#b3bcc6);font:600 10.5px/1.4 var(--font-print,ui-monospace);font-variation-settings:'wdth' 78;letter-spacing:.04em}.ds-tag b{color:var(--ink,#eef1f3)}.ds-tag i{font-style:normal;color:var(--alert,#ff7c6d)}.ds-tag[data-focus]{background:var(--move,#ffb21e);box-shadow:none;color:var(--move-ink,#1d1404)}.ds-tag[data-focus] b{color:var(--move-ink,#1d1404)}"
     }
   ],
   "narrative": {
-    "northStar": "The Departures Board",
-    "overview": "Spool is a station hall at night. Every surface is a piece of board hardware: painted graphite housings held by slotted screws, recessed black bezels, two-leaf split-flap tiles with a visible hinge gap, black sign plates hung from rods, and sign-yellow wayfinding that tells you where to go. The product answers one question, who moves next, and the world answers it the way a departures board does: rows that flip when something changes, lamps whose shape says the state, and a short code per carrier so a repo is recognisable at a glance.\n\nThe register is dense, legible and mechanical. Information sits recessed in bezels and flips into place; signs hang forward and point. Type splits into three voices: condensed flap characters for anything the board displays, a hyperlegible humanist sans for anything a person reads or acts on, and a hyperlegible mono for data (refs, times, ages, tokens). Motion is physical: tiles fall and land with a small overshoot, cycle forward through a real drum order, and settle instantly when reduced motion is on. Faces built from letters, set in flap cards, react to the cursor and to each section.\n\nConfirmed rejections: the dark dev-tool hero with a lit dashboard screenshot, and a bento grid of feature cards. The product is shown as a working board, never as a picture of one.",
+    "northStar": "The Flight Strip Bay",
+    "overview": "Spool is the bay an air traffic controller works from. Every open thread a contributor has on GitHub is a printed paper strip in a black plastic holder, and the strips sit in bays that answer one question: whose move is it. When the move passes, the strip slides out of one bay and into the other. The paper's colour says what kind of thread it carries, the holder's tab says its state, and the last box on every strip counts the days of silence, ringed in red grease pencil once it stalls.\n\nThe register is a working console, not a costume. The ground is a flat blue-grey night console with no texture, screws or gradients; the strips are the bright things on it, so the eye goes to the work and the room recedes. Type splits into two voices: Archivo for everything a person reads or acts on, and condensed Martian Mono for everything the strip printer sets (callsigns, numbers, times, statuses, counts, the faces). Motion is physical and sparse: strips slide between bays, fields print left to right, pencil marks draw on once. The night shift is the default; a day shift (light) is one switch away and keeps the same strips and holders.\n\nLetter-built faces, (^_^) and its family, are the one signature carried over from the earlier world. They are printed by the strip printer in a holder, react to the pointer and to each section, and live in the nav, the app header and the hero's position panel.\n\nConfirmed rejections: the dark dev-tool hero with a lit dashboard screenshot, the bento grid of feature cards, and the airport costume of the previous world (screws, bezels, hanging sign plates, departure-board signage, plane pictograms).",
     "keyCharacteristics": [
-      "Graphite housings, full bleed, with four slotted corner screws and a recessed black bezel for every flap module.",
-      "Two-leaf flap tiles: top and bottom leaves, a dark hinge gap with pins, warm-white condensed characters.",
-      "Sign yellow is wayfinding: the primary action, the pictogram square on a sign plate, the bands and wall, the next stop, focus, and what changed.",
-      "Status lamps carry state in shape as well as colour.",
-      "Solid-silhouette pictograms on a 32-unit grid, one fill weight.",
-      "Two-letter carrier codes with a tail-fin livery, collision-free within any visible set.",
-      "Letter-built faces in flap cards as the reusable signature."
+      "Paper strips in black holders, coloured by thread kind, read left to right: callsign, title, last move, silence.",
+      "Bays with a designator plate; amber lights only the bay that is your move.",
+      "Red grease pencil marks silence past the limit: a ring round the count and a red holder tab.",
+      "Flat blue-grey console in two shifts, night by default.",
+      "Condensed Martian Mono for anything printed; Archivo for anything read.",
+      "Strips slide between bays; fields print in; nothing else animates by default."
     ],
     "rules": [
       {
-        "name": "The Wayfinding Yellow Rule",
-        "body": "Sign yellow tells you where to go, what to do, or what changed: the primary action, the plate pictogram square, a band or wall, the next stop, the fresh lamp, focus. It is never atmosphere: no tinted panels, gradient washes, yellow-tinted shadows or glow bars.",
+        "name": "The Paper Carries The Colour Rule",
+        "body": "Saturated colour lives on strips, not on the room. Panels, bays and the console stay neutral in both shifts; if a surface that is not a strip, a plate or a mark turns colourful, it is wrong.",
         "section": "colors"
       },
       {
-        "name": "The Night Hall Rule",
-        "body": "The world is dark graphite. Light appears only as signage (yellow), selection (a warm-ink fill on the active tab or chip) and the paper boarding pass.",
+        "name": "The One Amber Rule",
+        "body": "Amber means the move is yours, or where you are. It never fills a button, a card or a panel.",
         "section": "colors"
       },
       {
-        "name": "The Lamp Colours Are State Rule",
-        "body": "Green, amber, red and idle-white mean go, wait, stop and idle. They are never used for decoration, category or brand.",
+        "name": "The Pencil Means Stalled Rule",
+        "body": "Red pencil appears only for silence past the limit and for closed-and-struck. Errors use Alert Coral text, not pencil.",
         "section": "colors"
       },
       {
-        "name": "The Three Voices Rule",
-        "body": "Barlow Condensed belongs to the board's hardware: flap tiles, flap-faced chips, carrier codes, gate numbers and the wordmark. Atkinson Hyperlegible Next carries everything a person reads or clicks. Atkinson Mono carries data. A voice never crosses into another's job.",
+        "name": "The Printer Sets Data Rule",
+        "body": "Martian Mono is for what the strip printer would print: codes, numbers, times, statuses, counts and faces. Prose, buttons and headings are Archivo.",
         "section": "typography"
       },
       {
-        "name": "The Level Sign Rule",
-        "body": "Headlines hang at about zero tracking (0.005em on plate H2s, -0.01em on titles, never tighter than -0.02em). Display weight comes from the plate and the size, not from crushed letter-spacing.",
+        "name": "The Pin The Width Rule",
+        "body": "Every element set in the print font also sets the width axis (`font-variation-settings: var(--print-wdth)`); width is not inherited from the family.",
         "section": "typography"
       },
       {
-        "name": "The Column Head Rule",
-        "body": "Uppercase tracked 12px text labels a column or a field. It never sits above a heading as a kicker.",
-        "section": "typography"
-      },
-      {
-        "name": "The Recess Rule",
-        "body": "Information sits in the housing (bezels, inset fields); signs hang out from it. Nothing lifts on hover.",
-        "section": "elevation"
-      },
-      {
-        "name": "The Only Lamps Glow Rule",
-        "body": "A glow is light, so only lamps emit it. Everything else casts plain black shadow.",
+        "name": "The Holder Is The Depth Rule",
+        "body": "Lift a thing by putting it in a holder, never by floating it on a shadow. No glows, no zero-offset coloured halos.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "**Do** put every value that changes (status, count, clock, face, flight number) in flap tiles so it flips through the drum, and settle it instantly under reduced motion or the motion switch.",
-      "**Do** mark state with lamp shape as well as colour: go circle, wait diamond, stop square, idle ring.",
-      "**Do** mark what changed with the 8px sign-yellow fresh lamp in the row's first column, and nothing else.",
-      "**Do** open each landing section with a hanging black sign plate: yellow pictogram square, H2 at 0.005em tracking; the section's face shows in the nav wordmark.",
-      "**Do** paint housings full bleed with four slotted corner screws, and set flap modules and boards in a recessed black bezel.",
-      "**Do** assign carrier codes with the collision-free assigner for every set of repos shown together.",
-      "**Do** keep dim flap ink at #a09c92 or brighter, and ink-3 for the faintest text on graphite.",
-      "**Do** draw new pictograms as solid silhouettes on the 32-unit grid at one fill weight, filled with currentColor, and seat them in a square.",
-      "**Do** label synthetic content with the dashed sample tag and live public feeds with the solid green-edged tag."
+      "Do put every thread on a strip: callsign first, silence last, coloured by kind.",
+      "Do say whose move it is with the bay, and the state with the holder tab and a pencil mark.",
+      "Do keep the console flat and neutral in both shifts; let the strips carry the colour.",
+      "Do set codes, numbers, times and statuses in condensed Martian Mono, and pin its width axis.",
+      "Do make primary actions strips in holders that slide when pulled.",
+      "Do label synthetic strips SAMPLE and live data LIVE, in printed tags."
     ],
     "donts": [
-      "**Don't** use sign yellow as atmosphere: no tinted panels, gradient washes, yellow-tinted shadows, or glow bars for what changed.",
-      "**Don't** let colour alone carry thread state; lamps change shape and timeline dots always sit beside text naming the event.",
-      "**Don't** set running text, sign labels or buttons in Barlow Condensed; it belongs to flaps, carrier codes, gate numbers and the wordmark.",
-      "**Don't** put uppercase tracked labels above headings as kickers; uppercase 12px is for column heads and field labels.",
-      "**Don't** track headlines tighter than -0.02em.",
-      "**Don't** show the product as a lit dashboard screenshot or a bento grid of feature cards; show it as a working board.",
-      "**Don't** lift cards on hover or float content above the housing; information is recessed and signs hang.",
-      "**Don't** use emoji, icon fonts or text glyphs as icons; use the pictogram set.",
-      "**Don't** introduce light page surfaces beyond signage yellow, warm-ink selection and the boarding-pass paper."
+      "Don't bring back the airport costume: no screws, bezels, hanging sign plates, flap tiles or plane pictograms.",
+      "Don't fill buttons, cards or panels with amber; amber is for your move only.",
+      "Don't use red pencil for anything but stalled silence and struck-through closed titles.",
+      "Don't float things on glows or coloured halos; depth comes from holders.",
+      "Don't put a kicker or eyebrow label above a heading.",
+      "Don't set prose or buttons in the print font."
     ]
   }
 }
