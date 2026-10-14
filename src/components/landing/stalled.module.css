@@ -1,0 +1,255 @@
+.panel {
+  padding: clamp(18px, 2.2vw, 32px);
+  container-type: inline-size;
+}
+
+.control {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 18px 36px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.controlText {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.glass {
+  width: 40px;
+  height: 40px;
+  padding: 7px;
+  border-radius: 4px;
+  background: var(--lamp-wait);
+  color: #1a1100;
+}
+
+.label {
+  font-weight: 700;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.limit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.unit {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+
+.ruler {
+  position: relative;
+  height: 44px;
+}
+
+.range {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+}
+
+.days {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 3px;
+  height: 100%;
+}
+
+.day {
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  padding-bottom: 3px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #2a2c30 0 50%, #222428 50% 100%);
+  color: var(--ink-3);
+  font-family: var(--font-data);
+  font-size: 10.5px;
+  transition:
+    background 260ms var(--ease-out),
+    color 260ms var(--ease-out),
+    transform 260ms var(--ease-out);
+}
+
+.day[data-on] {
+  background: linear-gradient(180deg, #4a3613 0 50%, #3f2e10 50% 100%);
+  color: #ffd18c;
+}
+
+.day[data-at] {
+  background: var(--lamp-wait);
+  color: #1a1100;
+  font-weight: 700;
+  transform: scaleY(1.12);
+}
+
+.range:focus-visible + .days .day[data-at] {
+  outline: 2px solid var(--sign);
+  outline-offset: 2px;
+}
+
+.board {
+  --flap-size: clamp(18px, 2cqi, 26px);
+  margin-top: 8px;
+}
+
+.labels,
+.row {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) minmax(0, 0.9fr) 72px 150px;
+  align-items: center;
+  gap: 18px;
+}
+
+.labels {
+  padding: 12px 0 10px;
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.rows {
+  --rh: 62px;
+  position: relative;
+}
+
+.row {
+  height: var(--rh);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background-color 300ms var(--ease-out);
+}
+
+.row[data-late] {
+  background: linear-gradient(90deg, rgba(255, 166, 43, 0.06), transparent 60%);
+}
+
+.thread {
+  display: grid;
+  min-width: 0;
+}
+
+.title {
+  overflow: hidden;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ref {
+  overflow: hidden;
+  font-family: var(--font-data);
+  font-size: 12.5px;
+  color: var(--ink-3);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.colLast {
+  overflow: hidden;
+  color: var(--ink-2);
+  font-size: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.labels .colLast {
+  color: inherit;
+  font-size: inherit;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* the moving threshold rule */
+.cut {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  top: calc(var(--cut) * var(--rh));
+  height: 2px;
+  margin-top: -1px;
+  background: var(--lamp-wait);
+  box-shadow: 0 0 16px rgba(255, 166, 43, 0.5);
+  transition:
+    top 520ms var(--ease-out),
+    opacity 300ms var(--ease-out);
+  pointer-events: none;
+}
+
+.cut[data-hidden] {
+  opacity: 0;
+}
+
+.cut span {
+  position: absolute;
+  right: 0;
+  top: -11px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: var(--lamp-wait);
+  color: #1a1100;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+@container (max-width: 860px) {
+  .labels,
+  .row {
+    grid-template-columns: 52px minmax(0, 1fr) 64px 132px;
+  }
+  .colLast {
+    display: none;
+  }
+}
+
+@container (max-width: 560px) {
+  .control {
+    grid-template-columns: 1fr;
+  }
+  .labels,
+  .row {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 10px;
+  }
+  .labels > :first-child,
+  .row > :first-child {
+    display: none;
+  }
+  .rows {
+    --rh: 66px;
+  }
+  .status :global(.flaps) {
+    --flap-size: 16px;
+  }
+  .label {
+    font-size: 16px;
+  }
+}

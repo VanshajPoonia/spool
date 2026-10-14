@@ -1,0 +1,368 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(250px, 320px) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(20px, 2.6vw, 40px);
+}
+
+/* the repo list: one row per carrier, the selected one lit with its livery */
+.fleet {
+  display: grid;
+  gap: 4px;
+}
+
+.fleetHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tab {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-2);
+  text-align: left;
+  transition:
+    background-color 220ms var(--ease-out),
+    color 220ms var(--ease-out);
+}
+
+/* livery stripe that grows in on the selected row */
+.tab::before {
+  content: "";
+  position: absolute;
+  inset: 10px auto 10px 0;
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--c1), var(--c2));
+  transform: scaleY(0);
+  transition: transform 320ms var(--ease-out);
+}
+
+.tab:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--ink);
+}
+
+.tab[aria-selected="true"] {
+  background: #1b1d20;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.tab[aria-selected="true"]::before {
+  transform: none;
+}
+
+.tab > :first-child {
+  transition: transform 320ms var(--ease-out);
+}
+
+.tab:hover > :first-child,
+.tab[aria-selected="true"] > :first-child {
+  transform: translateX(4px);
+}
+
+.tabName {
+  display: grid;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.tabName strong {
+  overflow: hidden;
+  font-size: 16px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tabName span {
+  overflow: hidden;
+  color: var(--ink-3);
+  font-size: 13px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tabCount {
+  color: var(--ink);
+  font-family: var(--font-data);
+  font-size: 14px;
+}
+
+.tabCount span {
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+/* the record for the selected repo */
+.record {
+  display: grid;
+  gap: 22px;
+  padding: clamp(20px, 2.4vw, 32px);
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.recordHead {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 24px;
+  min-height: 104px;
+}
+
+.recordTitle {
+  display: grid;
+  gap: 8px;
+}
+
+.recordTitle h3 {
+  overflow-wrap: anywhere;
+  font-size: clamp(22px, 2.2vw, 30px);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.recordTitle p {
+  max-width: 52ch;
+  color: var(--ink-2);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.recordTitle strong {
+  color: var(--ink);
+}
+
+/* the tail fin, painted in the repo's livery; it taxis in whenever the repo changes */
+.fin {
+  position: relative;
+  display: block;
+  width: clamp(140px, 16cqi, 200px);
+  height: clamp(84px, 10cqi, 112px);
+  margin: calc(-1 * clamp(20px, 2.4vw, 32px)) calc(-1 * clamp(20px, 2.4vw, 32px)) 0 0;
+  clip-path: polygon(38% 0, 100% 0, 100% 100%, 0 100%);
+  background:
+    linear-gradient(122deg, transparent 0 40%, var(--c2) 40% 55%, var(--c1) 55% 100%),
+    var(--c1);
+  align-self: start;
+  animation: taxi 620ms var(--ease-out) both;
+}
+
+.fin::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 45%, rgba(0, 0, 0, 0.2));
+}
+
+.fin span {
+  position: absolute;
+  z-index: 1;
+  right: 14%;
+  bottom: 10%;
+  color: #fff;
+  font-family: var(--font-flap);
+  font-weight: 700;
+  font-size: clamp(30px, 3.6cqi, 44px);
+  line-height: 1;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+@keyframes taxi {
+  from {
+    opacity: 0;
+    transform: translateX(48px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.bar {
+  display: flex;
+  gap: 3px;
+  height: 8px;
+}
+
+.bar span {
+  min-width: 0;
+  border-radius: 2px;
+  transition:
+    flex-grow 600ms var(--ease-out),
+    opacity 240ms var(--ease-out);
+}
+
+.bar [data-dim] {
+  opacity: 0.35;
+}
+
+.bar [data-kind="merged"] {
+  background: var(--lamp-go);
+}
+
+.bar [data-kind="closed"] {
+  background: var(--lamp-stop);
+}
+
+.bar [data-kind="open"] {
+  background: var(--lamp-wait);
+}
+
+.buckets {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.bucket {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 6px;
+  background: #1b1d20;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  color: var(--ink-2);
+  text-align: left;
+  transition:
+    background-color 220ms var(--ease-out),
+    box-shadow 220ms var(--ease-out),
+    color 220ms var(--ease-out);
+}
+
+.bucket:hover {
+  background: #212327;
+  color: var(--ink);
+}
+
+.bucket[aria-pressed="true"] {
+  color: var(--ink);
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+.bucketLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.list {
+  display: grid;
+  gap: 2px;
+  min-height: 140px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-content: start;
+}
+
+.list li {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: 4px;
+  font-size: 15px;
+  animation: drop 460ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+.list li:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.list .empty {
+  grid-template-columns: 1fr;
+  color: var(--ink-3);
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.num {
+  color: var(--ink-3);
+  font-family: var(--font-data);
+  font-size: 13px;
+}
+
+:global(html[data-motion="off"]) .fin,
+:global(html[data-motion="off"]) .list li {
+  animation: none;
+}
+
+@container (max-width: 560px) {
+  .fin {
+    display: none;
+  }
+  .recordHead {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+  .buckets {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .bucket {
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .fleet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .fleetHead {
+    grid-column: 1 / -1;
+  }
+}
+
+/* phones: a compact two-up grid of tags and names, so the record stays close */
+@media (max-width: 520px) {
+  .fleet {
+    gap: 4px;
+  }
+  .tab {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    padding: 9px 10px;
+  }
+  .tabName span,
+  .tabCount {
+    display: none;
+  }
+  .tabName strong {
+    font-size: 15px;
+  }
+}
