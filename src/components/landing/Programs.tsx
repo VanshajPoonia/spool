@@ -91,7 +91,7 @@ export function Programs({ data }: { data: ProgramsData }) {
       event: next ? `GSoC: ${next.label}` : `GSoC ${g.year}: next milestone`,
       days: next && now ? daysUntil(next.date, now) : null,
       date: next ? fmtDate(next.date, true) : now ? `${Number(g.year) + 1} not announced yet` : "",
-      detail: <>Phase: {gsocPhase(g.phase).toLowerCase().replace(/^\w/, (m) => m.toUpperCase())}.</>,
+      detail: <>Phase: {gsocPhase(g.phase).toLowerCase().replace(/^\w/, (m) => m.toUpperCase())}. The whole season is in the next section.</>,
     });
   }
   // Soonest first; unknown dates go last.

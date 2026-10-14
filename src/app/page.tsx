@@ -2,6 +2,7 @@ import { Approach } from "@/components/landing/Approach";
 import { Callsigns } from "@/components/landing/Callsigns";
 import { DaySection } from "@/components/landing/DaySection";
 import { Footer } from "@/components/landing/Footer";
+import { Gsoc } from "@/components/landing/Gsoc";
 import { Hero } from "@/components/landing/Hero";
 import { Inbound } from "@/components/landing/Inbound";
 import { MoodProvider } from "@/components/landing/mood";
@@ -51,6 +52,7 @@ export default async function Home() {
         <Callsigns />
         <Inbound initial={repos} />
         <Programs data={programs} />
+        <Gsoc data={programs.gsoc} fetchedAt={programs.fetchedAt} />
         <SignOn />
       </main>
       <Footer lines={footerLines(programs.yc)} />
