@@ -1,3 +1,4 @@
+import { Approach } from "@/components/landing/Approach";
 import { Callsigns } from "@/components/landing/Callsigns";
 import { DaySection } from "@/components/landing/DaySection";
 import { Footer } from "@/components/landing/Footer";
@@ -43,6 +44,7 @@ export default async function Home() {
       <SiteNav />
       <main>
         <Hero />
+        <Approach />
         <StripPrint />
         <DaySection />
         <Stalled />

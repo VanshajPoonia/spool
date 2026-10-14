@@ -1,0 +1,321 @@
+/* The field runs edge to edge and dissolves into the page on every side. */
+.stage {
+  position: relative;
+  margin: 0 calc(-1 * var(--edge));
+}
+
+.scene {
+  position: relative;
+  height: clamp(420px, 46vw, 720px);
+  overflow: hidden;
+}
+
+.scene canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%),
+    linear-gradient(180deg, transparent 0, #000 10%, #000 84%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%),
+    linear-gradient(180deg, transparent 0, #000 10%, #000 84%, transparent 100%);
+  mask-composite: intersect;
+  animation: fieldIn 900ms var(--ease-out) both;
+}
+
+@keyframes fieldIn {
+  from {
+    opacity: 0;
+  }
+}
+
+.sceneNote {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 0 var(--edge);
+  color: var(--ink-3);
+  font-size: 15px;
+  text-align: center;
+}
+
+.tools {
+  position: absolute;
+  top: 8px;
+  right: var(--edge);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 2;
+}
+
+.tool {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.tool:hover {
+  background: var(--bay-3);
+}
+
+/* ---------- data blocks: a radar tag beside each plane ---------- */
+
+.labels {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  will-change: transform;
+}
+
+.leader {
+  position: absolute;
+  top: -1px;
+  left: 3px;
+  width: 26px;
+  height: 1px;
+  background: var(--ink-3);
+  transform-origin: 0 50%;
+  transform: rotate(-56deg);
+}
+
+.block {
+  position: absolute;
+  bottom: 20px;
+  left: 15px;
+  display: grid;
+  padding: 3px 7px 2px 9px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--console) 84%, transparent);
+  box-shadow:
+    inset 3px 0 0 var(--strip-pr),
+    inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-2);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.label[data-kind="review"] .block {
+  box-shadow:
+    inset 3px 0 0 var(--strip-review),
+    inset 0 0 0 1px var(--rule-2);
+}
+
+.label[data-kind="plain"] .block {
+  box-shadow:
+    inset 3px 0 0 var(--strip-plain),
+    inset 0 0 0 1px var(--rule-2);
+}
+
+.code {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.state {
+  position: relative;
+  white-space: pre;
+}
+
+/* the one being brought in */
+.label[data-focus] {
+  z-index: 2;
+}
+
+.label[data-focus] .block {
+  background: var(--move);
+  box-shadow: none;
+  color: var(--move-ink);
+}
+
+.label[data-focus] .code {
+  color: var(--move-ink);
+}
+
+.label[data-focus] .leader {
+  background: var(--move);
+}
+
+.label[data-tone="stop"] .state {
+  color: var(--alert);
+}
+
+.ring {
+  position: absolute;
+  left: 2px;
+  bottom: -4px;
+  width: calc(100% + 2px);
+  height: 22px;
+  fill: none;
+  stroke: var(--pencil);
+  stroke-width: 2;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  overflow: visible;
+}
+
+/* ---------- the deck under the field ---------- */
+
+.deck {
+  display: grid;
+  gap: 18px;
+  margin-top: clamp(-36px, -2.4vw, -16px);
+  z-index: 2;
+}
+
+.rail {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plate {
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px 9px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px var(--rule);
+  color: var(--ink-3);
+  transition:
+    background-color 260ms var(--ease-out),
+    color 260ms var(--ease-out);
+}
+
+.plateAtc {
+  color: var(--ink-2);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.plateGit {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.plate[data-past] .plateAtc {
+  color: var(--ink);
+}
+
+.plate[data-past] {
+  color: var(--ink-2);
+}
+
+.plate[data-now] {
+  background: var(--move);
+  box-shadow: none;
+  color: var(--move-ink);
+}
+
+.plate[data-now] .plateAtc {
+  color: var(--move-ink);
+}
+
+.plate[data-now][data-key="landed"] {
+  background: var(--landed);
+}
+
+.desk {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, auto);
+  align-items: end;
+  gap: 14px;
+}
+
+.next {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.deskName {
+  color: var(--ink-3);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.press {
+  min-height: 0;
+}
+
+.landed {
+  display: grid;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+}
+
+.rack {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.empty {
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+.caption {
+  max-width: 78ch;
+  color: var(--ink-3);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media (max-width: 860px) {
+  .desk {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .scene {
+    height: clamp(400px, 124vw, 560px);
+  }
+  .rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .label[data-kind="plain"] {
+    display: none !important;
+  }
+  .block {
+    font-size: 9.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene canvas {
+    animation: none;
+  }
+}
