@@ -1,0 +1,215 @@
+.form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 4px;
+  background: var(--housing-2);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+
+.field:focus-within {
+  box-shadow: inset 0 0 0 2px var(--sign);
+}
+
+.field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  outline: none;
+  font-family: var(--font-data);
+  font-size: 14px;
+}
+
+.field:has(input[aria-invalid]) {
+  box-shadow: inset 0 0 0 2px var(--lamp-stop);
+}
+
+.formError {
+  grid-column: 1 / -1;
+  color: #ffb3a6;
+  font-size: 14px;
+}
+
+.allowance {
+  margin: -4px 0 14px;
+  color: var(--ink-3);
+  font-size: 13.5px;
+}
+
+.allowance a {
+  color: var(--ink-2);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+.allowance a:hover {
+  color: var(--ink);
+}
+
+.summary {
+  margin-bottom: 8px;
+  color: var(--lamp-wait);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 16px auto minmax(0, 1fr) minmax(150px, 220px) 56px 34px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rule);
+  animation: in 360ms var(--ease-out) both;
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+@keyframes in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.row[data-kind="closed"],
+.row[data-kind="missing"] {
+  opacity: 0.6;
+}
+
+.lamp {
+  display: grid;
+  place-items: center;
+}
+
+.pending {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  animation: blink 1s var(--ease-in-out) infinite alternate;
+}
+
+@keyframes blink {
+  to {
+    opacity: 0.25;
+  }
+}
+
+.main {
+  display: grid;
+  min-width: 0;
+}
+
+.title {
+  overflow: hidden;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-decoration: none;
+}
+
+.title:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.sub {
+  overflow: hidden;
+  color: var(--ink-3);
+  font-family: var(--font-data);
+  font-size: 12.5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.status {
+  display: grid;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.status strong {
+  color: var(--ink);
+}
+
+.status span,
+.status a {
+  overflow: hidden;
+  color: var(--ink-3);
+  font-size: 13px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.status a:hover {
+  color: var(--ink);
+}
+
+.row[data-kind="asked"] .status strong {
+  color: var(--lamp-wait);
+}
+
+.fresh {
+  justify-self: end;
+  padding: 0;
+  color: var(--sign);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.spin {
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+:global(html[data-motion="off"]) .row,
+:global(html[data-motion="off"]) .pending,
+:global(html[data-motion="off"]) .spin {
+  animation: none;
+}
+
+@media (max-width: 760px) {
+  .row {
+    grid-template-columns: 16px auto minmax(0, 1fr) 34px;
+    row-gap: 6px;
+  }
+  .status {
+    grid-column: 3 / 4;
+    grid-row: 2;
+  }
+  .fresh {
+    grid-column: 4;
+    grid-row: 2;
+  }
+}
