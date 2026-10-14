@@ -1,0 +1,117 @@
+.wrap {
+  display: grid;
+  gap: 10px;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list > li:not(.add) {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 34px;
+  padding: 0 4px 0 12px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #f3f0e7 0 50%, #e6e2d6 50% 100%);
+  color: var(--housing);
+  font-family: var(--font-flap);
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.list > li:not(.add) button {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: #55524a;
+}
+
+.list > li:not(.add) button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #000;
+}
+
+.add form {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 4px 0 10px;
+  border-radius: 3px;
+  background: var(--housing-2);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+
+.add form:focus-within {
+  box-shadow: inset 0 0 0 2px var(--sign);
+}
+
+.add input {
+  width: 170px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 14px;
+  outline: none;
+}
+
+.add input::placeholder {
+  color: var(--ink-3);
+}
+
+.add button {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--ink-2);
+}
+
+.add button:disabled {
+  opacity: 0.4;
+}
+
+.suggest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.suggest button {
+  height: 26px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--rule);
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.suggest button:hover {
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink-3);
+}
+
+.hint {
+  color: var(--ink-3);
+  font-size: 13px;
+}
