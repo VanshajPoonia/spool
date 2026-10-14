@@ -7,7 +7,8 @@
   height: 20px;
   padding: 0 6px;
   border-radius: 3px;
-  font-family: var(--font-data);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -16,14 +17,14 @@
 }
 
 .tag[data-p="1"] {
-  background: var(--sign);
-  color: var(--sign-ink);
+  background: var(--move);
+  color: var(--move-ink);
 }
 
 .tag[data-p="2"] {
-  background: rgba(255, 166, 43, 0.14);
-  box-shadow: inset 0 0 0 1px rgba(255, 166, 43, 0.55);
-  color: var(--lamp-wait);
+  background: color-mix(in oklab, var(--move) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--move) 55%, transparent);
+  color: var(--move);
 }
 
 .tag[data-p="3"] {
@@ -33,7 +34,7 @@
 }
 
 .word {
-  font-family: var(--font-sign);
+  font-family: var(--font-ui);
   font-weight: 700;
   letter-spacing: 0;
 }
@@ -60,7 +61,7 @@
 }
 
 .trigger:hover {
-  background: var(--housing-3);
+  background: var(--bay-3);
   color: var(--ink);
 }
 
@@ -91,9 +92,9 @@
   width: 230px;
   padding: 6px;
   border-radius: 6px;
-  background: #202226;
+  background: var(--bay-2);
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 0 0 1px var(--rule),
     0 18px 40px rgba(0, 0, 0, 0.55);
   animation: pop 180ms var(--ease-out);
   transform-origin: top right;
@@ -128,7 +129,7 @@
 
 .menu button:hover,
 .menu button:focus-visible {
-  background: var(--housing-3);
+  background: var(--bay-3);
 }
 
 .itemText {
@@ -150,7 +151,7 @@
 }
 
 .check {
-  color: var(--sign);
+  color: var(--move);
 }
 
 :global(html[data-motion="off"]) .menu,

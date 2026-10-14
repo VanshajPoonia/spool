@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Pin, PinOff, X } from "lucide-react";
-import { FlapText } from "@/components/flap/Flap";
-import { CarrierTag, Lamp } from "@/components/kit/Kit";
+import { PrintText } from "@/components/print/PrintText";
+import { Callsign, StateMark } from "@/components/kit/Kit";
 import { ago, type Thread } from "@/lib/classify";
 import { fetchTimeline, type TimelineEvent } from "@/lib/github";
 import { COLS, threadKey } from "@/lib/plan";
@@ -78,7 +78,7 @@ export function ThreadDetail({ t, code, mode, now, onClose }: { t: Thread; code?
   return (
     <aside className={s.drawer} aria-label={`Details for ${t.repo}#${t.num}`}>
       <div className={s.top}>
-        <CarrierTag repo={t.repo} size="lg" code={code} />
+        <Callsign repo={t.repo} size="lg" code={code} />
         <div className={s.ref}>
           <span>{t.repo}</span>
           <span className={s.num}>
@@ -93,8 +93,8 @@ export function ThreadDetail({ t, code, mode, now, onClose }: { t: Thread; code?
       <h2 className={s.title}>{t.title}</h2>
 
       <div className={s.status}>
-        <Lamp state={t.tone ?? "idle"} />
-        <FlapText value={t.status} length={12} size="30px" tone={t.tone} intro={3} />
+        <StateMark state={t.tone ?? "idle"} />
+        <PrintText value={t.status} length={12} style={{ fontSize: "19px" }} tone={t.tone} intro />
       </div>
       <p className={s.reason}>{t.reason}</p>
 
@@ -191,7 +191,7 @@ export function ThreadDetail({ t, code, mode, now, onClose }: { t: Thread; code?
       {err && <p className={s.err}>{err}</p>}
       {!events && !err && (
         <div className={s.loading}>
-          <FlapText value="LOADING" length={7} size="20px" intro={8} decorative />
+          <PrintText value="LOADING" length={7} style={{ fontSize: "15px" }} intro decorative />
         </div>
       )}
       {events && events.length === 0 && <p className={s.muted}>No events returned.</p>}

@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { ArrowUpRight, Eye, MessageSquare, Star } from "lucide-react";
-import { FlapText } from "@/components/flap/Flap";
-import { CarrierTag } from "@/components/kit/Kit";
-import { compactStars } from "@/components/landing/Routes";
+import { PrintText } from "@/components/print/PrintText";
+import { Callsign } from "@/components/kit/Kit";
+import { compactStars } from "@/lib/format";
 import { assignCodes } from "@/lib/carriers";
 import { fetchDiscovery, isLanguage, type FirstIssue, type FoundRepoGql } from "@/lib/github";
 import type { Discovery, FirstIssues } from "@/lib/programs";
@@ -134,7 +134,7 @@ export function DiscoverView() {
           </div>
           {!repos ? (
             <div className={p.loading}>
-              <FlapText value="SEARCHING" length={9} size="30px" intro={8} decorative />
+              <PrintText value="SEARCHING" length={9} style={{ fontSize: "19px" }} intro decorative />
             </div>
           ) : repos.length === 0 ? (
             <p className={p.empty}>{interests.length ? "No young repos matched. Try a broader topic." : "Add an interest to start."}</p>
@@ -144,7 +144,7 @@ export function DiscoverView() {
                 const saved = !!meta.shortlist[r.full];
                 return (
                   <li key={r.full} className={s.repo}>
-                    <CarrierTag repo={r.full} code={codes.get(r.full)} />
+                    <Callsign repo={r.full} code={codes.get(r.full)} />
                     <div className={p.itemMain}>
                       <a href={r.url} target="_blank" rel="noreferrer" className={p.itemTitle}>
                         {r.full}
@@ -161,7 +161,7 @@ export function DiscoverView() {
                       </span>
                     </div>
                     <span className={s.stars}>
-                      <FlapText value={compactStars(r.stars)} length={5} align="right" size="22px" label={`${r.stars} stars`} />
+                      <PrintText value={compactStars(r.stars)} length={5} align="right" style={{ fontSize: "14px" }} label={`${r.stars} stars`} />
                     </span>
                     <button type="button" className={p.iconBtn} aria-pressed={saved} onClick={() => toggleShortlist(r.full, r.url)} title={saved ? "Remove from shortlist" : "Add to shortlist"}>
                       <Star size={16} fill={saved ? "currentColor" : "none"} aria-hidden="true" />
@@ -184,7 +184,7 @@ export function DiscoverView() {
           </div>
           {!issues ? (
             <div className={p.loading}>
-              <FlapText value="SEARCHING" length={9} size="30px" intro={8} decorative />
+              <PrintText value="SEARCHING" length={9} style={{ fontSize: "19px" }} intro decorative />
             </div>
           ) : issues.length === 0 ? (
             <p className={p.empty}>No unclaimed good first issues in your languages right now.</p>
@@ -192,7 +192,7 @@ export function DiscoverView() {
             <ul className={p.list}>
               {issues.map((i) => (
                 <li key={i.id} className={`${p.item} ${s.issue}`}>
-                  <CarrierTag repo={i.repository.nameWithOwner} size="sm" code={codes.get(i.repository.nameWithOwner)} />
+                  <Callsign repo={i.repository.nameWithOwner} size="sm" code={codes.get(i.repository.nameWithOwner)} />
                   <div className={p.itemMain}>
                     <a href={i.url} target="_blank" rel="noreferrer" className={p.itemTitle}>
                       {i.title}
@@ -240,7 +240,7 @@ export function DiscoverView() {
           <ul className={s.short}>
             {shortlist.map((r) => (
               <li key={r.full}>
-                <CarrierTag repo={r.full} size="sm" code={codes.get(r.full)} />
+                <Callsign repo={r.full} size="sm" code={codes.get(r.full)} />
                 <a href={r.url} target="_blank" rel="noreferrer">
                   {r.full}
                   <ArrowUpRight size={14} aria-hidden="true" />

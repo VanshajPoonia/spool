@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDownUp, CheckCheck, ChevronDown, Keyboard, Search } from "lucide-react";
-import { FlapText } from "@/components/flap/Flap";
-import { CarrierTag, Pictogram } from "@/components/kit/Kit";
+import { Callsign } from "@/components/kit/Kit";
+import { Bay } from "@/components/kit/Strip";
+import { PrintText } from "@/components/print/PrintText";
 import type { Thread } from "@/lib/classify";
 import { FACES } from "@/lib/faces";
 import { prioRank, threadKey, type Prio } from "@/lib/plan";
@@ -24,8 +25,10 @@ function Loader() {
   }, []);
   const words = ["FETCHING", "YOUR PRS", "ISSUES", "REVIEWS", "MENTIONS"];
   return (
-    <div className={s.loader} role="status" aria-label="Loading your board from GitHub">
-      <FlapText value={words[i % words.length]} length={9} size="40px" decorative opts={{ stagger: 30, maxSteps: 10 }} />
+    <div className={s.loader} role="status" aria-label="Loading your bay from GitHub">
+      <span className={s.loaderStrip}>
+        <PrintText value={words[i % words.length]} length={9} decorative />
+      </span>
     </div>
   );
 }
@@ -33,55 +36,46 @@ function Loader() {
 function Group({
   title,
   sub,
-  pict,
+  which = "plain",
   items,
   empty,
   collapsible,
   defaultOpen = true,
   render,
-  tone,
   extra,
 }: {
   title: string;
   sub: string;
-  pict?: "arrivals" | "departures";
+  which?: "you" | "them" | "stalled" | "plain";
   items: Thread[];
   empty: string;
   collapsible?: boolean;
   defaultOpen?: boolean;
   render: (t: Thread) => React.ReactNode;
-  tone?: "sign" | "ink";
   extra?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen);
-  const body = (
-    <>
-      {items.length === 0 ? <p className={s.empty}>{empty}</p> : <ul className={s.rows}>{items.map(render)}</ul>}
-    </>
-  );
   return (
-    <section className={s.group} data-variant={tone}>
-      <header className={s.groupHead}>
-        {pict && (
-          <span className={s.pict} data-variant={tone}>
-            <Pictogram name={pict} />
-          </span>
-        )}
-        <div className={s.groupText}>
-          <h2>{title}</h2>
-          <p>{sub}</p>
-        </div>
-        {extra}
-        <FlapText value={String(items.length)} length={2} align="right" size="32px" label={`${items.length}`} opts={{ maxSteps: 6 }} />
-        {collapsible && (
-          <button type="button" className={s.collapse} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-            <ChevronDown size={18} aria-hidden="true" />
-            <span className="sr-only">{open ? "Collapse" : "Expand"}</span>
-          </button>
-        )}
-      </header>
-      {(!collapsible || open) && body}
-    </section>
+    <Bay
+      name={title}
+      which={which}
+      hint={sub}
+      className={s.group}
+      count={<PrintText value={String(items.length)} length={2} align="right" label={`${items.length}`} />}
+      tools={
+        <>
+          {extra}
+          {collapsible && (
+            <button type="button" className={s.collapse} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+              <ChevronDown size={18} aria-hidden="true" />
+              <span className="sr-only">{open ? "Collapse" : "Expand"}</span>
+            </button>
+          )}
+        </>
+      }
+    >
+      {(!collapsible || open) && (items.length === 0 ? <p className={s.empty}>{empty}</p> : <ul className={s.rows}>{items.map(render)}</ul>)}
+    </Bay>
   );
 }
 
@@ -257,13 +251,13 @@ export function BoardView() {
           <div className={s.quick} role="group" aria-label="Show only">
             <button type="button" aria-pressed={only === "delayed"} onClick={() => setOnly((o) => (o === "delayed" ? null : "delayed"))} disabled={!delayed && only !== "delayed"}>
               <span className={s.quickLamp} data-k="delayed" aria-hidden="true" />
-              Delayed
-              <FlapText value={String(delayed)} length={2} align="right" size="20px" tone={delayed ? "wait" : "dim"} label={`${delayed}`} opts={{ maxSteps: 6 }} />
+              Stalled
+              <PrintText value={String(delayed)} length={2} align="right" tone={delayed ? "stop" : "dim"} label={`${delayed}`} />
             </button>
             <button type="button" aria-pressed={only === "new"} onClick={() => setOnly((o) => (o === "new" ? null : "new"))} disabled={!fresh.size && only !== "new"}>
               <span className={s.quickLamp} data-k="new" aria-hidden="true" />
               New
-              <FlapText value={String(fresh.size)} length={2} align="right" size="20px" tone={fresh.size ? undefined : "dim"} label={`${fresh.size}`} opts={{ maxSteps: 6 }} />
+              <PrintText value={String(fresh.size)} length={2} align="right" tone={fresh.size ? "wait" : "dim"} label={`${fresh.size}`} />
             </button>
           </div>
           <button type="button" className={s.tool} onClick={seeAll} disabled={fresh.size === 0} title="Mark everything seen (Shift E)">
@@ -278,7 +272,7 @@ export function BoardView() {
           <div className={s.carriers} role="group" aria-label="Filter by repo">
             {repos.slice(0, 14).map(([r, n]) => (
               <button key={r} type="button" aria-pressed={repo === r} onClick={() => setRepo((cur) => (cur === r ? null : r))} title={r}>
-                <CarrierTag repo={r} size="sm" code={codeFor(r)} />
+                <Callsign repo={r} size="sm" code={codeFor(r)} />
                 <span className={s.carrierName}>{r.split("/")[1]}</span>
                 <span className={s.carrierCount}>{n}</span>
               </button>
@@ -301,10 +295,12 @@ export function BoardView() {
 
       {error && (
         <div className={s.error} role="alert">
-          <FlapText value={FACES.sad} length={5} size="26px" decorative />
+          <span className={s.errorFace}>
+            <PrintText value={FACES.sad} length={5} decorative />
+          </span>
           <p>
             {error}
-            {fetchedAt && threads.length > 0 ? " Showing the last board Spool loaded." : ""}
+            {fetchedAt && threads.length > 0 ? " Showing the last bay Spool loaded." : ""}
           </p>
           <button type="button" onClick={refresh}>
             Try again
@@ -318,20 +314,18 @@ export function BoardView() {
         <>
           <div className={s.columns}>
             <Group
-              title="Arrivals"
-              sub="Your move. Someone answered or asked."
-              pict="arrivals"
-              tone="sign"
+              title="Your move"
+              sub="Someone answered or asked."
+              which="you"
               items={groups.you}
               empty={filtering ? "Nothing on you matches the filter." : "Nothing is waiting on you."}
               render={row}
               extra={youOrder}
             />
             <Group
-              title="Departures"
-              sub={`Their move. Stalled after ${settings.staleDays} days of quiet.`}
-              pict="departures"
-              tone="ink"
+              title="Their move"
+              sub={`Stalled after ${settings.staleDays} days of quiet.`}
+              which="them"
               items={groups.them}
               empty={filtering ? "Nothing on them matches the filter." : "You have no open PRs or issues waiting on others."}
               render={row}
@@ -348,10 +342,10 @@ export function BoardView() {
               render={row}
             />
             {groups.snoozed.length > 0 && (
-              <Group title="Snoozed" sub="Back on the board when the snooze ends." items={groups.snoozed} empty="" collapsible defaultOpen={false} render={row} />
+              <Group title="Snoozed" sub="Back in the bay when the snooze ends." items={groups.snoozed} empty="" collapsible defaultOpen={false} render={row} />
             )}
             <Group
-              title="Departed"
+              title="Landed"
               sub="Merged or closed in the last 21 days."
               items={groups.done}
               empty="Nothing merged or closed in the last three weeks."

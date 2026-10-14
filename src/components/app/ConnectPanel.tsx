@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { ReactNode, useState } from "react";
-import { FlapText } from "@/components/flap/Flap";
-import { PassForm, type PassPhase } from "@/components/landing/BoardingPass";
+import { PrintText } from "@/components/print/PrintText";
+import { SignOnForm, type SignOnPhase } from "@/components/landing/SignOn";
 import { WIDE } from "@/lib/faces";
 import { updateSettings } from "@/lib/store";
 import { useBoard } from "./BoardProvider";
@@ -21,12 +21,12 @@ const COPY = {
 };
 
 export function ConnectPanel({ what = "board" }: { what?: keyof typeof COPY }) {
-  const [phase, setPhase] = useState<PassPhase>("idle");
+  const [phase, setPhase] = useState<SignOnPhase>("idle");
   const face = phase === "checking" ? WIDE.focus : phase === "error" ? WIDE.sad : phase === "ok" ? WIDE.cheer : WIDE.sleepy;
   return (
     <div className={s.wrap}>
       <div className={s.head}>
-        <FlapText value={face} length={7} size="clamp(40px, 5vw, 64px)" decorative intro={5} opts={{ maxSteps: 5, step: 46, stagger: 20 }} />
+        <PrintText value={face} length={7} style={{ fontSize: "calc(clamp(40px, 5vw, 64px) * 0.62)" }} decorative intro />
         <h1 className={s.title}>{COPY[what].title}</h1>
         <p className={s.lede}>{COPY[what].lede}</p>
         <div className={s.guest}>
@@ -44,7 +44,7 @@ export function ConnectPanel({ what = "board" }: { what?: keyof typeof COPY }) {
           </div>
         </div>
       </div>
-      <PassForm onPhase={setPhase} />
+      <SignOnForm onPhase={setPhase} />
     </div>
   );
 }

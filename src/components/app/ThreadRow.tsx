@@ -1,9 +1,10 @@
 "use client";
 
 import { memo, useEffect, useRef, useState } from "react";
-import { ArrowUpRight, BellOff, Clock, GitPullRequest, CircleDot, Pin, PinOff } from "lucide-react";
-import { FlapText } from "@/components/flap/Flap";
-import { CarrierTag, Lamp } from "@/components/kit/Kit";
+import { ArrowUpRight, BellOff, Clock, Pin, PinOff } from "lucide-react";
+import { StateMark } from "@/components/kit/Kit";
+import { Strip, type StripKind, type StripState } from "@/components/kit/Strip";
+import { carrier } from "@/lib/carriers";
 import { ago, type Thread } from "@/lib/classify";
 import { threadKey, type Prio } from "@/lib/plan";
 import { snooze, togglePin, type PlanStore } from "@/lib/store";
@@ -93,60 +94,80 @@ type Props = {
   onSelect: (t: Thread) => void;
 };
 
+/* What the strip's paper says about the thread: a review asked of you is pink, threads you only talk on are green. */
+export function stripKind(t: Thread): StripKind {
+  if (t.next === "watch") return "talk";
+  if (t.kind === "pr" && t.sources.includes("review") && t.next === "you") return "review";
+  return t.kind;
+}
+
+export function stripState(t: Thread): StripState {
+  if (t.next === "done") return "done";
+  if (t.next === "you") return "you";
+  if (t.next === "them") return t.tone === "wait" ? "stalled" : "them";
+  return "idle";
+}
+
 export const ThreadRow = memo(function ThreadRow({ t, code, now, fresh, pinned, snoozedUntil, note, prio, planSt, selected, dim, onSelect }: Props) {
-  const Icon = t.kind === "pr" ? GitPullRequest : CircleDot;
   return (
-    <li
+    <Strip
+      as="li"
       className={s.row}
-      data-selected={selected || undefined}
-      data-dim={dim || undefined}
-      data-fresh={fresh || undefined}
-      data-id={t.id}
-    >
-      <button type="button" className={s.rowMain} onClick={() => onSelect(t)} aria-label={`${t.title}, ${t.repo}#${t.num}. ${t.status}. ${t.reason}`}>
-        <span className={s.freshTab} aria-hidden="true" />
-        <CarrierTag repo={t.repo} code={code} />
-        <span className={s.what}>
-          <span className={s.title}>
-            {pinned && <Pin size={13} className={s.pinMark} aria-hidden="true" />}
-            {prio && <PriorityTag p={prio} />}
-            {t.title}
+      data={{
+        "data-id": t.id,
+        "data-selected": selected ? "" : undefined,
+        "data-dim": dim ? "" : undefined,
+        "data-fresh": fresh ? "" : undefined,
+        "data-pinned": pinned ? "" : undefined,
+      }}
+      kind={stripKind(t)}
+      callsign={code ?? carrier(t.repo).code}
+      num={t.num}
+      title={
+        <>
+          {pinned && <Pin size={13} className={s.pinMark} aria-hidden="true" />}
+          {prio && <PriorityTag p={prio} />}
+          {t.title}
+        </>
+      }
+      note={
+        <>
+          <span className={s.status}>
+            <StateMark state={t.tone ?? "idle"} />
+            {t.status}
           </span>
-          <span className={s.meta}>
-            <Icon size={13} aria-hidden="true" className={s.kind} data-kind={t.kind} />
-            <span className={s.ref}>
-              {t.repo}#{t.num}
-            </span>
-            <span className={s.reason}>{note ? `Note: ${note}` : t.reason}</span>
-          </span>
+          {note ? `Note: ${note}` : t.reason}
+        </>
+      }
+      who={t.lastActor ? `@${t.lastActor}` : undefined}
+      age={now ? ago(t.lastAt, now) : undefined}
+      quiet={t.next === "done" ? null : t.quietDays}
+      state={stripState(t)}
+      struck={t.state === "closed"}
+      onClick={() => onSelect(t)}
+      expanded={selected}
+      asideOverlay
+      label={`${t.title}, ${t.repo}#${t.num}. ${t.status}. ${t.reason}. Quiet ${t.quietDays} days.`}
+      aside={
+        <span className={s.actions}>
+          <PriorityMenu st={planSt} k={threadKey(t.id)} p={prio} label={`${t.repo}#${t.num}`} />
+          <button
+            type="button"
+            className={s.iconBtn}
+            onClick={() => togglePin(t.id)}
+            title={pinned ? "Unpin" : "Pin to the top"}
+            aria-pressed={pinned}
+          >
+            {pinned ? <PinOff size={16} aria-hidden="true" /> : <Pin size={16} aria-hidden="true" />}
+            <span className="sr-only">{pinned ? "Unpin" : "Pin"}</span>
+          </button>
+          {t.next !== "done" && <SnoozeMenu id={t.id} snoozedUntil={snoozedUntil} />}
+          <a className={s.iconBtn} href={t.url} target="_blank" rel="noreferrer" title="Open on GitHub">
+            <ArrowUpRight size={16} aria-hidden="true" />
+            <span className="sr-only">Open on GitHub</span>
+          </a>
         </span>
-        <span className={s.statusCell}>
-          <Lamp state={t.tone ?? "idle"} />
-          <FlapText value={t.status} length={12} tone={t.tone} />
-        </span>
-        <span className={s.when}>
-          <span className={s.actor}>{t.lastActor ? `@${t.lastActor}` : ""}</span>
-          <span className={s.age}>{now ? ago(t.lastAt, now) : ""}</span>
-        </span>
-      </button>
-      <span className={s.actions}>
-        <PriorityMenu st={planSt} k={threadKey(t.id)} p={prio} label={`${t.repo}#${t.num}`} />
-        <button
-          type="button"
-          className={s.iconBtn}
-          onClick={() => togglePin(t.id)}
-          title={pinned ? "Unpin" : "Pin to the top"}
-          aria-pressed={pinned}
-        >
-          {pinned ? <PinOff size={16} aria-hidden="true" /> : <Pin size={16} aria-hidden="true" />}
-          <span className="sr-only">{pinned ? "Unpin" : "Pin"}</span>
-        </button>
-        {t.next !== "done" && <SnoozeMenu id={t.id} snoozedUntil={snoozedUntil} />}
-        <a className={s.iconBtn} href={t.url} target="_blank" rel="noreferrer" title="Open on GitHub">
-          <ArrowUpRight size={16} aria-hidden="true" />
-          <span className="sr-only">Open on GitHub</span>
-        </a>
-      </span>
-    </li>
+      }
+    />
   );
 });

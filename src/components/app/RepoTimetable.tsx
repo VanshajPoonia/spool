@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { CSSProperties, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { FlapText } from "@/components/flap/Flap";
-import { Lamp } from "@/components/kit/Kit";
+import { PrintText } from "@/components/print/PrintText";
+import { StateMark } from "@/components/kit/Kit";
 import { aggregate, fmtDays } from "@/lib/aggregate";
 import { carrier } from "@/lib/carriers";
 import { ago } from "@/lib/classify";
@@ -48,13 +48,15 @@ export function RepoTimetable() {
         <ArrowLeft size={16} aria-hidden="true" /> All repos
       </Link>
 
-      <header className={s.head} style={{ "--c1": c.livery[0], "--c2": c.livery[1] } as CSSProperties}>
-        <span className={s.fin} aria-hidden="true">
-          <span>{c.code}</span>
+      <header className={s.head}>
+        <span className={s.code} aria-hidden="true">
+          {c.code}
         </span>
         <div className={s.headText}>
           <h1 className="sr-only">{full}</h1>
-          <FlapText value={full.toUpperCase()} length={Math.min(32, Math.max(16, full.length))} intro={4} decorative />
+          <span className={s.repoPrint}>
+            <PrintText value={full.toUpperCase()} length={Math.min(32, Math.max(16, full.length))} intro decorative />
+          </span>
           <p>
             {r?.language ? `${r.language} · ` : ""}
             {r?.first ? `You first showed up ${fmtDate(r.first, true)}` : "No history with this repo yet"}
@@ -68,7 +70,7 @@ export function RepoTimetable() {
 
       {historyLoading && !history ? (
         <div className={p.loading}>
-          <FlapText value="LOADING" length={7} size="34px" intro={8} decorative />
+          <PrintText value="LOADING" length={7} style={{ fontSize: "21px" }} intro decorative />
         </div>
       ) : !r ? (
         <p className={p.empty}>Spool hasn&rsquo;t seen you in {full}. It appears here once you open a PR or issue there.</p>
@@ -86,12 +88,12 @@ export function RepoTimetable() {
             ).map(([b, label, n, tone]) => (
               <button key={b} type="button" className={s.count} aria-pressed={bucket === b} onClick={() => setBucket(b)}>
                 <span>{label}</span>
-                <FlapText value={String(n)} length={3} align="right" size="44px" tone={tone} intro={3} />
+                <PrintText value={String(n)} length={3} align="right" style={{ fontSize: "27px" }} tone={tone} intro />
               </button>
             ))}
             <div className={s.count} data-static="">
               <span>Median to merge</span>
-              <FlapText value={fmtDays(r.medianDays).toUpperCase()} length={5} align="right" size="44px" intro={3} />
+              <PrintText value={fmtDays(r.medianDays).toUpperCase()} length={5} align="right" style={{ fontSize: "27px" }} intro />
             </div>
           </div>
 
@@ -114,8 +116,8 @@ export function RepoTimetable() {
                         <span className={p.itemSub}>{t.reason}</span>
                       </div>
                       <span className={s.status}>
-                        <Lamp state={t.tone ?? "idle"} />
-                        <FlapText value={t.status} length={12} size="20px" tone={t.tone} />
+                        <StateMark state={t.tone ?? "idle"} />
+                        <PrintText value={t.status} length={12} style={{ fontSize: "12px" }} tone={t.tone} />
                       </span>
                     </li>
                   ))}

@@ -2,7 +2,7 @@
 
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Download, Eye, EyeOff, LogOut, Trash2, Upload } from "lucide-react";
-import { FlapText } from "@/components/flap/Flap";
+import { PrintText } from "@/components/print/PrintText";
 import { verifyToken } from "@/lib/github";
 import { setPrefs, usePrefs } from "@/lib/prefs";
 import {
@@ -169,7 +169,7 @@ function UsagePanel({ guest }: { guest: boolean }) {
                   </strong>
                 </div>
                 <span className={s.meter} aria-hidden="true">
-                  <span style={{ width: `${pct}%` }} />
+                  <span style={{ "--pct": pct / 100 } as React.CSSProperties} />
                 </span>
                 <span className={p.muted}>
                   {used ? `${used.toLocaleString("en-US")} used. ` : ""}Refills {clock(win!.resetAt)}.
@@ -292,7 +292,7 @@ export function SettingsView() {
             <div className={s.guestNote}>
               <strong>You&rsquo;re browsing as a guest.</strong>
               <p>
-                Discover, Programs, the GSoC organisations and watched issues all work without a token. A read-only token adds your board
+                Discover, Programs, the GSoC organisations and watched issues all work without a token. A read-only token adds your bay
                 and repos, and raises GitHub&rsquo;s allowance from 60 calls an hour to 5,000.
               </p>
             </div>
@@ -335,7 +335,7 @@ export function SettingsView() {
             </label>
             <div className={s.slider}>
               <input id="stale" type="range" min={3} max={30} value={settings.staleDays} onChange={(e) => updateSettings({ staleDays: Number(e.target.value) })} />
-              <FlapText value={String(settings.staleDays)} length={2} align="right" size="32px" label={`${settings.staleDays} days`} opts={{ maxSteps: 4 }} />
+              <PrintText value={String(settings.staleDays)} length={2} align="right" style={{ fontSize: "20px" }} label={`${settings.staleDays} days`} />
               <span className={p.muted}>days of quiet</span>
             </div>
           </div>
@@ -351,13 +351,16 @@ export function SettingsView() {
             </div>
           </div>
           <div className={s.field}>
-            <span className={s.label}>Motion and sound</span>
+            <span className={s.label}>Display, motion and sound</span>
             <div className={s.toggles}>
+              <button type="button" aria-pressed={prefs.theme === "light"} onClick={() => setPrefs({ theme: prefs.theme === "light" ? "dark" : "light" })}>
+                <span className={s.switch} aria-hidden="true" /> Light theme
+              </button>
               <button type="button" aria-pressed={!prefs.motion} onClick={() => setPrefs({ motion: !prefs.motion })}>
                 <span className={s.switch} aria-hidden="true" /> Reduce motion
               </button>
               <button type="button" aria-pressed={prefs.sound} onClick={() => setPrefs({ sound: !prefs.sound })}>
-                <span className={s.switch} aria-hidden="true" /> Flap sound
+                <span className={s.switch} aria-hidden="true" /> Printer sound
               </button>
             </div>
           </div>

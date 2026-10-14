@@ -11,12 +11,12 @@
   height: 40px;
   padding: 0 12px;
   border-radius: 4px;
-  background: var(--housing-2);
+  background: var(--bay-2);
   box-shadow: inset 0 0 0 1px var(--rule);
 }
 
 .field:focus-within {
-  box-shadow: inset 0 0 0 2px var(--sign);
+  box-shadow: inset 0 0 0 2px var(--move);
 }
 
 .field input {
@@ -26,17 +26,18 @@
   background: transparent;
   color: var(--ink);
   outline: none;
-  font-family: var(--font-data);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-size: 14px;
 }
 
 .field:has(input[aria-invalid]) {
-  box-shadow: inset 0 0 0 2px var(--lamp-stop);
+  box-shadow: inset 0 0 0 2px var(--alert);
 }
 
 .formError {
   grid-column: 1 / -1;
-  color: #ffb3a6;
+  color: var(--alert);
   font-size: 14px;
 }
 
@@ -58,7 +59,7 @@
 
 .summary {
   margin-bottom: 8px;
-  color: var(--lamp-wait);
+  color: var(--move);
   font-size: 14px;
   font-weight: 600;
 }
@@ -140,7 +141,8 @@
 .sub {
   overflow: hidden;
   color: var(--ink-3);
-  font-family: var(--font-data);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-size: 12.5px;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -171,13 +173,13 @@
 }
 
 .row[data-kind="asked"] .status strong {
-  color: var(--lamp-wait);
+  color: var(--move);
 }
 
 .fresh {
   justify-self: end;
   padding: 0;
-  color: var(--sign);
+  color: var(--move);
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;

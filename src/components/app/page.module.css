@@ -20,9 +20,11 @@
 }
 
 .h1 {
-  font-size: clamp(30px, 3.6vw, 48px);
-  line-height: 1;
-  letter-spacing: -0.015em;
+  font-size: clamp(30px, 3.4vw, 46px);
+  line-height: 1.02;
+  font-weight: 760;
+  font-variation-settings: "wdth" 90;
+  letter-spacing: -0.018em;
 }
 
 .lede {
@@ -34,10 +36,8 @@
 .panel {
   padding: 18px;
   border-radius: 10px;
-  background: linear-gradient(180deg, #17191c 0%, #131416 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+  background: var(--bay);
+  box-shadow: inset 0 0 0 1px var(--rule);
   container-type: inline-size;
 }
 
@@ -90,7 +90,7 @@
   align-items: center;
   gap: 14px;
   padding: 12px 4px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+  border-bottom: 1px solid var(--rule);
 }
 
 .item:last-child {
@@ -126,7 +126,8 @@ a.itemTitle:hover {
 }
 
 .mono {
-  font-family: var(--font-data);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-size: 12.5px;
 }
 
@@ -142,9 +143,9 @@ a.itemTitle:hover {
 .error {
   padding: 12px 14px;
   border-radius: 6px;
-  background: #2a1512;
-  box-shadow: inset 0 0 0 1px #5a2a22;
-  color: #ffd2c9;
+  background: color-mix(in oklab, var(--pencil) 14%, var(--bay-2));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--pencil) 50%, transparent);
+  color: var(--ink);
 }
 
 .chips {
@@ -160,16 +161,18 @@ a.itemTitle:hover {
   height: 28px;
   padding: 0 10px;
   border-radius: 14px;
-  background: #1f2125;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule);
   color: var(--ink-2);
   font-size: 13px;
   font-weight: 600;
 }
 
+/* a picked chip is a strip of paper in its holder */
 .chip[data-on] {
-  background: var(--ink);
-  color: var(--housing);
+  background: var(--strip-plain);
+  box-shadow: 0 0 0 2px var(--holder);
+  color: var(--strip-ink);
 }
 
 .btn {
@@ -180,17 +183,17 @@ a.itemTitle:hover {
   padding: 0 14px;
   border: 0;
   border-radius: 4px;
-  background: var(--housing-3);
+  background: var(--bay-3);
   color: var(--ink);
   font-weight: 600;
   font-size: 14px;
   text-decoration: none;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1px var(--rule);
   white-space: nowrap;
 }
 
 .btn:hover:not(:disabled) {
-  background: #2a2d32;
+  background: var(--bay-3);
 }
 
 .btn:disabled {
@@ -198,26 +201,28 @@ a.itemTitle:hover {
   cursor: default;
 }
 
+/* the primary action is a strip in its holder */
 .btnSign {
-  background: var(--sign);
-  color: var(--sign-ink);
-  box-shadow: none;
+  background: var(--strip-pr);
+  color: var(--strip-ink);
+  box-shadow: 0 0 0 3px var(--holder);
   font-weight: 700;
+  transition: transform 260ms var(--ease-slide);
 }
 
 .btnSign:hover:not(:disabled) {
-  background: var(--sign-ink);
-  color: var(--sign);
-  box-shadow: inset 0 0 0 2px var(--sign);
+  background: var(--strip-pr);
+  transform: translateX(3px);
 }
 
 .btnDanger {
-  background: #3a1913;
-  color: #ffc3b6;
+  background: color-mix(in oklab, var(--pencil) 22%, var(--bay-2));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--pencil) 55%, transparent);
+  color: var(--ink);
 }
 
 .btnDanger:hover:not(:disabled) {
-  background: #5a2419;
+  background: color-mix(in oklab, var(--pencil) 34%, var(--bay-2));
 }
 
 .iconBtn {
@@ -232,12 +237,12 @@ a.itemTitle:hover {
 }
 
 .iconBtn:hover {
-  background: var(--housing-3);
+  background: var(--bay-3);
   color: var(--ink);
 }
 
 .iconBtn[aria-pressed="true"] {
-  color: var(--sign);
+  color: var(--move);
 }
 
 .loading {
@@ -250,16 +255,26 @@ a.itemTitle:hover {
   display: inline-flex;
   align-items: center;
   padding: 3px 8px;
-  border: 1px dashed #5b5850;
   border-radius: 3px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
   color: var(--ink-2);
-  font-size: 12px;
-  font-weight: 600;
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
 .tagLive {
-  border-style: solid;
-  border-color: color-mix(in oklab, var(--lamp-go) 60%, transparent);
-  color: #9fe7bd;
+  gap: 6px;
+}
+
+.tagLive::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--landed);
 }

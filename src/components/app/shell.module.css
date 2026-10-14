@@ -14,7 +14,7 @@
   gap: 20px;
   height: 64px;
   padding: 0 var(--gutter);
-  background: color-mix(in oklab, var(--housing) 92%, transparent);
+  background: color-mix(in oklab, var(--console) 92%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 1px 0 var(--rule);
@@ -26,13 +26,25 @@
   gap: 10px;
 }
 
-.brand {
+/* the wordmark and the face are printed fields in holders */
+.brand,
+.face {
   display: inline-flex;
-  border-radius: 3px;
+  padding: 7px 10px 6px;
+  border-radius: 5px;
+  background: var(--holder);
+  box-shadow: inset 0 1px 0 var(--holder-lip);
+  font-size: 16px;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.brand {
+  color: var(--strip-pr);
 }
 
 .face {
-  display: inline-flex;
+  color: var(--strip-plain);
 }
 
 .tabs {
@@ -40,8 +52,8 @@
   gap: 2px;
   padding: 4px;
   border-radius: 6px;
-  background: var(--housing-2);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule);
 }
 
 .tab {
@@ -63,21 +75,25 @@
 
 .tab:hover {
   color: var(--ink);
-  background: var(--housing-3);
+  background: var(--bay-3);
 }
 
+/* the current tab is the strip pulled out of the rack */
 .tab[aria-current="page"] {
-  background: var(--ink);
-  color: var(--housing);
+  background: var(--strip-plain);
+  color: var(--strip-ink);
+  box-shadow: 0 0 0 2px var(--holder);
 }
 
 .badge {
   min-width: 20px;
   height: 20px;
   padding: 0 6px;
-  border-radius: 10px;
-  background: var(--sign);
-  color: var(--sign-ink);
+  border-radius: 3px;
+  background: var(--move);
+  color: var(--move-ink);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-size: 12px;
   font-weight: 700;
   line-height: 20px;
@@ -107,7 +123,7 @@
 }
 
 .sync:hover:not(:disabled) {
-  background: var(--housing-3);
+  background: var(--bay-3);
   color: var(--ink);
 }
 
@@ -133,13 +149,14 @@
   padding: 0 10px 0 4px;
   border-radius: 18px;
   color: var(--ink-2);
-  font-family: var(--font-data);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-size: 13px;
   text-decoration: none;
 }
 
 .me:hover {
-  background: var(--housing-3);
+  background: var(--bay-3);
   color: var(--ink);
 }
 
@@ -167,20 +184,26 @@
 }
 
 .guest:hover {
-  background: var(--housing-3);
+  background: var(--bay-3);
   color: var(--ink);
 }
 
 .guestTag {
-  padding: 3px 9px;
-  border-radius: 14px;
-  background: var(--sign);
-  color: var(--sign-ink);
+  padding: 3px 8px;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
+  font-size: 11px;
   font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .guestLeft {
-  font-family: var(--font-data);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
 }
 
 .main {
@@ -191,20 +214,35 @@
   min-height: 60vh;
 }
 
+/* sample data is labelled where it starts, printed like every other tag */
 .sample {
   display: flex;
   align-items: center;
   gap: 14px;
   padding: 10px var(--gutter);
-  background: var(--sign);
-  color: var(--sign-ink);
+  background: var(--bay-2);
+  box-shadow: inset 0 -1px 0 var(--rule);
+  color: var(--ink-2);
   font-size: 15px;
 }
 
-.sampleIcon {
+.sample strong {
+  color: var(--ink);
+}
+
+.sampleTag {
   flex: none;
-  width: 24px;
-  height: 24px;
+  padding: 4px 8px 3px;
+  border-radius: 3px;
+  background: var(--strip-pr);
+  box-shadow: 0 0 0 2px var(--holder);
+  color: var(--strip-ink);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .sample p {
@@ -216,16 +254,16 @@
   height: 34px;
   padding: 0 14px;
   border: 0;
-  border-radius: 3px;
-  background: var(--sign-ink);
-  color: var(--sign);
+  border-radius: 4px;
+  background: var(--bay-3);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
   font-weight: 700;
   font-size: 14px;
 }
 
 .sample button:hover {
-  background: #000;
-  color: #fff;
+  background: var(--rule-2);
 }
 
 @media (max-width: 1100px) {

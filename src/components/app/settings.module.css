@@ -9,7 +9,7 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  box-shadow: 0 0 0 3px var(--housing-3);
+  box-shadow: 0 0 0 3px var(--bay-3);
 }
 
 .account div {
@@ -18,7 +18,8 @@
 }
 
 .account strong {
-  font-family: var(--font-data);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-size: 17px;
 }
 
@@ -47,8 +48,9 @@
 .tokenForm code {
   padding: 1px 5px;
   border-radius: 3px;
-  background: var(--housing-3);
-  font-family: var(--font-data);
+  background: var(--bay-3);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-size: 12.5px;
 }
 
@@ -76,20 +78,21 @@
   padding: 0 12px;
   border: 0;
   border-radius: 4px;
-  background: #0f1012;
+  background: var(--console);
   box-shadow: inset 0 0 0 1px var(--rule);
   color: var(--ink);
-  font-family: var(--font-data);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-size: 14px;
 }
 
 .tokenRow input:focus {
   outline: none;
-  box-shadow: inset 0 0 0 2px var(--sign);
+  box-shadow: inset 0 0 0 2px var(--move);
 }
 
 .err {
-  color: #ffb3a6;
+  color: var(--alert);
   font-size: 14px;
   font-weight: 600;
 }
@@ -99,7 +102,7 @@
   min-width: 0;
   gap: 10px;
   padding: 16px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+  border-bottom: 1px solid var(--rule);
 }
 
 .field:last-child {
@@ -114,7 +117,7 @@
 
 .slider input {
   flex: 1;
-  accent-color: var(--lamp-wait);
+  accent-color: var(--ink-2);
 }
 
 .seg {
@@ -122,7 +125,7 @@
   justify-self: start;
   padding: 3px;
   border-radius: 5px;
-  background: var(--housing-2);
+  background: var(--bay-2);
   box-shadow: inset 0 0 0 1px var(--rule);
 }
 
@@ -138,9 +141,9 @@
 }
 
 .seg button[aria-pressed="true"] {
-  background: var(--housing-3);
+  background: var(--bay-3);
   color: var(--ink);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px var(--rule);
 }
 
 .toggles {
@@ -169,7 +172,7 @@
   width: 38px;
   height: 22px;
   border-radius: 11px;
-  background: #2a2d32;
+  background: var(--bay-3);
   transition: background-color 220ms var(--ease-out);
 }
 
@@ -185,13 +188,14 @@
   transition: transform 260ms var(--ease-out);
 }
 
+/* on: the little strip slides right in its holder */
 .toggles button[aria-pressed="true"] .switch {
-  background: var(--sign);
+  background: var(--holder);
 }
 
 .toggles button[aria-pressed="true"] .switch::after {
   transform: translateX(16px);
-  background: var(--sign-ink);
+  background: var(--strip-pr);
 }
 
 .msg {
@@ -218,8 +222,8 @@
   margin-bottom: 16px;
   padding: 14px 16px;
   border-radius: 6px;
-  background: var(--housing-2);
-  box-shadow: inset 3px 0 0 var(--sign), inset 0 0 0 1px var(--rule);
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
   color: var(--ink-2);
   font-size: 15px;
 }
@@ -242,7 +246,7 @@
   gap: 10px;
   padding: 10px 12px;
   border-radius: 5px;
-  background: var(--housing-2);
+  background: var(--bay-2);
   box-shadow: inset 0 0 0 1px var(--rule);
 }
 
@@ -254,7 +258,8 @@
 .memory dd {
   margin: 0;
   color: var(--ink);
-  font-family: var(--font-data);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-size: 18px;
   font-weight: 700;
 }
@@ -291,7 +296,8 @@
 
 .meterHead strong {
   color: var(--ink);
-  font-family: var(--font-data);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-size: 13.5px;
 }
 
@@ -299,18 +305,21 @@
   display: block;
   height: 6px;
   border-radius: 3px;
-  background: var(--housing-3);
+  background: var(--bay-3);
   overflow: hidden;
 }
 
 .meter span {
   display: block;
+  width: 100%;
   height: 100%;
   border-radius: inherit;
-  background: var(--lamp-go);
-  transition: width 400ms var(--ease-out);
+  background: var(--landed);
+  transform: scaleX(var(--pct, 1));
+  transform-origin: left center;
+  transition: transform 400ms var(--ease-out);
 }
 
 .meters li[data-low] .meter span {
-  background: var(--lamp-stop);
+  background: var(--alert);
 }

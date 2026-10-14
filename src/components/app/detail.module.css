@@ -11,10 +11,10 @@
   padding: 22px 24px 28px;
   overflow-y: auto;
   border-radius: 10px;
-  background: linear-gradient(180deg, #1a1c1f 0%, #141518 100%);
+  background: var(--bay);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    inset 0 1px 0 var(--rule),
+    inset 0 0 0 1px var(--rule),
     -30px 0 80px -30px rgba(0, 0, 0, 0.85);
   animation: slide 420ms var(--ease-out) both;
   overscroll-behavior: contain;
@@ -43,7 +43,8 @@
 .ref {
   display: grid;
   min-width: 0;
-  font-family: var(--font-data);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-size: 13px;
   color: var(--ink-2);
 }
@@ -65,13 +66,13 @@
   height: 38px;
   border: 0;
   border-radius: 4px;
-  background: var(--housing-3);
+  background: var(--bay-3);
   color: var(--ink-2);
 }
 
 .close:hover {
   background: var(--ink);
-  color: var(--housing);
+  color: var(--console);
 }
 
 .title {
@@ -104,16 +105,16 @@
   height: 42px;
   padding: 0 14px 0 16px;
   border-radius: 4px;
-  background: var(--sign);
-  color: var(--sign-ink);
+  background: var(--strip-pr);
+  box-shadow: 0 0 0 3px var(--holder);
+  color: var(--strip-ink);
   font-weight: 700;
   text-decoration: none;
+  transition: transform 260ms var(--ease-slide);
 }
 
 .open:hover {
-  background: var(--sign-ink);
-  color: var(--sign);
-  box-shadow: inset 0 0 0 2px var(--sign);
+  transform: translateX(3px);
 }
 
 .btn {
@@ -124,25 +125,25 @@
   padding: 0 14px;
   border: 0;
   border-radius: 4px;
-  background: var(--housing-3);
+  background: var(--bay-3);
   color: var(--ink);
   font-weight: 600;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 0 1px var(--rule);
 }
 
 .btn:hover {
-  background: #2a2d32;
+  background: var(--bay-3);
 }
 
 .actions :global([aria-haspopup="menu"]) {
   width: 42px;
   height: 42px;
-  background: var(--housing-3);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  background: var(--bay-3);
+  box-shadow: inset 0 0 0 1px var(--rule);
 }
 
 .snoozed {
-  color: var(--lamp-wait);
+  color: var(--move);
   font-size: 13px;
   font-weight: 600;
 }
@@ -172,11 +173,11 @@
 
 .facts dd[data-ci="FAILURE"],
 .facts dd[data-ci="ERROR"] {
-  color: #ff9a87;
+  color: var(--alert);
 }
 
 .facts dd[data-ci="SUCCESS"] {
-  color: #8fe1b0;
+  color: var(--landed);
 }
 
 .labels {
@@ -191,7 +192,7 @@
 .labels li {
   padding: 3px 9px;
   border-radius: 10px;
-  background: color-mix(in oklab, var(--lc) 22%, #1d1f23);
+  background: color-mix(in oklab, var(--lc) 22%, var(--bay-2));
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--lc) 55%, transparent);
   font-size: 12.5px;
   font-weight: 600;
@@ -213,7 +214,7 @@
   padding: 10px 12px;
   border: 0;
   border-radius: 4px;
-  background: #0f1012;
+  background: var(--console);
   box-shadow: inset 0 0 0 1px var(--rule);
   color: var(--ink);
   resize: vertical;
@@ -221,7 +222,7 @@
 
 .note:focus {
   outline: none;
-  box-shadow: inset 0 0 0 2px var(--sign);
+  box-shadow: inset 0 0 0 2px var(--move);
 }
 
 .note::placeholder {
@@ -238,7 +239,7 @@
 }
 
 .err {
-  color: #ffb3a6;
+  color: var(--alert);
   font-size: 14px;
 }
 
@@ -287,15 +288,15 @@
 }
 
 .timeline li[data-kind="review"]::before {
-  background: var(--lamp-wait);
+  background: var(--move);
 }
 
 .timeline li[data-kind="merged"]::before {
-  background: var(--lamp-go);
+  background: var(--landed);
 }
 
 .timeline li[data-kind="closed"]::before {
-  background: var(--lamp-stop);
+  background: var(--alert);
 }
 
 .timeline li[data-kind="commit"]::before {
@@ -306,7 +307,8 @@
 .tlWhen {
   padding-top: 1px;
   color: var(--ink-3);
-  font-family: var(--font-data);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-size: 12px;
 }
 
@@ -349,7 +351,7 @@
   gap: 6px 10px;
   padding: 10px 12px;
   border-radius: 6px;
-  background: var(--housing-2);
+  background: var(--bay-2);
   box-shadow: inset 0 0 0 1px var(--rule);
 }
 

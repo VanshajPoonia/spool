@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { FlapText } from "@/components/flap/Flap";
+import { PrintText } from "@/components/print/PrintText";
 import { fetchOctober } from "@/lib/github";
 import { daysUntil, gsocNext, gsocPhase, gsocStations, hacktoberfest, parseMonthDay } from "@/lib/program-dates";
 import { matchOrg, tagMatches, words } from "@/lib/interests";
@@ -37,7 +37,7 @@ function Countdown({ label, days, sub, href }: { label: string; days: number | n
     <div className={s.cd}>
       <span className={s.cdLabel}>{label}</span>
       <div className={s.cdRow}>
-        <FlapText value={days === null ? "--" : String(Math.max(0, days))} length={3} align="right" size="46px" intro={5} label={days === null ? "" : `${days} days`} />
+        <PrintText value={days === null ? "--" : String(Math.max(0, days))} length={3} align="right" style={{ fontSize: "29px" }} intro label={days === null ? "" : `${days} days`} />
         <span className={s.cdUnit}>DAYS</span>
       </div>
       <span className={s.cdSub}>
@@ -221,7 +221,7 @@ export function ProgramsView({ data }: { data: Programs }) {
                 Counting your own PRs needs GitHub. <Link href="/board/settings">Connect a read-only token</Link> and they show up here.
               </p>
             ) : (
-              !oct && !octErr && <div className={p.loading}><FlapText value="COUNTING" length={8} size="28px" intro={8} decorative /></div>
+              !oct && !octErr && <div className={p.loading}><PrintText value="COUNTING" length={8} style={{ fontSize: "17px" }} intro decorative /></div>
             )}
             {oct && (
               <>
@@ -236,7 +236,7 @@ export function ProgramsView({ data }: { data: Programs }) {
                   ).map(([l, n, tone]) => (
                     <div key={l}>
                       <span>{l}</span>
-                      <FlapText value={String(n)} length={2} align="right" size="36px" tone={tone} intro={4} />
+                      <PrintText value={String(n)} length={2} align="right" style={{ fontSize: "22px" }} tone={tone} intro />
                     </div>
                   ))}
                 </div>

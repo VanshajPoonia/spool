@@ -4,8 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode, Suspense } from "react";
 import { RefreshCw } from "lucide-react";
-import { FlapText } from "@/components/flap/Flap";
-import { Pictogram } from "@/components/kit/Kit";
+import { PrintText } from "@/components/print/PrintText";
 import { ago } from "@/lib/classify";
 import { FACES } from "@/lib/faces";
 import { updateSettings, useAuth, useUsage, windowLeft } from "@/lib/store";
@@ -14,7 +13,7 @@ import { BoardProvider, useBoard } from "./BoardProvider";
 import s from "./shell.module.css";
 
 const TABS = [
-  { href: "/board", label: "Board" },
+  { href: "/board", label: "Bay" },
   { href: "/board/plan", label: "Plan" },
   { href: "/board/repos", label: "Repos" },
   { href: "/board/discover", label: "Discover" },
@@ -65,10 +64,10 @@ function Header() {
     <header className={s.header}>
       <div className={s.left}>
         <Link href="/" className={s.brand} aria-label="Spool home">
-          <FlapText value="SPOOL" length={5} size="26px" decorative />
+          <PrintText value="SPOOL" length={5} decorative />
         </Link>
         <span className={s.face} title={mode === "guest" ? "Browsing as a guest" : mode === "none" ? "Loading" : `${onYou} on you`}>
-          <FlapText value={face} length={5} size="26px" decorative opts={{ maxSteps: 5, step: 46 }} />
+          <PrintText value={face} length={5} decorative opts={{ speed: 34 }} />
         </span>
       </div>
 
@@ -112,12 +111,12 @@ function SampleBand() {
   const auth = useAuth();
   return (
     <div className={s.sample} role="status">
-      <Pictogram name="wall" className={s.sampleIcon} />
+      <span className={s.sampleTag}>Sample</span>
       <p>
-        <strong>Sample data.</strong> Invented repos and people, run through the same rules as your real board.
+        <strong>Sample data.</strong> Invented repos and people, run through the same rules as your real bay.
       </p>
       <button type="button" onClick={() => updateSettings({ demo: false })}>
-        {auth ? "Back to my board" : "Leave sample data"}
+        {auth ? "Back to my bay" : "Leave sample data"}
       </button>
     </div>
   );

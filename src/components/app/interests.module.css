@@ -19,11 +19,13 @@
   height: 34px;
   padding: 0 4px 0 12px;
   border-radius: 3px;
-  background: linear-gradient(180deg, #f3f0e7 0 50%, #e6e2d6 50% 100%);
-  color: var(--housing);
-  font-family: var(--font-flap);
+  background: var(--strip-plain);
+  box-shadow: 0 0 0 2px var(--holder);
+  color: var(--strip-ink);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-weight: 600;
-  font-size: 17px;
+  font-size: 14px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -36,12 +38,12 @@
   border: 0;
   border-radius: 3px;
   background: transparent;
-  color: #55524a;
+  color: var(--strip-ink-2);
 }
 
 .list > li:not(.add) button:hover {
-  background: rgba(0, 0, 0, 0.1);
-  color: #000;
+  background: color-mix(in oklab, var(--strip-ink) 12%, transparent);
+  color: var(--strip-ink);
 }
 
 .add form {
@@ -50,12 +52,12 @@
   height: 34px;
   padding: 0 4px 0 10px;
   border-radius: 3px;
-  background: var(--housing-2);
+  background: var(--bay-2);
   box-shadow: inset 0 0 0 1px var(--rule);
 }
 
 .add form:focus-within {
-  box-shadow: inset 0 0 0 2px var(--sign);
+  box-shadow: inset 0 0 0 2px var(--move);
 }
 
 .add input {

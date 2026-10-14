@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { EyeOff, RefreshCw } from "lucide-react";
-import { CarrierTag, Lamp } from "@/components/kit/Kit";
+import { Callsign, StateMark } from "@/components/kit/Kit";
 import { fetchWatched, fetchWatchedPublic, GUEST_CALLS_PER_ISSUE } from "@/lib/github";
 import { sampleWatched } from "@/lib/sample-board";
 import { readMeta, seeWatched, unwatchIssue, useAuth, useMeta, useUsage, watchCacheStore, watchIssue, windowLeft } from "@/lib/store";
@@ -202,8 +202,8 @@ export function WatchPanel({ codeFor }: { codeFor: (repo: string) => string | un
           <ul className={s.list}>
             {rows.map(({ key, item, status }) => (
               <li key={key} className={s.row} data-kind={status?.kind}>
-                <span className={s.lamp}>{status ? <Lamp state={status.lamp} /> : <span className={s.pending} aria-hidden="true" />}</span>
-                <CarrierTag repo={item.repo} size="sm" code={codeFor(item.repo)} />
+                <span className={s.lamp}>{status ? <StateMark state={status.lamp} /> : <span className={s.pending} aria-hidden="true" />}</span>
+                <Callsign repo={item.repo} size="sm" code={codeFor(item.repo)} />
                 <div className={s.main}>
                   <a href={item.url} target="_blank" rel="noreferrer" className={s.title} onClick={() => mode !== "sample" && seeWatched(key, issues[key]?.title ?? undefined)}>
                     {item.title}

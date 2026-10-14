@@ -20,8 +20,8 @@ import {
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { ArrowDownWideNarrow, ArrowUpRight, CircleDot, Eye, GitPullRequest, GripVertical, MoreHorizontal, NotebookPen, Plus, X } from "lucide-react";
-import { FlapText } from "@/components/flap/Flap";
-import { CarrierTag, Lamp } from "@/components/kit/Kit";
+import { PrintText } from "@/components/print/PrintText";
+import { Callsign, StateMark } from "@/components/kit/Kit";
 import { ago } from "@/lib/classify";
 import {
   buildCards,
@@ -375,7 +375,7 @@ function NextUp({
       <span className={s.nextSign}>Work on next</span>
       <div className={s.nextWhat}>
         <div className={s.nextRef}>
-          {card.repo ? <CarrierTag repo={card.repo} size="sm" code={codeFor(card.repo)} /> : <span className={s.taskTag}>Task</span>}
+          {card.repo ? <Callsign repo={card.repo} size="sm" code={codeFor(card.repo)} /> : <span className={s.taskTag}>Task</span>}
           {card.repo && (
             <span className={s.nextRepo}>
               {card.repo}#{card.num}
@@ -421,7 +421,7 @@ function Column({ col, title, sub, count, keys, empty, foot, children }: { col: 
           <h2 id={`plan-${col}`}>{title}</h2>
           <p>{sub}</p>
         </div>
-        <FlapText value={String(count)} length={2} align="right" size="26px" label={`${count}`} tone={col === "doing" && count > 2 ? "wait" : undefined} opts={{ maxSteps: 6 }} />
+        <PrintText value={String(count)} length={2} align="right" style={{ fontSize: "17px" }} label={`${count}`} tone={col === "doing" && count > 2 ? "wait" : undefined} />
       </header>
       <SortableContext id={col} items={keys} strategy={verticalListSortingStrategy}>
         <ul ref={setNodeRef} className={s.list}>
@@ -532,7 +532,7 @@ function CardBody({
     <article className={s.card} data-kind={card.kind} data-finished={card.finished || undefined} data-prio={card.prio ?? undefined}>
       <div className={s.cardTop}>
         {grip}
-        {card.repo ? <CarrierTag repo={card.repo} size="sm" code={code} /> : <span className={s.taskTag}>Task</span>}
+        {card.repo ? <Callsign repo={card.repo} size="sm" code={code} /> : <span className={s.taskTag}>Task</span>}
         <span className={s.ref} title={card.repo ? `${card.repo}#${card.num}` : undefined}>
           {card.repo ? `${card.repo.split("/")[1]}#${card.num}` : ""}
         </span>
@@ -542,7 +542,7 @@ function CardBody({
       {title}
       {card.status && (
         <div className={s.status} title={card.detail ?? undefined}>
-          <Lamp state={card.lamp} />
+          <StateMark state={card.lamp} />
           <span>{card.status}</span>
           {card.yourMove && <span className={s.move}>Your move</span>}
         </div>

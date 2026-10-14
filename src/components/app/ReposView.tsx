@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import { ArrowUpRight, GitFork, Star } from "lucide-react";
-import { FlapText } from "@/components/flap/Flap";
-import { CarrierTag } from "@/components/kit/Kit";
+import { PrintText } from "@/components/print/PrintText";
+import { Callsign } from "@/components/kit/Kit";
 import { aggregate, fmtDays } from "@/lib/aggregate";
 import { ago } from "@/lib/classify";
 import { useBoard } from "./BoardProvider";
@@ -41,15 +41,15 @@ export function ReposView() {
         <div className={s.totals}>
           <div>
             <span>Repos</span>
-            <FlapText value={String(totals.repos)} length={3} align="right" size="34px" />
+            <PrintText value={String(totals.repos)} length={3} align="right" style={{ fontSize: "21px" }} />
           </div>
           <div>
             <span>Merged</span>
-            <FlapText value={String(totals.merged)} length={3} align="right" size="34px" tone="go" />
+            <PrintText value={String(totals.merged)} length={3} align="right" style={{ fontSize: "21px" }} tone="go" />
           </div>
           <div>
             <span>Open</span>
-            <FlapText value={String(totals.open)} length={3} align="right" size="34px" />
+            <PrintText value={String(totals.open)} length={3} align="right" style={{ fontSize: "21px" }} />
           </div>
         </div>
       </div>
@@ -70,7 +70,7 @@ export function ReposView() {
         </div>
         {historyLoading && !history ? (
           <div className={p.loading}>
-            <FlapText value="LOADING" length={7} size="34px" intro={8} decorative />
+            <PrintText value="LOADING" length={7} style={{ fontSize: "21px" }} intro decorative />
           </div>
         ) : contributed.length === 0 ? (
           <p className={p.empty}>No PRs or issues found yet.</p>
@@ -91,7 +91,7 @@ export function ReposView() {
               return (
                 <Link key={r.repo} href={`/board/repos/${owner}/${name}`} className={s.row} role="row">
                   <span className={s.repo} role="cell">
-                    <CarrierTag repo={r.repo} code={codeFor(r.repo)} />
+                    <Callsign repo={r.repo} code={codeFor(r.repo)} />
                     <span className={s.repoName}>
                       <strong>{name}</strong>
                       <span>
@@ -147,7 +147,7 @@ export function ReposView() {
           <ul className={s.own}>
             {history.own.map((r) => (
               <li key={r.nameWithOwner}>
-                <CarrierTag repo={r.nameWithOwner} code={codeFor(r.nameWithOwner)} />
+                <Callsign repo={r.nameWithOwner} code={codeFor(r.nameWithOwner)} />
                 <div className={p.itemMain}>
                   <a href={r.url} target="_blank" rel="noreferrer" className={p.itemTitle}>
                     {r.nameWithOwner.split("/")[1]}
