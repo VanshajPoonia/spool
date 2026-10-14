@@ -1,0 +1,360 @@
+/* Spool: departures board world.
+   Graphite housing, two-leaf flap tiles, sign-yellow wayfinding. */
+
+:root {
+  /* housing + surfaces */
+  --housing: #101113;
+  --housing-2: #16181b;
+  --housing-3: #1d1f23;
+  --rail: #2a2d32;
+  --rule: #2f3238;
+
+  /* flap tiles */
+  --flap-top: #2b2d32;
+  --flap-top-2: #25272b;
+  --flap-bot: #222428;
+  --flap-bot-2: #1c1e21;
+  --flap-ink: #f2eee3;
+  --flap-hinge: #070708;
+
+  /* ink on housing */
+  --ink: #f3f0e7;
+  --ink-2: #bdb9ae;
+  --ink-3: #8d8a82;
+
+  /* signage */
+  --sign: #ffcf00;
+  --sign-ink: #111111;
+
+  /* lamps */
+  --lamp-go: #46c37b;
+  --lamp-wait: #ffa62b;
+  --lamp-stop: #ff5b41;
+  --lamp-idle: #e9e5d8;
+
+  --radius-tile: 3px;
+  --radius-sign: 4px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --font-sign: var(--font-atkinson), "Atkinson Hyperlegible", system-ui, sans-serif;
+  --font-flap: var(--font-barlow), "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-data: var(--font-atkinson-mono), ui-monospace, monospace;
+
+  --gutter: clamp(20px, 4vw, 64px);
+  /* landing pages hold their content to one measure and centre it on wide screens */
+  --page: 1360px;
+  --edge: max(var(--gutter), calc((100vw - var(--page)) / 2));
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scrollbar-color: var(--rail) var(--housing);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--housing);
+  color: var(--ink);
+  font-family: var(--font-sign);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "ss01" 0;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--sign);
+  color: var(--sign-ink);
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--housing);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--rail);
+  border: 3px solid var(--housing);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3e45;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+input,
+textarea {
+  caret-color: var(--sign);
+}
+
+:focus-visible {
+  outline: 2px solid var(--sign);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+kbd {
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: var(--housing-3);
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  color: var(--ink-2);
+  font-family: var(--font-data);
+  font-size: 12px;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+.data {
+  font-family: var(--font-data);
+  font-size: 0.875em;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- split-flap tiles ---------- */
+
+.flaps {
+  --fh: var(--flap-size, 32px);
+  display: inline-flex;
+  gap: var(--fgap, 2px);
+  vertical-align: middle;
+  line-height: 0;
+}
+
+.flap {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: calc(var(--fh) * var(--fw-ratio, 0.66));
+  height: var(--fh);
+  perspective: calc(var(--fh) * 5);
+  font-family: var(--font-flap);
+  font-weight: 600;
+  font-size: calc(var(--fh) * 0.8);
+  color: var(--flap-ink);
+  text-align: center;
+  user-select: none;
+  border-radius: var(--radius-tile);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03),
+    0 calc(var(--fh) * 0.04) calc(var(--fh) * 0.12) rgba(0, 0, 0, 0.55);
+}
+
+.flap .fh {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  overflow: hidden;
+}
+
+.flap .fh-t {
+  top: 0;
+  border-radius: var(--radius-tile) var(--radius-tile) 0 0;
+  background: linear-gradient(180deg, var(--flap-top) 0%, var(--flap-top-2) 100%);
+}
+
+.flap .fh-b {
+  bottom: 0;
+  border-radius: 0 0 var(--radius-tile) var(--radius-tile);
+  background: linear-gradient(180deg, var(--flap-bot) 0%, var(--flap-bot-2) 100%);
+}
+
+.flap .fc {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--fh);
+  line-height: var(--fh);
+  white-space: pre;
+  transform: translateY(var(--fy, 0.02em));
+}
+
+.flap .fh-t .fc {
+  top: 0;
+}
+
+.flap .fh-b .fc {
+  bottom: 0;
+}
+
+/* the moving leaves: present only while the tile flips (the engine sets data-flip) */
+.flap .lf-t,
+.flap .lf-b {
+  display: none;
+  z-index: 2;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.flap[data-flip] .lf-t,
+.flap[data-flip] .lf-b {
+  display: block;
+}
+
+.flap .lf-t {
+  transform-origin: 50% 100%;
+}
+
+.flap .lf-b {
+  transform-origin: 50% 0%;
+  transform: rotateX(90deg);
+}
+
+/* hinge gap */
+.flap::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: max(1px, calc(var(--fh) * 0.022));
+  transform: translateY(-50%);
+  background: var(--flap-hinge);
+  /* the edges of the cards stacked behind the top leaf */
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.035),
+    0 -2px 0 rgba(0, 0, 0, 0.32),
+    0 -3px 0 rgba(255, 255, 255, 0.025),
+    0 -4px 0 rgba(0, 0, 0, 0.22);
+}
+
+/* hinge pins */
+.flap::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  left: -1px;
+  right: -1px;
+  height: max(3px, calc(var(--fh) * 0.09));
+  transform: translateY(-50%);
+  background:
+    linear-gradient(90deg, #050506 0, #050506 max(2px, calc(var(--fh) * 0.05)), transparent max(2px, calc(var(--fh) * 0.05))),
+    linear-gradient(270deg, #050506 0, #050506 max(2px, calc(var(--fh) * 0.05)), transparent max(2px, calc(var(--fh) * 0.05)));
+  pointer-events: none;
+}
+
+[data-tone="sign"] .flap,
+.flap[data-tone="sign"] {
+  --flap-top: #ffd51f;
+  --flap-top-2: #f7cb00;
+  --flap-bot: #f0c400;
+  --flap-bot-2: #e6bb00;
+  --flap-ink: #111;
+}
+
+/* "dim" still has to read: 5.7:1 on the tile face */
+[data-tone="dim"] .flap,
+.flap[data-tone="dim"] {
+  --flap-ink: #a09c92;
+}
+
+[data-tone="go"] .flap,
+.flap[data-tone="go"] {
+  --flap-ink: #7fe0a6;
+}
+
+[data-tone="wait"] .flap,
+.flap[data-tone="wait"] {
+  --flap-ink: #ffc169;
+}
+
+[data-tone="stop"] .flap,
+.flap[data-tone="stop"] {
+  --flap-ink: #ff8f7a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html[data-motion="off"] *,
+html[data-motion="off"] *::before,
+html[data-motion="off"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
