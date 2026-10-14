@@ -1,0 +1,467 @@
+/* ---------- holder ---------- */
+
+.holder {
+  container-type: inline-size;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 4px;
+  min-width: 0;
+  padding: 3px 3px 3px 9px;
+  border-radius: 5px;
+  background: var(--holder);
+  box-shadow: inset 0 1px 0 var(--holder-lip);
+  list-style: none;
+}
+
+/* the holder's tab: the state, readable from across the room */
+.holder::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 3px;
+  bottom: 3px;
+  width: 4px;
+  border-radius: 2px;
+  background: transparent;
+}
+
+.holder[data-state="you"]::before {
+  background: var(--move);
+}
+
+.holder[data-state="stalled"]::before {
+  background: var(--pencil);
+}
+
+.holder[data-state="done"]::before {
+  background: var(--landed);
+}
+
+.holder[data-state="them"]::before {
+  background: var(--holder-lip);
+}
+
+/* ---------- paper ---------- */
+
+.paper {
+  --title: 15px;
+  --cs: 6.4em;
+  --quietw: 4.4em;
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--cs) minmax(0, 1fr) auto auto auto;
+  flex: 1;
+  min-width: 0;
+  min-height: 50px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-strip);
+  background: var(--strip-plain);
+  color: var(--strip-ink);
+  text-align: left;
+  text-decoration: none;
+  font: inherit;
+  transition: transform 260ms var(--ease-slide);
+}
+
+.paper[data-kind="pr"] {
+  background: var(--strip-pr);
+}
+.paper[data-kind="issue"] {
+  background: var(--strip-issue);
+}
+.paper[data-kind="review"] {
+  background: var(--strip-review);
+}
+.paper[data-kind="talk"] {
+  background: var(--strip-talk);
+}
+
+a.paper,
+button.paper {
+  cursor: pointer;
+}
+
+a.paper:hover,
+button.paper:hover {
+  transform: translateX(4px);
+}
+
+.paper:focus-visible {
+  outline-offset: 2px;
+}
+
+.holder[data-size="sm"] .paper {
+  --title: 14px;
+  min-height: 40px;
+}
+
+.holder[data-size="lg"] .paper {
+  --title: 17px;
+  --cs: 7em;
+  min-height: 60px;
+}
+
+/* the strip coming out of the printer, at reading distance */
+.holder[data-size="xl"] {
+  padding: 5px 5px 5px 14px;
+  border-radius: 8px;
+}
+
+.holder[data-size="xl"]::before {
+  left: 4px;
+  top: 5px;
+  bottom: 5px;
+  width: 6px;
+}
+
+.holder[data-size="xl"] .paper {
+  --title: clamp(19px, 2vw, 26px);
+  --cs: 6.2em;
+  --quietw: 6em;
+  min-height: clamp(88px, 9vw, 116px);
+  border-radius: 5px;
+}
+
+.holder[data-size="xl"] .cs {
+  font-size: clamp(15px, 1.5vw, 20px);
+  padding-left: 14px;
+}
+
+.holder[data-size="xl"] .note,
+.holder[data-size="xl"] .last {
+  font-size: clamp(13px, 1.1vw, 15px);
+}
+
+.holder[data-size="xl"] .body {
+  padding: 10px 16px;
+}
+
+.holder[data-size="xl"] .kind {
+  font-size: 11px;
+}
+
+/* every box after the first is split off by a printed hairline */
+.paper > * + * {
+  border-left: 1px solid var(--strip-rule);
+}
+
+.cs {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-content: center;
+  column-gap: 0.4em;
+  padding: 5px 8px 5px 10px;
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
+  font-size: 13px;
+  line-height: 1.15;
+}
+
+.code {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.kind {
+  grid-column: 1 / -1;
+  margin-top: 3px;
+  color: var(--strip-ink-2);
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  font-variation-settings: "wdth" 80;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+
+.body {
+  display: grid;
+  align-content: center;
+  min-width: 0;
+  padding: 6px 12px;
+}
+
+.title {
+  overflow: hidden;
+  font-size: var(--title);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.006em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.title[data-struck] {
+  text-decoration: line-through;
+  text-decoration-color: var(--pencil);
+  text-decoration-thickness: 2px;
+}
+
+.holder[data-size="lg"] .title {
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.note {
+  overflow: hidden;
+  margin-top: 1px;
+  color: var(--strip-ink-2);
+  font-size: 13px;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.last {
+  display: grid;
+  align-content: center;
+  justify-items: end;
+  min-width: 6.5em;
+  padding: 5px 10px;
+  color: var(--strip-ink-2);
+  font-size: 13px;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.who {
+  max-width: 11em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.age {
+  color: var(--strip-ink);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.quiet {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  width: var(--quietw);
+  padding: 4px 6px;
+  line-height: 1;
+}
+
+.quietNum {
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
+  font-weight: 700;
+  font-size: 19px;
+  font-variant-numeric: tabular-nums;
+}
+
+.holder[data-size="sm"] .quietNum {
+  font-size: 16px;
+}
+
+.holder[data-size="lg"] .quietNum {
+  font-size: 22px;
+}
+
+.holder[data-size="xl"] .quietNum {
+  font-size: clamp(26px, 2.6vw, 36px);
+}
+
+.quietUnit {
+  margin-top: 4px;
+  color: var(--strip-ink-2);
+  font-size: 10px;
+  font-weight: 700;
+  font-variation-settings: "wdth" 80;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* answered: a graphite tick in the corner */
+.tick {
+  position: absolute;
+  top: 3px;
+  right: calc(var(--quietw) + 4px);
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: var(--strip-ink);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.8;
+  border: 0;
+}
+
+.tick path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 420ms var(--ease-out) 120ms forwards;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.aside {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 2px;
+  color: var(--holder-ink);
+}
+
+/* overlay controls slide out of the holder over the paper's right end */
+.holder[data-aside="overlay"] .aside {
+  position: absolute;
+  z-index: 2;
+  top: 3px;
+  right: 3px;
+  bottom: 3px;
+  padding: 0 4px 0 10px;
+  border-radius: 0 3px 3px 0;
+  background: var(--holder);
+  opacity: 0;
+  transform: translateX(8px);
+  pointer-events: none;
+  transition:
+    opacity 180ms var(--ease-out),
+    transform 220ms var(--ease-out);
+}
+
+.holder[data-aside="overlay"]:hover .aside,
+.holder[data-aside="overlay"]:focus-within .aside {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+@media (hover: none) {
+  .holder[data-aside="overlay"] .aside {
+    display: none;
+  }
+}
+
+/* narrow strips fold the last-move box away; the silence box stays */
+@container (max-width: 540px) {
+  /* every size narrows here, so it has to outrank the size rules */
+  .holder[data-size] .paper {
+    --cs: minmax(3.2em, max-content);
+    --quietw: 3.8em;
+  }
+  .title {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .last {
+    display: none;
+  }
+  .kind {
+    display: none;
+  }
+  .cs {
+    grid-template-columns: 1fr;
+    padding-left: 8px;
+  }
+}
+
+/* ---------- bay ---------- */
+
+.bay {
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--bay);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+
+.bayHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 30px;
+  padding: 0 2px;
+}
+
+/* the designator plate */
+.bayName {
+  padding: 4px 9px 3px;
+  border-radius: 3px;
+  background: var(--bay-3);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+  font-variation-settings: "wdth" 78;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.bay[data-which="you"] .bayName {
+  background: var(--move);
+  color: var(--move-ink);
+}
+
+.bay[data-which="stalled"] .bayName {
+  background: var(--pencil);
+  color: #fff;
+}
+
+.bayCount {
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
+  font-weight: 700;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.bayHint {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink-3);
+  font-size: 13px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bayTools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.rack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@container (max-width: 460px) {
+  .bayHint {
+    display: none;
+  }
+}

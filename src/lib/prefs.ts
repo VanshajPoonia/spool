@@ -1,14 +1,14 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { setFlapMotion } from "@/components/flap/engine";
-import { setSound } from "@/components/flap/sound";
+import { setPrintMotion } from "@/components/print/engine";
+import { setSound } from "@/components/print/sound";
 
-export type Prefs = { sound: boolean; motion: boolean };
+export type Prefs = { sound: boolean; motion: boolean; theme: "dark" | "light" };
 
 const KEY = "spool:prefs";
 const listeners = new Set<() => void>();
-const DEFAULTS: Prefs = { sound: false, motion: true };
+const DEFAULTS: Prefs = { sound: false, motion: true, theme: "dark" };
 let cache: Prefs | null = null;
 
 function read(): Prefs {
@@ -25,8 +25,13 @@ function read(): Prefs {
 function apply(p: Prefs) {
   if (typeof document === "undefined") return;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  document.documentElement.dataset.motion = p.motion ? "on" : "off";
-  setFlapMotion(p.motion && !reduced);
+  const html = document.documentElement;
+  html.dataset.motion = p.motion ? "on" : "off";
+  // The night shift is the default; the day shift is opt-in.
+  if (p.theme === "light") html.dataset.theme = "light";
+  else delete html.dataset.theme;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", p.theme === "light" ? "#e3e7eb" : "#14181d");
+  setPrintMotion(p.motion && !reduced);
   // Sound needs a user gesture; it is only switched on from a click.
   if (!p.sound) setSound(false);
 }

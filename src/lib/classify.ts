@@ -113,7 +113,7 @@ export function classify(n: RawNode & { sources: Source[] }, me: string, staleDa
       reason = `@${last.actor} had the last word.`;
     } else if (quietDays >= staleDays) {
       next = "them";
-      status = `DELAYED ${quietDays}D`;
+      status = `STALLED ${quietDays}D`;
       tone = "wait";
       reason = `No reply in ${quietDays} days. You had the last word.`;
     } else {
@@ -128,7 +128,7 @@ export function classify(n: RawNode & { sources: Source[] }, me: string, staleDa
       reason = `@${last.actor} had the last word.`;
     } else if (quietDays >= staleDays) {
       next = "them";
-      status = `DELAYED ${quietDays}D`;
+      status = `STALLED ${quietDays}D`;
       tone = "wait";
       reason = `No reply in ${quietDays} days.`;
     } else {

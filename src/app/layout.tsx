@@ -1,51 +1,52 @@
 import type { Metadata, Viewport } from "next";
-import { Atkinson_Hyperlegible_Mono, Atkinson_Hyperlegible_Next, Barlow_Condensed } from "next/font/google";
+import { Archivo, Martian_Mono } from "next/font/google";
 import { PrefsBoot } from "@/components/PrefsBoot";
 import "./globals.css";
 
-const atkinson = Atkinson_Hyperlegible_Next({
-  variable: "--font-atkinson",
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
+  axes: ["wdth"],
   display: "swap",
 });
 
-const atkinsonMono = Atkinson_Hyperlegible_Mono({
-  variable: "--font-atkinson-mono",
+// What the strip printer sets: a monospace with a width axis, run condensed like a thermal printer.
+const martian = Martian_Mono({
+  variable: "--font-martian",
   subsets: ["latin"],
-  display: "swap",
-});
-
-const barlow = Barlow_Condensed({
-  variable: "--font-barlow",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  axes: ["wdth"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Spool: who moves next on your open source",
+  title: "Spool: the open source manager that knows whose move it is",
   description:
-    "Spool keeps every PR, issue and comment thread you have open on GitHub on one board, sorted by who owes the next reply. Plus GSoC, YC and Product Hunt dates.",
+    "Spool puts every PR, issue, review request and mention you have open on GitHub in one bay, sorted by who owes the next reply. Plus GSoC, YC and Product Hunt dates.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#101113",
-  colorScheme: "dark",
+  themeColor: "#14181d",
 };
+
+// Sets the shift before first paint so a light-shift reader never sees the console flash dark.
+const THEME_BOOT = `try{var p=JSON.parse(localStorage.getItem("spool:prefs")||"{}");if(p.theme==="light")document.documentElement.dataset.theme="light"}catch(e){}`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${atkinson.variable} ${atkinsonMono.variable} ${barlow.variable}`}>
+    <html lang="en" className={`${archivo.variable} ${martian.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
+      </head>
       <body>
         <div
           hidden
           dangerouslySetInnerHTML={{
             __html: `<!--
-THESIS: Spool's landing is a split-flap departures board answering one question, who moves next. It refuses the dark dev-tool hero with a lit dashboard screenshot and a bento grid of features.
-OWN-WORLD: Graphite board housing with corner screws; two-leaf flap tiles with hinge gap and warm-white condensed characters; sign-yellow wayfinding bands with black humanist sans and filled pictograms; status lamps whose shape carries state. Yellow only for the primary action and what changed.
-STORY: The visitor watches a contributor's day play out on a board, sees threads split into waiting on you and waiting on them, sees live GSoC, YC and Product Hunt dates, then pastes a token on a boarding pass or opens the sample board.
-FIRST VIEWPORT: Full-bleed housing. Giant flaps spell WHO MOVES / NEXT? with a five-tile flap face closing row two. A yellow band carries the one-line offer, Connect GitHub and Sample board. A sample board with a scrub clock starts above the fold.
-FORM: Departures Board, candidate 4 of 7, seed key 9f103c2f. Signature: flap faces that react to the cursor and to each section; a scrubbable sample day.
+THESIS: Spool is a flight strip bay: every thread is a printed strip that slides between Your move and Their move. It refuses the dev-tool hero with a dashboard screenshot, the bento grid, and the airport costume it replaces.
+OWN-WORLD: A flat blue-grey night console; paper strips in black holders, coloured by kind (buff PR, blue issue, pink review, green talk), printed in condensed Martian Mono boxes split by hairlines; red grease-pencil ticks, circles and silence tabs; amber only for what is your move.
+STORY: The visitor watches a strip hand off between bays, learns Spool sorts their GitHub threads by whose move it is, sees silence counted in days, then signs on with a token or opens the sample bay.
+FIRST VIEWPORT: Headline, lede and two strip buttons on the left; a live two-bay rack on the right, one strip sliding across every few seconds; the count waiting on you printed above the rack.
+FORM: Flight Strip Bay, candidate 1 of 7 (impeccable's pick), seed key 04a12bd9.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
 -->`,
           }}

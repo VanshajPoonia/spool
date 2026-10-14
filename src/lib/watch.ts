@@ -1,4 +1,4 @@
-import type { LampState } from "@/components/kit/Kit";
+import type { MarkState } from "@/components/kit/Kit";
 
 /*
  * Watched issues: issues you might take, tracked until someone else does.
@@ -23,7 +23,7 @@ export type WatchedIssue = {
 
 export type WatchStatus = {
   kind: "free" | "asked" | "assigned" | "pr" | "closed" | "missing";
-  lamp: LampState;
+  lamp: MarkState;
   label: string;
   detail: string | null;
   href: string | null;

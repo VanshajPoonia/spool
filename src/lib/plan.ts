@@ -1,4 +1,4 @@
-import type { LampState } from "@/components/kit/Kit";
+import type { MarkState } from "@/components/kit/Kit";
 import { lampFor, type Thread } from "./classify";
 import { watchStatus, type WatchedIssue, type WatchItem } from "./watch";
 
@@ -56,7 +56,7 @@ export type Card = {
   /** short state, e.g. "Changes requested" or "Still free"; null for your own tasks */
   status: string | null;
   detail: string | null;
-  lamp: LampState;
+  lamp: MarkState;
   yourMove: boolean;
   /** GitHub says it's merged or closed, so it stays in Done */
   finished: boolean;
@@ -80,10 +80,10 @@ const SAY: Record<string, string> = {
   "IN REVIEW": "In review",
 };
 
-/* The board speaks in flap capitals; a card speaks in sentence case. */
+/* The strip speaks in printed capitals; a card speaks in sentence case. */
 function say(status: string) {
   if (SAY[status]) return SAY[status];
-  const d = status.match(/^DELAYED (\d+)D$/);
+  const d = status.match(/^STALLED (\d+)D$/);
   if (d) return `Quiet ${d[1]} days`;
   return status.charAt(0) + status.slice(1).toLowerCase();
 }

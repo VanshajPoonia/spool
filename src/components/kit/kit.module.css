@@ -1,183 +1,200 @@
-/* carrier tag: tail fin + code */
-.carrier {
-  --h: 26px;
+/* ---------- callsign ---------- */
+
+.callsign {
   display: inline-flex;
-  align-items: stretch;
-  height: var(--h);
+  align-items: center;
+  justify-content: center;
   flex: none;
+  min-width: 3.1em;
+  height: 1.9em;
+  padding: 0 0.45em;
   border-radius: 3px;
-  overflow: hidden;
-  background: #24262a;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-  vertical-align: middle;
-}
-
-.carrier[data-size="sm"] {
-  --h: 20px;
-}
-
-.carrier[data-size="lg"] {
-  --h: 40px;
-}
-
-.fin {
-  width: calc(var(--h) * 0.62);
-  background:
-    linear-gradient(118deg, transparent 0 34%, var(--c2) 34% 52%, var(--c1) 52% 100%),
-    var(--c1);
-}
-
-.code {
-  display: grid;
-  place-items: center;
-  min-width: calc(var(--h) * 1.05);
-  padding: 0 calc(var(--h) * 0.18);
-  font-family: var(--font-flap);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-weight: 700;
-  font-size: calc(var(--h) * 0.66);
-  letter-spacing: 0.04em;
-  color: var(--flap-ink);
+  font-size: 13px;
+  letter-spacing: 0.08em;
   line-height: 1;
 }
 
-/* status lamp */
-.lamp {
-  --c: var(--lamp-idle);
-  display: inline-block;
+.callsign[data-size="sm"] {
+  font-size: 11px;
+}
+
+.callsign[data-size="lg"] {
+  font-size: 16px;
+}
+
+/* printed straight onto a strip: no box, just the code */
+.callsign[data-on-strip] {
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  box-shadow: none;
+  color: var(--strip-ink);
+}
+
+/* ---------- grease-pencil marks ---------- */
+
+.mark {
   flex: none;
-  width: 9px;
-  height: 9px;
-  background: var(--c);
-  border-radius: 50%;
-  box-shadow:
-    0 0 0 2px rgba(0, 0, 0, 0.55),
-    0 0 10px color-mix(in oklab, var(--c) 55%, transparent);
-  vertical-align: middle;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  overflow: visible;
 }
 
-.lamp[data-state="go"] {
-  --c: var(--lamp-go);
+.mark path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
 }
 
-.lamp[data-state="wait"] {
-  --c: var(--lamp-wait);
-  border-radius: 1px;
-  transform: rotate(45deg) scale(0.86);
+.mark[data-state="go"] {
+  stroke: var(--landed);
 }
 
-.lamp[data-state="stop"] {
-  --c: var(--lamp-stop);
-  border-radius: 1px;
+.mark[data-state="wait"] {
+  stroke: var(--move);
 }
 
-.lamp[data-state="idle"] {
-  background: transparent;
-  box-shadow:
-    inset 0 0 0 2px var(--c),
-    0 0 0 2px rgba(0, 0, 0, 0.55);
+.mark[data-state="stop"] {
+  stroke: var(--alert);
 }
 
-/* wayfinding sign link */
-.sign {
+.mark[data-state="idle"] {
+  stroke: var(--ink-3);
+}
+
+.ringWrap {
+  position: relative;
+  display: inline-block;
+}
+
+.ring {
+  position: absolute;
+  left: -34%;
+  right: -34%;
+  top: -30%;
+  bottom: -30%;
+  width: 168%;
+  height: 160%;
+  max-width: none;
+  fill: none;
+  stroke: var(--pencil);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ring path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 620ms var(--ease-out) 240ms forwards;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ---------- a strip used as an action ---------- */
+
+.stripLink {
   display: inline-flex;
+  padding: 3px 3px 3px 9px;
+  border-radius: 5px;
+  background: var(--holder);
+  box-shadow:
+    inset 0 1px 0 var(--holder-lip),
+    0 10px 18px -14px rgba(0, 0, 0, 0.8);
+  color: var(--strip-ink);
+  text-decoration: none;
+}
+
+.stripLinkPaper {
+  display: flex;
+  flex: 1;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  min-height: 56px;
-  padding: 0 18px 0 22px;
-  background: var(--sign);
-  color: var(--sign-ink);
-  text-decoration: none;
-  font-family: var(--font-sign);
+  min-height: 52px;
+  padding: 0 8px 0 18px;
+  border-radius: var(--radius-strip);
+  background: var(--strip-pr);
   font-weight: 700;
-  font-size: 18px;
-  letter-spacing: -0.01em;
-  border-radius: var(--radius-sign);
-  transition:
-    background-color 220ms var(--ease-out),
-    color 220ms var(--ease-out);
+  font-size: 17px;
+  font-variation-settings: "wdth" 104;
+  letter-spacing: -0.005em;
+  transition: transform 260ms var(--ease-slide);
 }
 
-.sign[data-variant="board"] {
-  background: #24262a;
-  color: var(--ink);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
-}
-
-.signIcon {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 3px;
-  background: var(--sign-ink);
-  color: var(--sign);
-  transition: transform 320ms var(--ease-out);
-}
-
-.sign[data-variant="board"] .signIcon {
-  background: var(--ink);
-  color: var(--housing);
-}
-
-.signIcon svg {
-  width: 18px;
-  height: 18px;
-}
-
-.sign:hover {
-  background: var(--sign-ink);
-  color: var(--sign);
-}
-
-.sign:hover .signIcon {
-  background: var(--sign);
-  color: var(--sign-ink);
-  transform: translateX(4px);
-}
-
-.sign[data-variant="board"]:hover {
-  background: var(--ink);
-  color: var(--housing);
-}
-
-.sign[data-variant="board"]:hover .signIcon {
-  background: var(--housing);
-  color: var(--ink);
-}
-
-.signLabel {
+.stripLinkLabel {
   white-space: nowrap;
 }
 
-/* on a yellow band: an inked panel, or a plain sign cell */
-.sign[data-variant="ink"] {
-  background: var(--sign-ink);
-  color: var(--sign);
+.stripLinkIcon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-left: 1px solid var(--strip-rule);
 }
 
-.sign[data-variant="ink"] .signIcon {
-  background: var(--sign);
-  color: var(--sign-ink);
+.stripLink:hover .stripLinkPaper {
+  transform: translateX(6px);
 }
 
-.sign[data-variant="ink"]:hover {
-  background: #000;
-  color: #fff;
+.stripLink:active .stripLinkPaper {
+  transform: translateX(2px);
 }
 
-.sign[data-variant="ink"]:hover .signIcon {
-  background: #fff;
-  color: #000;
-}
-
-.sign[data-variant="cell"] {
+/* an empty holder: the quiet action */
+.stripLink[data-variant="quiet"] {
   background: transparent;
-  color: var(--sign-ink);
-  box-shadow: inset 0 0 0 2px var(--sign-ink);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
 }
 
-.sign[data-variant="cell"]:hover {
-  background: var(--sign-ink);
-  color: var(--sign);
+.stripLink[data-variant="quiet"] .stripLinkPaper {
+  background: transparent;
+}
+
+.stripLink[data-variant="quiet"] .stripLinkIcon {
+  border-left-color: var(--rule-2);
+}
+
+.stripLink[data-variant="quiet"]:hover {
+  background: var(--bay-2);
+}
+
+/* as a button */
+button.stripLink {
+  border: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+button.stripLink:disabled {
+  cursor: default;
+  background: var(--bay-3);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+}
+
+button.stripLink:disabled .stripLinkPaper {
+  background: var(--bay-2);
+  color: var(--ink-3);
+  transform: none;
+}
+
+button.stripLink:disabled .stripLinkIcon {
+  border-left-color: var(--rule-2);
 }
