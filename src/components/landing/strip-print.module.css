@@ -1,0 +1,236 @@
+/* The pinned stretch: the stage holds still while the strip prints. */
+.track {
+  position: relative;
+  height: 340vh;
+}
+
+.track[data-still] {
+  height: auto;
+}
+
+.stage {
+  position: sticky;
+  top: 64px;
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(28px, 4vw, 64px);
+  height: calc(100svh - 64px);
+  max-height: 820px;
+}
+
+.track[data-still] .stage {
+  position: static;
+  height: auto;
+  max-height: none;
+}
+
+/* ---------- the steps ---------- */
+
+.steps {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  padding: 12px 12px 12px 10px;
+  border-radius: 8px;
+  color: var(--ink-3);
+  transition:
+    background-color 300ms var(--ease-out),
+    color 300ms var(--ease-out);
+}
+
+.step[data-on] {
+  color: var(--ink-2);
+}
+
+.step[data-now] {
+  background: var(--bay-2);
+  color: var(--ink);
+}
+
+.letter {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: var(--bay-3);
+  color: inherit;
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+button.letter:hover {
+  background: var(--rule-2);
+  color: var(--ink);
+}
+
+.step[data-on] .letter {
+  background: var(--strip-issue);
+  color: var(--strip-ink);
+}
+
+.stepBody {
+  display: grid;
+  gap: 4px;
+}
+
+.stepName {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+.stepText {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* the steps not yet reached keep their name but fold their text away */
+.track:not([data-still]) .step:not([data-now]) .stepText {
+  display: none;
+}
+
+/* ---------- the printer ---------- */
+
+.printer {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.plates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.plate {
+  padding: 5px 10px 4px;
+  border-radius: 3px;
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  color: var(--ink-3);
+  font-size: 13px;
+  font-weight: 800;
+  font-variation-settings: "wdth" 78;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition:
+    background-color 360ms var(--ease-out),
+    color 360ms var(--ease-out),
+    box-shadow 360ms var(--ease-out);
+}
+
+.plate[data-lit][data-bay="them"] {
+  background: var(--bay-3);
+  box-shadow: inset 0 0 0 1px var(--ink-3);
+  color: var(--ink);
+}
+
+.plate[data-lit][data-bay="stalled"] {
+  background: var(--pencil);
+  box-shadow: none;
+  color: #fff;
+}
+
+.slot {
+  position: relative;
+  display: grid;
+  align-items: center;
+  min-height: clamp(150px, 15vw, 190px);
+  padding: 26px clamp(14px, 2vw, 28px);
+  border-radius: 12px;
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  overflow: hidden;
+}
+
+/* the printer's mouth, on the left edge: strips feed out of it */
+.mouth {
+  position: absolute;
+  left: 0;
+  top: 22%;
+  bottom: 22%;
+  width: 8px;
+  border-radius: 0 4px 4px 0;
+  background: var(--holder);
+  box-shadow: inset -2px 0 0 var(--holder-lip);
+}
+
+.out {
+  animation: feed 820ms var(--ease-out) both;
+}
+
+@keyframes feed {
+  from {
+    transform: translateX(-104%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.waiting {
+  color: var(--ink-3);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
+  font-size: 14px;
+}
+
+.blank {
+  display: inline-block;
+  width: 3ch;
+}
+
+.titlePrint {
+  font-family: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  white-space: pre-wrap;
+}
+
+.notePrint {
+  font-family: inherit;
+  font-weight: inherit;
+  letter-spacing: 0;
+  white-space: pre-wrap;
+}
+
+.caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .track {
+    height: 300vh;
+  }
+  .stage {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    gap: 22px;
+  }
+  .steps {
+    order: 2;
+  }
+  .track:not([data-still]) .step:not([data-now]) {
+    display: none;
+  }
+}

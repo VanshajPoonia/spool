@@ -1,436 +1,260 @@
 .wrap {
-  container-type: inline-size;
+  display: grid;
+  gap: 14px;
 }
 
 .head {
   display: flex;
-  align-items: end;
+  flex-wrap: wrap;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 16px;
-  padding-bottom: 14px;
+  gap: 8px 24px;
+  padding: 2px 4px;
 }
 
 .title {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.titleMain {
+  gap: 10px;
   font-weight: 700;
-  font-size: 20px;
-  letter-spacing: -0.01em;
+  font-size: 17px;
 }
 
-.sample {
-  padding: 3px 8px;
-  border: 1px dashed #5b5850;
-  border-radius: 3px;
-  color: var(--ink-2);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.counts {
+/* the controller's running note: the last thing that happened, or the strip under the pointer */
+.remark {
   display: flex;
-  gap: 18px;
-  color: var(--ink-3);
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.remarkTime,
+.remarkRef {
+  flex: none;
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-size: 13px;
-  font-weight: 600;
+  color: var(--ink);
 }
 
-.counts > span {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* the rows sit in their own recessed bezel, like the headline flaps */
-.board {
-  --flap-size: clamp(16px, 2.05cqi, 29px);
-  display: grid;
-  grid-template-columns: 8px max-content max-content minmax(0, 1fr) max-content max-content max-content;
-  column-gap: clamp(10px, 1.5cqi, 22px);
-  padding: 2px clamp(10px, 1.2cqi, 18px) 6px;
-  border-radius: 6px;
-  background: #0b0c0d;
-  box-shadow:
-    inset 0 3px 8px rgba(0, 0, 0, 0.85),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.9),
-    0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.labels,
-.row {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: subgrid;
-  align-items: center;
-}
-
-.labels {
-  padding: 10px 0 8px;
+.remarkRef {
   color: var(--ink-3);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
-.labels > :first-child {
-  grid-column: 2;
+.remarkNote {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.row {
-  position: relative;
-  padding: 7px 0;
-  cursor: pointer;
-  border-top: 1px solid rgba(255, 255, 255, 0.045);
-  outline: none;
-  transition:
-    opacity 260ms var(--ease-out),
-    filter 260ms var(--ease-out),
-    background-color 260ms var(--ease-out);
-}
-
-.row:hover,
-.row:focus-visible {
-  background: rgba(255, 255, 255, 0.025);
-}
-
-.row:focus-visible {
-  box-shadow: inset 0 0 0 2px var(--sign);
-}
-
-.row[data-dim] {
-  opacity: 0.3;
-  filter: saturate(0.3);
-}
-
-/* a small sign-yellow lamp marks a row that just changed */
-.fresh {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: transparent;
-  transition: background-color 400ms var(--ease-out);
-}
-
-.row[data-fresh] .fresh {
-  background: var(--sign);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
-}
-
-.carrierCell {
-  display: inline-flex;
-  perspective: 300px;
-  animation: fin 520ms var(--ease-out) both;
-}
-
-.carrierCell > span {
-  --h: var(--flap-size);
-}
-
-@keyframes fin {
-  from {
-    transform: rotateX(-90deg);
-    opacity: 0;
-  }
-  to {
-    transform: none;
-    opacity: 1;
-  }
-}
-
-.status {
-  display: inline-flex;
-  align-items: center;
+.bays {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
   gap: 10px;
 }
 
-.mobileTitle {
-  display: none;
-}
-
-/* an opened row unrolls the thread's day so far */
-.log {
-  grid-column: 2 / -1;
+.rack {
   display: grid;
-  gap: 2px;
-  margin: 12px 0 6px;
-  padding: 0 0 0 14px;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
   list-style: none;
-  border-left: 2px solid var(--rule);
-  animation: unroll 420ms var(--ease-out) both;
 }
 
-.log li {
-  display: grid;
-  grid-template-columns: 44px 12px minmax(84px, max-content) minmax(0, 1fr);
-  align-items: center;
-  gap: 10px;
-  padding: 5px 0;
+.item {
+  transition: opacity 240ms var(--ease-out);
+}
+
+.item[data-dim] {
+  opacity: 0.55;
+}
+
+.empty {
+  padding: 14px 4px;
   color: var(--ink-3);
   font-size: 14px;
 }
 
+/* a strip's moves, opened under it inside the holder */
+.log {
+  flex-basis: 100%;
+  display: grid;
+  gap: 2px;
+  margin: 4px 0 2px;
+  padding: 8px 10px 6px 4px;
+  list-style: none;
+  color: var(--strip-plain);
+}
+
+.log li {
+  display: grid;
+  grid-template-columns: 3.6em 18px 8.5em minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 3px 0;
+  font-size: 13px;
+  opacity: 0.72;
+}
+
 .log li[data-now] {
-  color: var(--ink);
+  opacity: 1;
 }
 
 .logTime {
-  font-family: var(--font-data);
-  font-size: 12.5px;
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
 }
 
 .logStatus {
-  font-family: var(--font-data);
-  font-size: 12px;
-  letter-spacing: 0.02em;
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .logNote {
   min-width: 0;
 }
 
-@keyframes unroll {
-  from {
-    opacity: 0;
-    clip-path: inset(0 0 100% 0);
-  }
-  to {
-    opacity: 1;
-    clip-path: inset(0 0 0 0);
-  }
-}
+/* ---------- the sample clock ---------- */
 
-.row[data-open] {
-  background: rgba(255, 255, 255, 0.035);
-}
-
-.remark {
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  min-height: 48px;
-  padding: 14px 0;
-  border-top: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-  overflow: hidden;
-}
-
-.remarkTime,
-.remarkRef {
-  flex: none;
-  font-family: var(--font-data);
-  font-size: 13px;
-  color: var(--ink-3);
-}
-
-.remarkRef {
-  color: var(--ink-2);
-}
-
-.remarkNote {
-  color: var(--ink);
-  font-weight: 600;
-  animation: note 520ms var(--ease-out) both;
-}
-
-@keyframes note {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-    filter: blur(5px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-    filter: none;
-  }
-}
-
-/* scrub clock */
 .scrub {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
   align-items: center;
-  gap: 16px;
-  padding-top: 18px;
+  gap: 14px;
+  padding: 6px 4px 2px;
 }
 
 .play {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
-  flex: none;
+  width: 40px;
+  height: 40px;
   border: 0;
-  border-radius: 3px;
-  background: var(--housing-3);
+  border-radius: 6px;
+  background: var(--bay-3);
   color: var(--ink);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
-  transition: background-color 200ms var(--ease-out);
 }
 
 .play:hover {
-  background: #2a2d32;
+  background: var(--rule-2);
+}
+
+.clock {
+  font-size: 22px;
 }
 
 .track {
   position: relative;
-  flex: 1;
   height: 46px;
 }
 
 .track input {
+  --p: 0%;
   position: absolute;
-  inset: 0;
+  inset: 0 0 auto 0;
   width: 100%;
-  height: 26px;
+  height: 22px;
   margin: 0;
   background: transparent;
   appearance: none;
   -webkit-appearance: none;
-  cursor: ew-resize;
+  cursor: pointer;
 }
 
 .track input::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
-  background: linear-gradient(90deg, var(--ink-2) 0 var(--p), #2c2f34 var(--p) 100%);
+  background: linear-gradient(90deg, var(--ink-2) var(--p), var(--rule-2) var(--p));
 }
 
 .track input::-moz-range-track {
   height: 4px;
   border-radius: 2px;
-  background: linear-gradient(90deg, var(--ink-2) 0 var(--p), #2c2f34 var(--p) 100%);
+  background: linear-gradient(90deg, var(--ink-2) var(--p), var(--rule-2) var(--p));
 }
 
 .track input::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 6px;
+  width: 14px;
   height: 22px;
   margin-top: -9px;
-  border-radius: 2px;
-  background: var(--ink);
-  box-shadow:
-    0 0 0 3px var(--housing),
-    0 2px 8px rgba(0, 0, 0, 0.6);
+  border-radius: 3px;
+  background: var(--strip-pr);
+  box-shadow: 0 0 0 3px var(--holder);
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 .track input::-moz-range-thumb {
-  width: 6px;
+  width: 14px;
   height: 22px;
   border: 0;
-  border-radius: 2px;
-  background: var(--ink);
-  box-shadow: 0 0 0 3px var(--housing);
-}
-
-.track input:focus-visible {
-  outline: none;
-}
-
-.track input:focus-visible::-webkit-slider-thumb {
-  background: var(--sign);
+  border-radius: 3px;
+  background: var(--strip-pr);
+  box-shadow: 0 0 0 3px var(--holder);
 }
 
 .ticks {
   position: absolute;
-  left: 3px;
-  right: 3px;
-  top: 2px;
-  height: 6px;
+  left: 7px;
+  right: 7px;
+  top: 16px;
+  height: 8px;
   pointer-events: none;
 }
 
 .tick {
   position: absolute;
-  top: 0;
   width: 2px;
-  height: 6px;
+  height: 8px;
   margin-left: -1px;
   border-radius: 1px;
-  background: #4a4d53;
-  transition: background-color 300ms var(--ease-out);
+  background: var(--rule-2);
 }
 
 .tick[data-passed] {
-  background: var(--ink-2);
+  background: var(--move);
 }
 
 .hours {
   position: absolute;
-  left: 3px;
-  right: 3px;
-  bottom: 0;
-  height: 16px;
+  left: 7px;
+  right: 7px;
+  top: 28px;
   pointer-events: none;
 }
 
 .hours span {
   position: absolute;
   transform: translateX(-50%);
-  font-family: var(--font-data);
-  font-size: 11px;
   color: var(--ink-3);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
+  font-size: 11px;
 }
 
-.hours span:first-child {
-  transform: none;
-}
-
-.hours span:last-child {
-  transform: translateX(-100%);
-}
-
-.colThread,
-.colNo {
-  display: inline-flex;
-}
-
-@container (max-width: 980px) {
-  .colThread {
-    display: none;
-  }
-  .board {
-    grid-template-columns: 8px max-content max-content max-content max-content minmax(0, 1fr);
-  }
-  .mobileTitle {
-    display: block;
-    grid-column: 2 / -1;
-    padding-top: 4px;
-    font-size: 13px;
-    color: var(--ink-3);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+@media (max-width: 1000px) {
+  .bays {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
-@container (max-width: 560px) {
-  .colNo {
-    display: none;
-  }
-  .board {
-    --flap-size: clamp(15px, 4.6cqi, 22px);
-    grid-template-columns: 8px max-content max-content max-content minmax(0, 1fr);
-    column-gap: 8px;
-  }
-  .status {
-    gap: 6px;
-  }
-  .counts {
-    display: none;
-  }
-  .remark {
-    flex-wrap: wrap;
-    gap: 4px 10px;
-  }
+@media (max-width: 560px) {
   .log li {
-    grid-template-columns: 40px 12px minmax(0, 1fr);
+    grid-template-columns: 3.4em 18px minmax(0, 1fr);
   }
   .logNote {
     grid-column: 3;
+  }
+  .remark {
+    flex-wrap: wrap;
+  }
+  .remarkNote {
+    white-space: normal;
   }
 }

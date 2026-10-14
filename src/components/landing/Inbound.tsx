@@ -1,29 +1,24 @@
 "use client";
 
 import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUpRight, Check, Plus } from "lucide-react";
-import { FlapText } from "@/components/flap/Flap";
-import { CarrierTag } from "@/components/kit/Kit";
+import { Check, Plus } from "lucide-react";
+import { Strip } from "@/components/kit/Strip";
+import { PrintText } from "@/components/print/PrintText";
 import { assignCodes } from "@/lib/carriers";
 import { FACES } from "@/lib/faces";
+import { compactStars } from "@/lib/format";
 import type { Discovery } from "@/lib/programs";
 import { fmtDate } from "@/lib/time";
 import { useSectionFace } from "./mood";
 import { SectionHead } from "./SectionHead";
 import sec from "./section.module.css";
-import s from "./routes.module.css";
+import s from "./inbound.module.css";
 
 const SHOWN = 6;
 const MAX_TOPICS = 3;
 const TOPICS = ["typescript", "rust", "python", "go", "cli", "ai", "devtools", "database", "react", "wasm"];
 
-export function compactStars(n: number) {
-  if (n >= 10000) return `${Math.round(n / 1000)}K`;
-  if (n >= 1000) return `${(n / 1000).toFixed(1)}K`;
-  return String(n);
-}
-
-export function Routes({ initial }: { initial: Discovery }) {
+export function Inbound({ initial }: { initial: Discovery }) {
   const ref = useRef<HTMLElement>(null);
   const [topics, setTopics] = useState<string[]>(initial.topics);
   const topicsKey = [...topics].sort().join(",");
@@ -59,21 +54,21 @@ export function Routes({ initial }: { initial: Discovery }) {
     setTopics((cur) => (cur.includes(t) ? (cur.length > 1 ? cur.filter((x) => x !== t) : cur) : cur.length < MAX_TOPICS ? [...cur, t] : cur));
 
   return (
-    <section ref={ref} id="routes" className={sec.section} aria-labelledby="routes-title">
-      <SectionHead id="routes-title" title="Fresh repos in the topics you follow." pict="route">
-        Spool searches GitHub for repos created in the last five months in your topics and ranks them by stars, so you
-        find projects while they&rsquo;re still small. This board is live: pick up to three topics and it searches again.
+    <section ref={ref} id="inbound" className={sec.section} aria-labelledby="inbound-title">
+      <SectionHead id="inbound-title" title="Fresh repos in the topics you follow.">
+        Spool searches GitHub for repos created in the last five months in your topics and ranks them by stars, so you find
+        projects while they&rsquo;re still small. These strips are live: pick up to three topics and it searches again.
       </SectionHead>
 
       <div className={s.picker}>
-        <p className={s.pickerHead} id="routes-topics">
+        <p className={s.pickerHead} id="inbound-topics">
           Your topics
           <span className={s.pickerCount}>
             {topics.length} of {MAX_TOPICS} picked
-            {full && <span className={s.pickerHint}>. Remove one to swap it</span>}
+            {full && <span>. Remove one to swap it</span>}
           </span>
         </p>
-        <div className={s.topics} role="group" aria-labelledby="routes-topics">
+        <div className={s.topics} role="group" aria-labelledby="inbound-topics">
           {TOPICS.map((t) => {
             const on = topics.includes(t);
             const locked = on && topics.length === 1;
@@ -96,14 +91,13 @@ export function Routes({ initial }: { initial: Discovery }) {
         </div>
       </div>
 
-      <div className={`${s.results} ${sec.rise}`} aria-busy={loading}>
+      <div className={`${sec.panel} ${s.results}`} aria-busy={loading}>
         <div className={s.resultsHead}>
           <p className={s.caption} aria-live="polite">
             {loading ? "Searching GitHub…" : `${Math.min(SHOWN, data.repos.length)} newest repos with the most stars in ${topics.join(", ")}`}
           </p>
           <span className={`${sec.tag} ${sec.tagLive}`}>Live from GitHub search</span>
         </div>
-        <div className={s.scan} data-on={loading || undefined} aria-hidden="true" />
         {error && <p className={s.error}>{error}</p>}
 
         {/* keyed by the search so a new result set deals in fresh */}
@@ -112,29 +106,30 @@ export function Routes({ initial }: { initial: Discovery }) {
             const [owner, name] = r.full.split("/");
             const stars = compactStars(r.stars);
             return (
-              <li key={r.full} className={s.card} style={{ "--i": i } as CSSProperties}>
-                <a href={r.url} target="_blank" rel="noreferrer" className={s.link}>
-                  <span className={s.cardTop}>
-                    <CarrierTag repo={r.full} code={codes.get(r.full)} />
-                    <span className={s.rank}>No. {i + 1}</span>
-                    <ArrowUpRight size={18} className={s.ext} aria-hidden="true" />
-                  </span>
-                  <span className={s.repo}>
-                    <span className={s.owner}>{owner}/</span>
-                    <span className={s.name}>{name}</span>
-                  </span>
-                  <span className={s.desc}>{r.description || "No description."}</span>
-                  <span className={s.meta}>
+              <li key={r.full} style={{ "--i": i } as CSSProperties}>
+                <Strip
+                  size="lg"
+                  kind="plain"
+                  callsign={codes.get(r.full) ?? ""}
+                  title={
+                    <>
+                      <span className={s.owner}>{owner}/</span>
+                      {name}
+                    </>
+                  }
+                  note={r.description || "No description."}
+                  who={r.language ?? "No language"}
+                  age={`Created ${fmtDate(r.created)}`}
+                  extra={
                     <span className={s.stars}>
-                      <FlapText value={stars} length={stars.length} introOnView={3} introDelay={i * 70} label={`${r.stars} stars`} />
-                      <span className={s.unit}>stars</span>
+                      <PrintText value={stars} length={stars.length} introOnView introDelay={i * 80} label={`${r.stars} stars`} />
+                      <span>stars</span>
                     </span>
-                    <span className={s.facts}>
-                      {r.language && <span>{r.language}</span>}
-                      <span>Created {fmtDate(r.created)}</span>
-                    </span>
-                  </span>
-                </a>
+                  }
+                  href={r.url}
+                  external
+                  label={`${r.full}, ${r.stars} stars. Opens on GitHub.`}
+                />
               </li>
             );
           })}

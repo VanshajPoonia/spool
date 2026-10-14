@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Volume2, VolumeX } from "lucide-react";
-import { FlapText } from "@/components/flap/Flap";
-import { Pictogram } from "@/components/kit/Kit";
+import { ArrowRight, Moon, Sun, Volume2, VolumeX } from "lucide-react";
+import { PrintText } from "@/components/print/PrintText";
 import { setPrefs, usePrefs } from "@/lib/prefs";
 import { usePageFace } from "./mood";
 import s from "./nav.module.css";
@@ -14,7 +13,7 @@ export function SiteNav() {
   const prefs = usePrefs();
   const [hover, setHover] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  // The nav's Connect button waits until the hero's own buttons have scrolled away.
+  // The nav's Connect strip waits until the hero's own buttons have scrolled away.
   const [heroCta, setHeroCta] = useState(true);
 
   useEffect(() => {
@@ -31,6 +30,7 @@ export function SiteNav() {
   }, []);
 
   const mark = hover || !face ? "SPOOL" : face;
+  const light = prefs.theme === "light";
 
   return (
     <header className={s.nav} data-scrolled={scrolled || undefined}>
@@ -43,7 +43,7 @@ export function SiteNav() {
         onBlur={() => setHover(false)}
         aria-label="Spool, home"
       >
-        <FlapText value={mark} length={5} size="30px" decorative opts={{ stagger: 26, maxSteps: 8, step: 48 }} />
+        <PrintText value={mark} length={5} decorative opts={{ speed: 30 }} />
       </Link>
 
       <nav className={s.links} aria-label="Primary">
@@ -57,17 +57,27 @@ export function SiteNav() {
         <a href="#connect" className={s.cta} data-away={heroCta || undefined} aria-hidden={heroCta || undefined} tabIndex={heroCta ? -1 : undefined}>
           <span className={s.ctaLong}>Connect GitHub</span>
           <span className={s.ctaShort}>Connect</span>
-          <Pictogram name="arrow" className={s.ctaIcon} />
+          <ArrowRight size={16} strokeWidth={2.4} aria-hidden="true" />
         </a>
         <button
           type="button"
-          className={s.sound}
+          className={s.toggle}
+          aria-pressed={light}
+          onClick={() => setPrefs({ theme: light ? "dark" : "light" })}
+          title={light ? "Switch to the night shift (dark)" : "Switch to the day shift (light)"}
+        >
+          {light ? <Moon size={18} strokeWidth={2} aria-hidden="true" /> : <Sun size={18} strokeWidth={2} aria-hidden="true" />}
+          <span className="sr-only">Light theme</span>
+        </button>
+        <button
+          type="button"
+          className={s.toggle}
           aria-pressed={prefs.sound}
           onClick={() => setPrefs({ sound: !prefs.sound })}
-          title={prefs.sound ? "Turn flap sound off" : "Turn flap sound on"}
+          title={prefs.sound ? "Turn printer sound off" : "Turn printer sound on"}
         >
-          {prefs.sound ? <Volume2 size={18} strokeWidth={2} /> : <VolumeX size={18} strokeWidth={2} />}
-          <span className="sr-only">Flap sound</span>
+          {prefs.sound ? <Volume2 size={18} strokeWidth={2} aria-hidden="true" /> : <VolumeX size={18} strokeWidth={2} aria-hidden="true" />}
+          <span className="sr-only">Printer sound</span>
         </button>
       </div>
     </header>

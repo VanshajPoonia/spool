@@ -1,277 +1,157 @@
+/* Headline and the way in on the left, a live sample bay on the right. */
 .hero {
-  padding: 64px 0 0;
-}
-
-/* painted graphite housing, edge to edge */
-.housing {
-  position: relative;
-  padding: clamp(40px, 8svh, 104px) var(--edge);
-  background:
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 4px),
-    radial-gradient(120% 70% at 50% -20%, rgba(255, 255, 255, 0.07), transparent 60%),
-    linear-gradient(180deg, #2a2c31 0%, #222428 55%, #1d1f22 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.09),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.55),
-    0 30px 60px -30px rgba(0, 0, 0, 0.9);
-}
-
-/* a soft light that follows the mouse and glances off the paint and the tiles alike */
-.housing {
-  isolation: isolate;
-}
-
-.lightBox {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  overflow: hidden;
-  pointer-events: none;
-  mix-blend-mode: soft-light;
-}
-
-.light {
-  position: absolute;
-  left: -360px;
-  top: -360px;
-  width: 720px;
-  height: 720px;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(255, 248, 230, 0.5), rgba(255, 248, 230, 0.16) 50%, transparent);
-  opacity: 0;
-  transition: opacity 500ms var(--ease-out);
-  will-change: transform;
-}
-
-.light[data-on] {
-  opacity: 1;
-}
-
-/* slotted screws */
-.screw {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #6b7078 0%, #3a3d43 55%, #1f2125 100%);
-  box-shadow:
-    0 1px 1px rgba(0, 0, 0, 0.7),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.45);
-}
-
-.screw::after {
-  content: "";
-  position: absolute;
-  left: 1.5px;
-  right: 1.5px;
-  top: 50%;
-  height: 1.6px;
-  margin-top: -0.8px;
-  background: #121316;
-  transform: rotate(var(--r, 30deg));
-}
-
-.screw[data-pos="tl"] {
-  top: 12px;
-  left: 12px;
-  --r: 28deg;
-}
-
-.screw[data-pos="tr"] {
-  top: 12px;
-  right: 12px;
-  --r: -52deg;
-}
-
-.screw[data-pos="bl"] {
-  bottom: 12px;
-  left: 12px;
-  --r: 78deg;
-}
-
-.screw[data-pos="br"] {
-  bottom: 12px;
-  right: 12px;
-  --r: 6deg;
-}
-
-/*
- * The copy and the headline board, side by side: copy on the left, board on the right. The
- * board's eleven columns take up to 56% of the measure, so the tile height follows the width
- * (capped at 120px); the copy column sits centred against it.
- */
-.deck {
-  --pad: clamp(10px, 1.3vw, 18px);
-  --share: 0.56;
-  --big: min(120px, calc((var(--share) * (100vw - 2 * var(--edge)) - 2 * var(--pad)) / 8.3));
-  --flap-size: var(--big);
-  --fgap: calc(var(--big) * 0.06);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas: "copy stage";
+  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
   align-items: center;
-  column-gap: clamp(32px, 4vw, 64px);
+  gap: clamp(32px, 4.4vw, 72px);
+  padding: calc(64px + clamp(40px, 7svh, 88px)) var(--edge) clamp(48px, 8svh, 96px);
 }
 
-.stage {
-  grid-area: stage;
-  display: grid;
-  gap: 14px;
-}
-
-.clock {
-  justify-self: end;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.clockLabel {
-  color: var(--ink-2);
-  font-size: 13px;
-  font-weight: 600;
-}
-
-/* the recessed bezel the flap module sits in */
-.bezel {
-  padding: var(--pad);
-  border-radius: 6px;
-  background: #0b0c0d;
-  box-shadow:
-    inset 0 3px 8px rgba(0, 0, 0, 0.85),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.9),
-    0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-/* giant flap headline: WHO MOVES / NEXT? and the face */
-.big :global(.flap) {
-  font-weight: 600;
-  --fy: 0.035em;
-  width: calc(var(--big) * 0.7);
-}
-
-.bigWide {
-  display: grid;
-  gap: calc(var(--big) * 0.1);
-}
-
-.bigRow {
-  display: flex;
-  gap: var(--fgap);
-}
-
-.face {
-  display: inline-flex;
-}
-
-.bigNarrow {
-  display: none;
-}
-
-/* what Spool does, and the way in */
 .copy {
-  grid-area: copy;
   min-width: 0;
 }
 
-/* the headline says what Spool is; the line under it says what it tracks */
 .title {
-  max-width: 16ch;
-  color: var(--ink);
-  font-size: clamp(32px, 3.4vw, 54px);
-  line-height: 1.04;
-  font-weight: 700;
-  letter-spacing: 0.005em;
-  text-wrap: balance;
+  max-width: 15ch;
+  font-size: clamp(38px, 4.4vw, 66px);
+  line-height: 1.02;
+  font-weight: 760;
+  font-variation-settings: "wdth" 90;
+  letter-spacing: -0.02em;
 }
 
 .offer {
-  max-width: 44ch;
-  margin-top: clamp(14px, 1.4vw, 20px);
+  max-width: 42ch;
+  margin-top: clamp(16px, 1.6vw, 24px);
   color: var(--ink-2);
   font-size: clamp(17px, 1.35vw, 20px);
   line-height: 1.5;
-  text-wrap: pretty;
 }
 
-/* the two signs sit side by side when the column has room, and stack full width when it doesn't */
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: clamp(22px, 2.4vw, 32px);
+  margin-top: clamp(24px, 2.6vw, 36px);
 }
 
 .actions > a {
   flex: 1 1 auto;
-  min-height: 60px;
 }
 
 .guest {
   max-width: 52ch;
-  margin-top: 14px;
+  margin-top: 16px;
   color: var(--ink-3);
   font-size: 14px;
   line-height: 1.5;
-  text-wrap: pretty;
 }
 
 .guest a {
   color: var(--ink-2);
   font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 .guest a:hover {
   color: var(--ink);
-  text-decoration-thickness: 2px;
+}
+
+/* ---------- the console ---------- */
+
+.console {
+  min-width: 0;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--bay-2);
+  box-shadow:
+    inset 0 0 0 1px var(--rule),
+    0 30px 60px -36px rgba(0, 0, 0, 0.7);
+}
+
+.consoleHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 4px 6px 14px;
+}
+
+.face {
+  flex: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  background: var(--holder);
+  color: var(--strip-plain);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.position {
+  display: grid;
+  min-width: 0;
+}
+
+.positionName {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.positionNote {
+  overflow: hidden;
+  color: var(--ink-3);
+  font-size: 13px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.clock {
+  margin-left: auto;
+  color: var(--ink-2);
+  font-size: 18px;
+}
+
+.bays {
+  display: grid;
+  gap: 10px;
+}
+
+.rack {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.empty {
+  padding: 14px 4px;
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+@media (max-width: 1080px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .title {
+    max-width: 18ch;
+  }
 }
 
 @media (max-width: 860px) {
   .hero {
-    padding-top: 56px;
+    padding-top: calc(56px + 32px);
   }
 }
 
-/* narrow: the board across the full width, the copy under it */
-@media (max-width: 939px) {
-  .deck {
-    --share: 1;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      "stage"
-      "copy";
-    row-gap: clamp(24px, 4vw, 36px);
-  }
-}
-
-@media (hover: none) {
-  .lightBox {
-    display: none;
-  }
-}
-
-/* phones: the headline stacks five tiles wide */
-@media (max-width: 720px) {
-  .deck {
-    --big: min(104px, calc((100vw - 2 * var(--edge) - 48px) / 3.62));
-  }
-  .bigWide {
-    display: none;
-  }
-  .bigNarrow {
-    display: grid;
-    justify-content: start;
-    gap: calc(var(--big) * 0.1);
-  }
-  .big {
-    container-type: inline-size;
-  }
-  .big :global(.flap) {
-    width: min(calc(var(--big) * 0.92), calc((100cqi - 4 * var(--fgap)) / 5));
-  }
+@media (max-width: 560px) {
   .actions > a {
-    min-height: 56px;
+    flex-basis: 100%;
+  }
+  .positionNote {
+    display: none;
+  }
+  .console {
+    padding: 10px;
+    margin-inline: -6px;
   }
 }

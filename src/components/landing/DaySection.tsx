@@ -14,7 +14,7 @@ export function DaySection() {
   useSectionFace(ref, face);
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
-  // The nav face reacts to whatever just happened on the board, then settles back to watching.
+  // The nav face reacts to whatever just happened in the bay, then settles back to watching.
   const react = useCallback((m: Mood, ms = 1800) => {
     setFace(FACES[m]);
     window.clearTimeout(timer.current);
@@ -23,15 +23,12 @@ export function DaySection() {
 
   return (
     <section ref={ref} id="today" className={sec.section} aria-labelledby="day-title">
-      <SectionHead id="day-title" title="Waiting on you, or waiting on them." pict="wall">
-        Every open thread is in one of two states: someone answered and the next move is yours, or you sent it off and
-        you&rsquo;re waiting. Spool calls them <strong>arrivals</strong> and <strong>departures</strong>, and sorts by that
-        before anything else. The board below replays a sample day from 08:00. Drag the clock, or open a row to see its
-        history.
+      <SectionHead id="day-title" title="Waiting on you, or waiting on them.">
+        Every open thread sits in one of two bays: someone answered and the move is <strong>yours</strong>, or you sent it
+        off and the move is <strong>theirs</strong>. Spool sorts by that before anything else. The bay below replays a
+        sample day from 08:00. Drag the clock, or open a strip to see its moves.
       </SectionHead>
-      <div className={sec.rise}>
-        <DayBoard onEvent={react} />
-      </div>
+      <DayBoard onEvent={react} />
     </section>
   );
 }

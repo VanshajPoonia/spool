@@ -14,6 +14,8 @@ export type DayState = {
   tone: StatusTone;
   note: string;
   mood?: Mood;
+  /** whole days since the last move, for states carried in from before today */
+  quiet?: number;
 };
 
 export type DayRow = {
@@ -22,7 +24,7 @@ export type DayRow = {
   num: number;
   kind: "pr" | "issue";
   title: string;
-  /** the destination as the board prints it: a whole phrase, 22 characters at most */
+  /** the title cut to a whole phrase, 22 characters at most */
   board: string;
   events: { at: number; state: DayState }[];
 };
@@ -41,11 +43,11 @@ export const SAMPLE_DAY: DayRow[] = [
     title: "Stream rows from cursor in batches",
     board: "STREAM ROWS IN BATCHES",
     events: [
-      { at: h(8), state: { next: "THEM", status: "IN REVIEW", tone: undefined, note: "Opened 3 days ago, waiting on a maintainer" } },
+      { at: h(8), state: { next: "THEM", status: "IN REVIEW", tone: undefined, note: "Opened 3 days ago, waiting on a maintainer", quiet: 3 } },
       { at: h(10, 41), state: { next: "YOU", status: "CHANGES REQ", tone: "stop", note: "@mara-k asked for a benchmark against the old reader", mood: "alarm" } },
       { at: h(13, 20), state: { next: "THEM", status: "IN REVIEW", tone: undefined, note: "You pushed two commits and posted the numbers", mood: "calm" } },
       { at: h(17, 5), state: { next: "THEM", status: "APPROVED", tone: "go", note: "@mara-k approved; waiting for the merge queue", mood: "glad" } },
-      { at: h(19, 30), state: { next: "DONE", status: "MERGED", tone: "go", note: "Merged into main. Departed.", mood: "stars" } },
+      { at: h(19, 30), state: { next: "DONE", status: "MERGED", tone: "go", note: "Merged into main.", mood: "stars" } },
     ],
   },
   {
@@ -56,7 +58,7 @@ export const SAMPLE_DAY: DayRow[] = [
     title: "Popover loses focus on scroll",
     board: "POPOVER LOSES FOCUS",
     events: [
-      { at: h(8), state: { next: "THEM", status: "DELAYED 19D", tone: "wait", note: "Nobody has replied in 19 days" } },
+      { at: h(8), state: { next: "THEM", status: "STALLED", tone: "wait", note: "Nobody has replied in 19 days", quiet: 19 } },
       { at: h(15, 12), state: { next: "YOU", status: "THEY REPLIED", tone: undefined, note: "@devon asked for a minimal repro", mood: "watch" } },
       { at: h(16, 5), state: { next: "THEM", status: "AWAITING", tone: undefined, note: "You posted a repro link", mood: "calm" } },
     ],
@@ -69,7 +71,7 @@ export const SAMPLE_DAY: DayRow[] = [
     title: "Add retry jitter to webhook sender",
     board: "WEBHOOK RETRY JITTER",
     events: [
-      { at: h(8), state: { next: "THEM", status: "DRAFT", tone: undefined, note: "@ilya is still drafting" } },
+      { at: h(8), state: { next: "THEM", status: "DRAFT", tone: undefined, note: "@ilya is still drafting", quiet: 1 } },
       { at: h(9, 30), state: { next: "YOU", status: "REVIEW ASKED", tone: undefined, note: "@ilya requested your review", mood: "focus" } },
       { at: h(12, 15), state: { next: "THEM", status: "REVIEWED", tone: "go", note: "You approved with two comments", mood: "wink" } },
     ],
@@ -82,7 +84,7 @@ export const SAMPLE_DAY: DayRow[] = [
     title: "Pattern match on nested enums",
     board: "MATCH NESTED ENUMS",
     events: [
-      { at: h(8), state: { next: "THEM", status: "IN REVIEW", tone: undefined, note: "Waiting on a reviewer" } },
+      { at: h(8), state: { next: "THEM", status: "IN REVIEW", tone: undefined, note: "Waiting on a reviewer", quiet: 4 } },
       { at: h(11, 40), state: { next: "YOU", status: "CI FAILED", tone: "stop", note: "test-linux failed: snapshot mismatch", mood: "done" } },
       { at: h(14, 2), state: { next: "THEM", status: "IN REVIEW", tone: undefined, note: "You updated the snapshot; checks are green", mood: "calm" } },
     ],
@@ -95,7 +97,7 @@ export const SAMPLE_DAY: DayRow[] = [
     title: "Ship shell completions for fish",
     board: "FISH SHELL COMPLETIONS",
     events: [
-      { at: h(8), state: { next: "YOU", status: "ASSIGNED", tone: undefined, note: "Assigned to you 6 days ago" } },
+      { at: h(8), state: { next: "YOU", status: "ASSIGNED", tone: undefined, note: "Assigned to you 6 days ago", quiet: 6 } },
       { at: h(21, 10), state: { next: "THEM", status: "IN REVIEW", tone: undefined, note: "You opened PR #81 for it", mood: "glad" } },
     ],
   },

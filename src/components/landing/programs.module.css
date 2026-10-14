@@ -1,393 +1,84 @@
-/* the yellow wall: one saturated field that owns the whole section */
-.wall {
-  position: relative;
-  margin-top: clamp(112px, 13vw, 200px);
-  padding: clamp(72px, 9vw, 140px) var(--edge) clamp(56px, 7vw, 100px);
-  background: var(--sign);
-  color: var(--sign-ink);
-}
-
-.wall::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.08), transparent 18%),
-    repeating-linear-gradient(90deg, transparent 0 calc(100% / 12 - 1px), rgba(0, 0, 0, 0.045) calc(100% / 12 - 1px) calc(100% / 12));
-}
-
-.wall ::selection {
-  background: var(--sign-ink);
-  color: var(--sign);
-}
-
-.wall :focus-visible {
-  outline-color: var(--sign-ink);
-}
-
-.inner {
-  position: relative;
+.layout {
   display: grid;
-  gap: clamp(16px, 1.8vw, 26px);
-}
-
-.head {
-  margin-bottom: clamp(20px, 2.6vw, 40px);
-}
-
-.head p {
-  color: #2e2a12;
-  font-weight: 500;
-}
-
-/* shared dark card with a black plate on top */
-.module,
-.ticket {
-  position: relative;
-  border-radius: 8px;
-  background: var(--housing);
-  color: var(--ink);
-  box-shadow: 0 28px 50px -30px rgba(40, 30, 0, 0.75);
-}
-
-.module {
-  overflow: hidden;
-}
-
-.module :focus-visible,
-.ticket :focus-visible {
-  outline-color: var(--sign);
-}
-
-.plate,
-.ticketPlate {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 13px 20px;
-  background: #050505;
-  color: var(--sign);
-}
-
-.ticketPlate {
-  border-radius: 8px 8px 0 0;
-}
-
-.plate h3,
-.ticketPlate h3 {
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.005em;
-}
-
-.plateLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--ink-2);
-  font-size: 14px;
-  font-weight: 600;
-  white-space: nowrap;
-  text-decoration: none;
-  transition: color 200ms var(--ease-out);
-}
-
-.plateLink svg {
-  transition: transform 240ms var(--ease-out);
-}
-
-.plateLink:hover {
-  color: var(--sign);
-}
-
-.plateLink:hover svg {
-  transform: translate(2px, -2px);
-}
-
-/* countdown tickets, soonest first */
-.tickets {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(14px, 1.6vw, 24px);
-}
-
-/* subgrid lines up every ticket's plate, body and stub across the row */
-.ticket {
-  display: grid;
-  grid-row: span 3;
-  grid-template-rows: subgrid;
-  row-gap: 0;
-  transition: transform 360ms var(--ease-out);
-}
-
-.ticket:hover {
-  transform: translateY(-4px) rotate(-0.4deg);
-}
-
-.ticket[data-first] {
-  box-shadow:
-    0 0 0 3px var(--sign-ink),
-    0 28px 50px -30px rgba(40, 30, 0, 0.75);
-}
-
-.ticketBody {
-  display: grid;
-  align-content: start;
-  gap: 14px;
-  padding: 22px 22px 24px;
-}
-
-.event {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  color: var(--ink-2);
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.soonest {
-  margin-left: auto;
-  padding: 2px 8px;
-  border-radius: 3px;
-  background: var(--sign);
-  color: var(--sign-ink);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.days {
-  --flap-size: clamp(48px, 4.6vw, 64px);
-  --fgap: 4px;
-  display: flex;
-  align-items: flex-end;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  grid-template-areas: "schedule ph";
+  align-items: start;
   gap: 12px;
 }
 
-.daysUnit {
-  padding-bottom: 6px;
-  color: var(--ink-2);
-  font-family: var(--font-flap);
-  font-weight: 600;
-  font-size: 24px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+.schedule {
+  grid-area: schedule;
 }
 
-.date {
-  font-size: clamp(20px, 1.8vw, 24px);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-/* the tear-off stub, with notches cut into both edges */
-.stub {
-  position: relative;
-  padding: 16px 22px 18px;
-  border-top: 2px dashed #34373c;
-  color: var(--ink-2);
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.stub strong {
-  color: var(--ink);
-}
-
-.stub::before,
-.stub::after {
-  content: "";
-  position: absolute;
-  top: -10px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--sign);
-}
-
-.stub::before {
-  left: -9px;
-}
-
-.stub::after {
-  right: -9px;
-}
-
-.body {
-  --flap-size: clamp(22px, 2.3vw, 30px);
+.rack {
   display: grid;
-  align-content: start;
-  gap: 24px;
-  padding: clamp(20px, 2.2vw, 28px);
-  container-type: inline-size;
-}
-
-/* GSoC route map: every label hangs below its stop, in one row */
-.route {
-  position: relative;
-  padding: 10px 0 0;
-}
-
-.track {
-  position: relative;
-  height: 4px;
-  margin: 0 5px;
-  border-radius: 2px;
-  background: #2c2f34;
-}
-
-.trackDone {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: calc(var(--here) * 100%);
-  border-radius: 2px;
-  background: var(--ink-2);
-  transform-origin: 0 50%;
-}
-
-.here {
-  position: absolute;
-  top: 50%;
-  left: calc(var(--here) * 100%);
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--sign);
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 4px rgba(255, 207, 0, 0.25);
-  animation: pulse 2.2s var(--ease-in-out) infinite;
-}
-
-@keyframes pulse {
-  50% {
-    box-shadow: 0 0 0 10px rgba(255, 207, 0, 0);
-  }
-}
-
-.stations {
-  position: relative;
-  height: 54px;
-  margin: 0 5px;
-  padding: 0;
-  list-style: none;
-}
-
-.stations li {
-  position: absolute;
-  top: -9px;
-  left: calc(var(--pos) * 100%);
-  display: grid;
-  gap: 3px;
-  width: max-content;
-  padding-top: 22px;
-  /* slide the label so the first sits right of its stop and the last sits left of it */
-  transform: translateX(calc(var(--pos) * -100%));
-  text-align: center;
-}
-
-.stations li:first-child {
-  text-align: left;
-}
-
-.stations li:last-child {
-  text-align: right;
-}
-
-.dot {
-  position: absolute;
-  top: 2px;
-  left: calc(var(--pos) * 100%);
-  width: 10px;
-  height: 10px;
-  margin-left: -5px;
-  border-radius: 50%;
-  background: var(--housing);
-  box-shadow: inset 0 0 0 2px #5a5d63;
-}
-
-.stations li[data-passed] .dot {
-  background: var(--ink-2);
-  box-shadow: none;
-}
-
-.stations li[data-next] .dot {
-  background: var(--sign);
-  box-shadow: 0 0 0 3px rgba(255, 207, 0, 0.3);
-}
-
-.stName,
-.stDate {
-  white-space: nowrap;
-}
-
-.stName {
-  color: var(--ink-2);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.stDate {
-  color: var(--ink-3);
-  font-family: var(--font-data);
-  font-size: 12px;
-}
-
-.stations li[data-passed] .stName {
-  color: var(--ink-3);
-}
-
-.stations li[data-next] .stName {
-  color: var(--sign);
-}
-
-.orgs {
-  display: grid;
-  gap: 14px;
-  padding-top: 20px;
-  border-top: 1px solid var(--rule);
-}
-
-.orgCount {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  color: var(--ink-2);
-  font-weight: 600;
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
   gap: 6px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.tags li {
-  padding: 4px 10px;
-  border-radius: 3px;
-  background: #1f2125;
-  font-family: var(--font-data);
-  font-size: 13px;
+/* days left, printed like the silence box */
+.days {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  min-width: clamp(3.6em, 9cqi, 5em);
+  padding: 4px 8px;
+  font-size: 24px;
+  line-height: 1;
 }
 
-.tags li span {
-  color: var(--ink-3);
+.days > span:last-child {
+  margin-top: 5px;
+  color: var(--strip-ink-2);
+  font-size: 10px;
+  font-weight: 700;
+  font-variation-settings: "wdth" 80;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.down {
+.ph {
+  grid-area: ph;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.moduleHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.moduleHead h3 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.moduleLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
   color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
 }
+
+.moduleLink:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+/* ---------- Product Hunt ---------- */
 
 .launches {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 2px 28px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -396,10 +87,14 @@
 .launches li {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
+  align-items: baseline;
   gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 10px 2px;
+  border-top: 1px solid var(--rule);
+}
+
+.launches li:first-child {
+  border-top: 0;
 }
 
 .launches a {
@@ -408,21 +103,18 @@
   text-decoration: none;
 }
 
-.lTitle {
-  overflow: hidden;
-  font-weight: 700;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
 .launches a:hover .lTitle {
   text-decoration: underline;
-  text-underline-offset: 3px;
+}
+
+.lTitle {
+  font-weight: 700;
+  font-size: 15px;
 }
 
 .lTag {
   overflow: hidden;
-  color: var(--ink-3);
+  color: var(--ink-2);
   font-size: 14px;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -430,98 +122,31 @@
 
 .lDate {
   color: var(--ink-3);
-  font-family: var(--font-data);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-size: 12px;
-  padding-top: 3px;
+}
+
+.down {
+  color: var(--ink-2);
+  font-size: 15px;
 }
 
 .fetched {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  margin-top: 6px;
-  color: #3a3410;
+  margin-top: 14px;
+  color: var(--ink-3);
   font-size: 14px;
-  font-weight: 500;
 }
 
-.fetchedIcon {
-  width: 20px;
-  height: 20px;
-}
-
-/* the progress line draws itself out to "you are here" as the map scrolls in */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .trackDone {
-      animation: draw linear both;
-      animation-timeline: view();
-      animation-range: entry 40% cover 45%;
-    }
-  }
-}
-
-:global(html[data-motion="off"]) .trackDone,
-:global(html[data-motion="off"]) .here {
-  animation: none;
-}
-
-@keyframes draw {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: none;
-  }
-}
-
-/* narrow map: the stops become a vertical list */
-@container (max-width: 760px) {
-  .stations {
-    height: auto;
-  }
-  .stations li {
-    position: relative;
-    top: 0;
-    left: 0;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    width: auto;
-    padding: 7px 0 7px 24px;
-    transform: none;
-    text-align: left;
-  }
-  .stations li .dot {
-    top: 50%;
-    left: 5px;
-    margin-top: -5px;
-  }
-  .stations li:last-child {
-    text-align: left;
-  }
-  .route .track {
-    display: none;
-  }
-  .route {
-    padding-top: 0;
-  }
-}
-
-@media (max-width: 1000px) {
-  .tickets {
-    grid-template-columns: 1fr;
-  }
-  .ticket:hover {
-    transform: none;
-  }
-  .launches {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 640px) {
-  .launches {
-    grid-template-columns: 1fr;
+@media (max-width: 980px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "schedule"
+      "ph";
   }
 }

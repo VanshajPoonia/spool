@@ -14,27 +14,34 @@
 }
 
 .nav[data-scrolled] {
-  background: color-mix(in oklab, var(--housing) 88%, transparent);
+  background: color-mix(in oklab, var(--console) 90%, transparent);
   backdrop-filter: blur(10px) saturate(1.2);
   -webkit-backdrop-filter: blur(10px) saturate(1.2);
   box-shadow: 0 1px 0 var(--rule);
 }
 
+/* the wordmark is a printed field in a holder; the page's face takes it over as you scroll */
 .brand {
   justify-self: start;
   display: inline-flex;
+  padding: 7px 11px 6px;
+  border-radius: 5px;
+  background: var(--holder);
+  box-shadow: inset 0 1px 0 var(--holder-lip);
+  color: var(--strip-pr);
+  font-size: 18px;
+  line-height: 1;
   text-decoration: none;
-  border-radius: 4px;
 }
 
 .links {
   display: flex;
-  gap: 4px;
+  gap: 2px;
 }
 
 .links a {
   padding: 8px 14px;
-  border-radius: 3px;
+  border-radius: 4px;
   color: var(--ink-2);
   text-decoration: none;
   font-weight: 600;
@@ -46,23 +53,23 @@
 
 .links a:hover {
   color: var(--ink);
-  background: var(--housing-3);
+  background: var(--bay-2);
 }
 
 .end {
   justify-self: end;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
 }
 
-.sound {
+.toggle {
   display: grid;
   place-items: center;
   width: 40px;
   height: 40px;
   border: 0;
-  border-radius: 3px;
+  border-radius: 4px;
   background: transparent;
   color: var(--ink-2);
   transition:
@@ -70,33 +77,38 @@
     background-color 200ms var(--ease-out);
 }
 
-.sound:hover {
-  background: var(--housing-3);
+.toggle:hover {
+  background: var(--bay-2);
   color: var(--ink);
 }
 
-.sound[aria-pressed="true"] {
-  color: var(--sign);
-}
-
+/* a compact strip: the Connect action once the hero's own has scrolled away */
 .cta {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   height: 40px;
-  padding: 0 8px 0 16px;
-  border-radius: 3px;
-  background: var(--sign);
-  color: var(--sign-ink);
+  margin-right: 6px;
+  padding: 0 12px 0 14px;
+  border-radius: 4px;
+  background: var(--strip-pr);
+  box-shadow: 0 0 0 3px var(--holder);
+  color: var(--strip-ink);
   font-weight: 700;
   font-size: 15px;
   text-decoration: none;
   transition:
-    background-color 200ms var(--ease-out),
-    color 200ms var(--ease-out),
     opacity 320ms var(--ease-out),
     transform 420ms var(--ease-out),
     visibility 0s;
+}
+
+.cta svg {
+  transition: transform 300ms var(--ease-out);
+}
+
+.cta:hover svg {
+  transform: translateX(3px);
 }
 
 .cta[data-away] {
@@ -110,25 +122,8 @@
     visibility 0s linear 260ms;
 }
 
-.ctaIcon {
-  width: 24px;
-  height: 24px;
-  padding: 4px;
-  border-radius: 2px;
-  background: var(--sign-ink);
-  color: var(--sign);
-  transition: transform 300ms var(--ease-out);
-}
-
-.cta:hover {
-  background: var(--sign-ink);
-  color: var(--sign);
-}
-
-.cta:hover .ctaIcon {
-  background: var(--sign);
-  color: var(--sign-ink);
-  transform: translateX(3px);
+.ctaShort {
+  display: none;
 }
 
 @media (max-width: 860px) {
@@ -141,22 +136,14 @@
   }
 }
 
-@media (max-width: 420px) {
-  .cta {
-    padding: 0 6px 0 12px;
-    gap: 8px;
-  }
-}
-
-.ctaShort {
-  display: none;
-}
-
 @media (max-width: 520px) {
   .ctaLong {
     display: none;
   }
   .ctaShort {
     display: inline;
+  }
+  .end {
+    gap: 2px;
   }
 }

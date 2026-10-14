@@ -1,10 +1,12 @@
 "use client";
 
-import { CSSProperties, useRef, useState } from "react";
-import { FlapText } from "@/components/flap/Flap";
-import { CarrierTag, Lamp, Pictogram } from "@/components/kit/Kit";
+import { useRef, useState } from "react";
+import { Bay, Strip } from "@/components/kit/Strip";
+import { PrintText } from "@/components/print/PrintText";
+import { carrier } from "@/lib/carriers";
 import { FACES } from "@/lib/faces";
 import { QUIET } from "@/lib/sample-threads";
+import { useFlip } from "./flip";
 import { useSectionFace } from "./mood";
 import { SectionHead } from "./SectionHead";
 import sec from "./section.module.css";
@@ -23,95 +25,75 @@ function faceFor(n: number) {
 
 export function Stalled() {
   const ref = useRef<HTMLElement>(null);
+  const baysRef = useRef<HTMLDivElement>(null);
   const [limit, setLimit] = useState(14);
-  const delayed = ROWS.filter((r) => r.quiet >= limit).length;
-  // The nav face reads the board: calm when nothing is stalled, asleep when most of it is.
-  useSectionFace(ref, faceFor(delayed));
-  const days = Array.from({ length: MAX - MIN + 1 }, (_, i) => MIN + i);
+  const stalled = ROWS.filter((r) => r.quiet >= limit);
+  const waiting = ROWS.filter((r) => r.quiet < limit);
+  // The nav face reads the bay: calm when nothing is stalled, asleep when most of it is.
+  useSectionFace(ref, faceFor(stalled.length));
+  useFlip(baysRef, stalled.length);
+
+  const strip = (r: (typeof ROWS)[number], late: boolean) => (
+    <li key={r.id} data-flip={r.id}>
+      <Strip
+        kind="pr"
+        callsign={carrier(r.repo).code}
+        num={r.num}
+        title={r.title}
+        note={`Last word: ${r.last}`}
+        quiet={r.quiet}
+        state={late ? "stalled" : "them"}
+        sample
+        label={`${r.repo} #${r.num}, ${r.title}. Quiet ${r.quiet} days${late ? ", stalled" : ""}. Sample data.`}
+      />
+    </li>
+  );
 
   return (
     <section ref={ref} id="stalled" className={sec.section} aria-labelledby="stalled-title">
-      <SectionHead id="stalled-title" title="A PR nobody answers isn’t pending. It’s stalled." pict="hourglass">
-        Spool counts the days since anyone last spoke on each thread. Past your limit it&rsquo;s marked{" "}
-        <strong>DELAYED</strong> and moves up the board, with who had the last word and when. Drag the limit and watch the
-        board re-sort.
+      <SectionHead id="stalled-title" title="A PR nobody answers isn’t pending. It’s stalled.">
+        Spool counts the days since anyone last spoke on each thread. Past your limit the count is ringed in red pencil and
+        the strip moves to the <strong>stalled</strong> bay at the top, with who had the last word. Drag the limit and
+        watch the strips move.
       </SectionHead>
 
-      <div className={`${sec.panel} ${s.panel} ${sec.rise}`}>
+      <div className={`${sec.panel} ${s.panel}`}>
         <div className={s.control}>
-          <div className={s.controlText}>
-            <Pictogram name="hourglass" className={s.glass} />
-            <label htmlFor="stall-limit" className={s.label}>
-              Call it stalled after
-            </label>
-            <span className={s.limit}>
-              <FlapText value={String(limit)} length={2} align="right" size="40px" label={`${limit}`} opts={{ maxSteps: 4, step: 40 }} />
-              <span className={s.unit}>days</span>
-            </span>
-          </div>
-          <div className={s.ruler}>
-            <input
-              id="stall-limit"
-              type="range"
-              min={MIN}
-              max={MAX}
-              value={limit}
-              onChange={(e) => setLimit(Number(e.target.value))}
-              className={s.range}
-            />
-            <div className={s.days} aria-hidden="true">
-              {days.map((d) => (
-                <span key={d} className={s.day} data-on={d >= limit || undefined} data-at={d === limit || undefined}>
-                  {d % 7 === 0 || d === MIN || d === MAX ? d : ""}
-                </span>
-              ))}
-            </div>
-          </div>
+          <label htmlFor="stall-limit" className={s.label}>
+            Call it stalled after
+          </label>
+          <span className={s.limit}>
+            <PrintText value={String(limit)} length={2} align="right" label={`${limit}`} opts={{ speed: 20 }} />
+            <span className={s.unit}>days</span>
+          </span>
+          <input
+            id="stall-limit"
+            type="range"
+            min={MIN}
+            max={MAX}
+            value={limit}
+            onChange={(e) => setLimit(Number(e.target.value))}
+            className={s.range}
+            style={{ "--p": `${((limit - MIN) / (MAX - MIN)) * 100}%` } as React.CSSProperties}
+          />
         </div>
 
-        <div className={s.board} role="table" aria-label="Threads by days since the last reply">
-          <div className={s.labels} role="row">
-            <span role="columnheader">Repo</span>
-            <span role="columnheader">Thread</span>
-            <span role="columnheader" className={s.colLast}>
-              Last word
-            </span>
-            <span role="columnheader">Quiet</span>
-            <span role="columnheader">Status</span>
-          </div>
-          <div className={s.rows} style={{ "--cut": delayed } as CSSProperties}>
-            <div className={s.cut} aria-hidden="true" data-hidden={delayed === 0 || delayed === ROWS.length || undefined}>
-              <span>
-                {limit} day limit
-              </span>
-            </div>
-            {ROWS.map((r) => {
-              const late = r.quiet >= limit;
-              return (
-                <div key={r.id} role="row" className={s.row} data-late={late || undefined}>
-                  <CarrierTag repo={r.repo} />
-                  <span className={s.thread}>
-                    <span className={s.title}>{r.title}</span>
-                    <span className={s.ref}>
-                      {r.repo}#{r.num}
-                    </span>
-                  </span>
-                  <span className={s.colLast}>{r.last}</span>
-                  <FlapText value={`${r.quiet}D`} length={3} align="right" tone={late ? "wait" : "dim"} introOnView={3} />
-                  <span className={s.status}>
-                    <Lamp state={late ? "wait" : "idle"} />
-                    <FlapText value={late ? "DELAYED" : "ON TIME"} length={7} tone={late ? "wait" : undefined} opts={{ stagger: 24, maxSteps: 8 }} />
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+        <div ref={baysRef} className={s.bays}>
+          <Bay name="Stalled" which="stalled" as="div" count={<PrintText value={String(stalled.length)} length={1} label={`${stalled.length} stalled`} />} hint={`Quiet ${limit} days or more`}>
+            <ul className={s.rack}>{stalled.map((r) => strip(r, true))}</ul>
+            {stalled.length === 0 && <p className={s.empty}>Nothing has been quiet that long.</p>}
+          </Bay>
+          <Bay name="Their move" which="them" as="div" count={<PrintText value={String(waiting.length)} length={1} label={`${waiting.length} waiting`} />} hint="Still inside your limit">
+            <ul className={s.rack}>{waiting.map((r) => strip(r, false))}</ul>
+            {waiting.length === 0 && <p className={s.empty}>Every thread here is past the limit.</p>}
+          </Bay>
         </div>
+
         <p className={s.foot}>
           <span className={sec.tag}>Sample data</span>
-          {delayed === 0
+          {stalled.length === 0
             ? "Nothing is past the limit."
-            : `${delayed} of ${ROWS.length} threads are past the limit and sit at the top of your board.`}
+            : `${stalled.length} of ${ROWS.length} threads are past the limit and sit at the top of your bay.`}
         </p>
       </div>
     </section>

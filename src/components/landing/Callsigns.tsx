@@ -1,34 +1,35 @@
 "use client";
 
 import { CSSProperties, KeyboardEvent, useRef, useState } from "react";
-import { FlapText } from "@/components/flap/Flap";
-import { CarrierTag, Lamp, type LampState } from "@/components/kit/Kit";
+import { Callsign, StateMark, type MarkState } from "@/components/kit/Kit";
+import { Strip, type StripState } from "@/components/kit/Strip";
+import { PrintText } from "@/components/print/PrintText";
 import { carrier } from "@/lib/carriers";
 import { FACES } from "@/lib/faces";
 import { FLEET } from "@/lib/sample-threads";
 import { useSectionFace } from "./mood";
 import { SectionHead } from "./SectionHead";
 import sec from "./section.module.css";
-import s from "./carriers.module.css";
+import s from "./callsigns.module.css";
 
 type Bucket = "merged" | "closed" | "open";
 
-const BUCKETS: { key: Bucket; label: string; lamp: LampState; face: string }[] = [
-  { key: "merged", label: "Merged", lamp: "go", face: FACES.glad },
-  { key: "closed", label: "Closed", lamp: "stop", face: FACES.sad },
-  { key: "open", label: "Still open", lamp: "wait", face: FACES.focus },
+const BUCKETS: { key: Bucket; label: string; mark: MarkState; face: string; state: StripState }[] = [
+  { key: "merged", label: "Merged", mark: "go", face: FACES.glad, state: "done" },
+  { key: "closed", label: "Closed", mark: "stop", face: FACES.sad, state: "idle" },
+  { key: "open", label: "Still open", mark: "wait", face: FACES.focus, state: "them" },
 ];
 
 const EMPTY: Record<Bucket, string> = {
   merged: "Nothing merged here yet.",
   closed: "Nothing closed without merging.",
-  open: "Nothing waiting. Every PR here has landed or closed.",
+  open: "Nothing waiting. Every PR here has merged or closed.",
 };
 
-// Wide enough for the biggest count in the fleet, so no count carries a blank lead tile.
+// Wide enough for the biggest count in the fleet, so counts never change width.
 const COUNT_W = String(Math.max(...FLEET.flatMap((f) => [f.merged.length, f.closed.length, f.open.length]))).length;
 
-/* "4.2D" -> "about 4.2 days"; the sample data writes "NONE YET" when nothing has merged. */
+/* "4.2D" -> "4.2 days"; the sample data writes "NONE YET" when nothing has merged. */
 function mergeTime(median: string) {
   const m = median.match(/^([\d.]+)D$/);
   return m ? `${m[1]} days` : null;
@@ -40,7 +41,7 @@ function sinceText(since: string) {
   return Number.isNaN(d.getTime()) ? since : d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
-export function Carriers() {
+export function Callsigns() {
   const ref = useRef<HTMLElement>(null);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const [sel, setSel] = useState(0);
@@ -53,6 +54,7 @@ export function Carriers() {
   const total = r.merged.length + r.closed.length + r.open.length;
   const list = r[bucket];
   const median = mergeTime(r.median);
+  const b = BUCKETS.find((x) => x.key === bucket)!;
 
   const pick = (i: number) => {
     const f = FLEET[i];
@@ -72,13 +74,13 @@ export function Carriers() {
   };
 
   return (
-    <section ref={ref} id="carriers" className={sec.section} aria-labelledby="carriers-title">
-      <SectionHead id="carriers-title" title="Every repo gets a carrier code." pict="tail">
-        Like an airline, each repo you contribute to gets a two-letter code and a coloured stripe. The tag sits on every row
-        of your board, so you can tell repos apart without reading. Pick one below to see its record.
+    <section ref={ref} id="callsigns" className={sec.section} aria-labelledby="callsigns-title">
+      <SectionHead id="callsigns-title" title="Every repo gets a callsign.">
+        Each repo you contribute to gets a short code, unique among your repos and the same everywhere it appears. It&rsquo;s
+        printed first on every strip, so you can tell repos apart without reading. Pick one to see its record.
       </SectionHead>
 
-      <div className={`${s.layout} ${sec.rise}`}>
+      <div className={s.layout}>
         <div className={s.fleet} role="tablist" aria-label="Your repos" aria-orientation="vertical" onKeyDown={onKey}>
           <p className={s.fleetHead}>
             Your repos <span className={sec.tag}>Sample data</span>
@@ -94,15 +96,14 @@ export function Carriers() {
                 }}
                 type="button"
                 role="tab"
-                id={`carrier-tab-${i}`}
+                id={`callsign-tab-${i}`}
                 aria-selected={i === sel}
-                aria-controls="carrier-record"
+                aria-controls="callsign-record"
                 tabIndex={i === sel ? 0 : -1}
                 className={s.tab}
-                style={{ "--c1": fc.livery[0], "--c2": fc.livery[1] } as CSSProperties}
                 onClick={() => pick(i)}
               >
-                <CarrierTag repo={f.repo} />
+                <Callsign repo={f.repo} />
                 <span className={s.tabName}>
                   <strong>{fc.name}</strong>
                   <span>{fc.owner}</span>
@@ -115,14 +116,11 @@ export function Carriers() {
           })}
         </div>
 
-        <div
-          className={`${sec.panel} ${s.record}`}
-          id="carrier-record"
-          role="tabpanel"
-          aria-labelledby={`carrier-tab-${sel}`}
-          style={{ "--c1": c.livery[0], "--c2": c.livery[1] } as CSSProperties}
-        >
+        <div className={`${sec.panel} ${s.record}`} id="callsign-record" role="tabpanel" aria-labelledby={`callsign-tab-${sel}`}>
           <header className={s.recordHead}>
+            <span className={s.bigCode} aria-hidden="true">
+              <PrintText value={c.code} length={2} decorative />
+            </span>
             <div className={s.recordTitle}>
               <h3>{r.repo}</h3>
               <p>
@@ -136,47 +134,53 @@ export function Carriers() {
                 )}
               </p>
             </div>
-            {/* keyed so the fin taxis in fresh each time the repo changes */}
-            <span key={r.repo} className={s.fin} aria-hidden="true">
-              <span>{c.code}</span>
-            </span>
           </header>
 
           <div className={s.bar} aria-hidden="true">
-            {BUCKETS.map((b) => (
-              <span key={b.key} data-kind={b.key} data-dim={bucket !== b.key || undefined} style={{ flexGrow: r[b.key].length || 0.0001 }} />
+            {BUCKETS.map((x) => (
+              <span key={x.key} data-kind={x.key} data-dim={bucket !== x.key || undefined} style={{ flexGrow: r[x.key].length || 0.0001 }} />
             ))}
           </div>
 
-          <div className={s.buckets} role="group" aria-label="Filter threads by outcome">
-            {BUCKETS.map((b) => (
+          <div className={s.buckets} role="group" aria-label="Filter pull requests by outcome">
+            {BUCKETS.map((x) => (
               <button
-                key={b.key}
+                key={x.key}
                 type="button"
                 className={s.bucket}
-                aria-pressed={bucket === b.key}
+                aria-pressed={bucket === x.key}
                 onClick={() => {
-                  setBucket(b.key);
-                  setFace(b.face);
+                  setBucket(x.key);
+                  setFace(x.face);
                 }}
               >
                 <span className={s.bucketLabel}>
-                  <Lamp state={b.lamp} />
-                  {b.label}
+                  <StateMark state={x.mark} />
+                  {x.label}
                 </span>
-                <FlapText value={String(r[b.key].length)} length={COUNT_W} align="right" size="34px" label={String(r[b.key].length)} opts={{ maxSteps: 6 }} />
+                <span className={s.bucketCount}>
+                  <PrintText value={String(r[x.key].length)} length={COUNT_W} align="right" label={String(r[x.key].length)} />
+                </span>
               </button>
             ))}
           </div>
 
-          <ul className={s.list} key={`${sel}-${bucket}`} aria-label={`${BUCKETS.find((b) => b.key === bucket)!.label} in ${c.name}, ${list.length} of ${total}`}>
+          <ul className={s.list} key={`${sel}-${bucket}`} aria-label={`${b.label} in ${c.name}, ${list.length} of ${total}`}>
             {list.length === 0 ? (
               <li className={s.empty}>{EMPTY[bucket]}</li>
             ) : (
               list.map((t, i) => (
                 <li key={t.num} style={{ "--i": i } as CSSProperties}>
-                  <span className={s.num}>#{t.num}</span>
-                  <span className={s.title}>{t.title}</span>
+                  <Strip
+                    size="sm"
+                    kind="pr"
+                    callsign={c.code}
+                    num={t.num}
+                    title={t.title}
+                    state={b.state}
+                    struck={bucket === "closed"}
+                    sample
+                  />
                 </li>
               ))
             )}

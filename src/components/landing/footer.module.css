@@ -1,110 +1,95 @@
 .footer {
-  padding: clamp(112px, 13vw, 200px) var(--edge) 40px;
+  margin-top: clamp(112px, 12vw, 180px);
+  padding: clamp(48px, 6vw, 80px) var(--edge) 40px;
+  border-top: 1px solid var(--rule);
+  background: var(--bay);
 }
 
-/* the same painted housing as the hero, bleeding to the edges */
-.housing {
-  margin: 0 calc(-1 * var(--edge));
-  padding: clamp(22px, 2.6vw, 40px) var(--edge);
-  background:
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 4px),
-    linear-gradient(180deg, #2a2c31 0%, #222428 55%, #1d1f22 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.09),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.55);
+.printer {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
 }
 
-.board {
-  --fgap: 5px;
-  padding: clamp(10px, 1.3vw, 20px);
-  border-radius: 6px;
-  background: #0b0c0d;
-  box-shadow:
-    inset 0 3px 8px rgba(0, 0, 0, 0.85),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.9),
-    0 1px 0 rgba(255, 255, 255, 0.08);
+/* one long strip in its holder; the message is printed on it */
+.strip {
+  max-width: 100%;
+  padding: 5px 5px 5px 14px;
+  border-radius: 8px;
+  background: var(--holder);
+  box-shadow: inset 0 1px 0 var(--holder-lip);
   cursor: text;
-  outline: none;
+}
+
+.strip:focus-visible {
+  outline-offset: 4px;
 }
 
 .wide,
 .narrow {
   display: grid;
-  gap: 8px;
-  container-type: inline-size;
-}
-
-.wide {
-  --flap-size: min(86px, calc((100cqi - 17 * 5px) / 18 / 0.66));
-}
-
-.wide :global(.flap) {
-  width: calc((100cqi - 17 * var(--fgap)) / 18);
+  gap: 2px;
+  padding: 14px 22px;
+  border-radius: 5px;
+  background: var(--strip-pr);
+  color: var(--strip-ink);
+  font-size: clamp(20px, 2.6vw, 36px);
+  line-height: 1.2;
 }
 
 .narrow {
   display: none;
-  --flap-size: min(64px, calc((100cqi - 8 * 5px) / 9 / 0.7));
 }
 
-.narrow :global(.flap) {
-  width: calc((100cqi - 8 * var(--fgap)) / 9);
-}
-
-@media (max-width: 640px) {
-  .wide {
-    display: none;
-  }
-  .narrow {
-    display: grid;
-  }
-}
-
-.board:focus-visible {
-  box-shadow:
-    inset 0 3px 8px rgba(0, 0, 0, 0.85),
-    0 0 0 3px var(--sign);
+.strip:focus-visible .wide,
+.strip:focus-visible .narrow {
+  box-shadow: inset 0 0 0 2px var(--strip-ink);
 }
 
 .hint {
-  margin-top: 16px;
-  color: var(--ink-2);
+  color: var(--ink-3);
   font-size: 14px;
 }
 
 .cols {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) auto auto;
-  gap: 32px 64px;
-  margin-top: 56px;
-  padding-top: 28px;
-  border-top: 1px solid var(--rule);
+  grid-template-columns: minmax(0, 1.2fr) auto auto;
+  align-items: start;
+  gap: 32px clamp(32px, 5vw, 80px);
+  margin-top: clamp(48px, 6vw, 72px);
+}
+
+.brand {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  color: var(--ink-2);
+  font-size: 15px;
 }
 
 .word {
-  font-family: var(--font-flap);
+  padding: 7px 11px 6px;
+  border-radius: 5px;
+  background: var(--holder);
+  color: var(--strip-pr);
+  font-family: var(--font-print);
+  font-variation-settings: var(--print-wdth);
   font-weight: 700;
-  font-size: 34px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.brand p {
-  margin-top: 6px;
-  color: var(--ink-2);
-  max-width: 40ch;
+  font-size: 18px;
+  letter-spacing: 0.02em;
+  line-height: 1;
 }
 
 .links {
   display: grid;
   gap: 8px;
-  align-content: start;
 }
 
 .links a {
   color: var(--ink-2);
-  text-decoration: none;
   font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
 }
 
 .links a:hover {
@@ -114,29 +99,35 @@
 
 .toggles {
   display: grid;
-  gap: 10px;
-  align-content: start;
+  gap: 8px;
 }
 
 .toggles button {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 0;
+  gap: 10px;
+  padding: 4px 0;
   border: 0;
   background: transparent;
   color: var(--ink-2);
   font-weight: 600;
+  font-size: 15px;
+  text-align: left;
 }
 
+.toggles button:hover {
+  color: var(--ink);
+}
+
+/* a switch is a small strip in a holder: off sits left, on slides right in strip colour */
 .switch {
   position: relative;
+  flex: none;
   width: 38px;
   height: 22px;
-  border-radius: 11px;
-  background: #2a2d32;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
-  transition: background-color 220ms var(--ease-out);
+  border-radius: 4px;
+  background: var(--holder);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
 }
 
 .switch::after {
@@ -146,38 +137,40 @@
   left: 3px;
   width: 16px;
   height: 16px;
-  border-radius: 50%;
-  background: var(--ink-2);
+  border-radius: 2px;
+  background: var(--ink-3);
   transition:
-    transform 260ms var(--ease-out),
-    background-color 220ms var(--ease-out);
-}
-
-.toggles button[aria-pressed="true"] .switch {
-  background: var(--sign);
+    transform 260ms var(--ease-slide),
+    background-color 200ms var(--ease-out);
 }
 
 .toggles button[aria-pressed="true"] .switch::after {
   transform: translateX(16px);
-  background: var(--sign-ink);
-}
-
-.toggles button:hover {
-  color: var(--ink);
+  background: var(--strip-pr);
 }
 
 .legal {
+  max-width: 80ch;
   margin-top: 40px;
   color: var(--ink-3);
   font-size: 13px;
-  max-width: 90ch;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 860px) {
   .cols {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
   }
   .brand {
     grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .wide {
+    display: none;
+  }
+  .narrow {
+    display: grid;
+    font-size: clamp(20px, 6.2vw, 30px);
   }
 }

@@ -2,17 +2,17 @@
 
 import Link from "next/link";
 import { KeyboardEvent, useMemo, useRef, useState } from "react";
-import { FlapText } from "@/components/flap/Flap";
-import { CHARSET } from "@/components/flap/engine";
+import { PrintText } from "@/components/print/PrintText";
 import { setPrefs, usePrefs } from "@/lib/prefs";
 import { useSectionFace } from "./mood";
 import s from "./footer.module.css";
 
-const COLS = 18;
+const COLS = 24;
 const ROWS = 3;
-// On phones the same message wraps onto a narrower, taller board so the tiles stay legible.
-const NCOLS = 9;
-const NROWS = 6;
+// On phones the same message wraps onto a narrower, taller strip so the print stays legible.
+const NCOLS = 12;
+const NROWS = 5;
+const PRINTABLE = /^[A-Z0-9 .,:;!?'"\-_/\\()<>^~*+=#$%&@|]$/;
 
 function wrapWords(lines: string[], cols: number, rows: number) {
   const out: string[] = [];
@@ -43,7 +43,7 @@ export function Footer({ lines }: { lines: string[] }) {
   const [typed, setTyped] = useState<string | null>(null);
   useSectionFace(ref, "(^_^)");
 
-  const rows = useMemo(() => (typed === null ? initial : chunk(typed, COLS, ROWS)), [typed, initial]);
+  const rows = useMemo(() => (typed === null ? initial.concat(Array(ROWS).fill("")).slice(0, ROWS) : chunk(typed, COLS, ROWS)), [typed, initial]);
   const narrow = useMemo(() => (typed === null ? wrapWords(initial, NCOLS, NROWS) : chunk(typed, NCOLS, NROWS)), [typed, initial]);
 
   const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -68,57 +68,60 @@ export function Footer({ lines }: { lines: string[] }) {
     }
     if (e.key.length !== 1) return;
     const ch = e.key.toUpperCase();
-    if (!CHARSET.includes(ch)) return;
+    if (!PRINTABLE.test(ch)) return;
     e.preventDefault();
     setTyped((t) => ((t ?? "") + ch).slice(0, COLS * ROWS));
   };
 
   return (
     <footer ref={ref} className={s.footer}>
-      <div className={s.housing}>
+      <div className={s.printer}>
         <div
-          className={s.board}
+          className={s.strip}
           tabIndex={0}
           role="textbox"
-          aria-label="Message board. Type to change it; Escape restores it."
+          aria-label="A strip you can print on. Type to change it; Escape restores it."
           aria-multiline="true"
           onKeyDown={onKey}
-          onBlur={() => undefined}
         >
           <div className={s.wide}>
             {rows.map((r, i) => (
-              <FlapText key={i} value={r} length={COLS} decorative introOnView={4} opts={{ stagger: 18, maxSteps: 10 }} />
+              <PrintText key={i} value={r} length={COLS} decorative introOnView introDelay={i * 240} />
             ))}
           </div>
           <div className={s.narrow}>
             {narrow.map((r, i) => (
-              <FlapText key={i} value={r} length={NCOLS} decorative introOnView={4} opts={{ stagger: 18, maxSteps: 10 }} />
+              <PrintText key={i} value={r} length={NCOLS} decorative introOnView introDelay={i * 180} />
             ))}
           </div>
         </div>
-        <p className={s.hint}>{typed === null ? "Click the board and type. Escape puts it back." : "Typing on the board. Escape puts it back."}</p>
+        <p className={s.hint}>{typed === null ? "Click the strip and type. Escape puts it back." : "Printing what you type. Escape puts it back."}</p>
       </div>
 
       <div className={s.cols}>
         <div className={s.brand}>
-          <span className={s.word}>Spool</span>
+          <span className={s.word}>SPOOL</span>
           <p>Read-only toward GitHub. Your token stays in this browser.</p>
         </div>
         <nav aria-label="Footer" className={s.links}>
-          <Link href="/board">Your board</Link>
+          <Link href="/board">Your bay</Link>
           <Link href="/board/repos">Repos</Link>
           <Link href="/board/discover">Discover</Link>
           <Link href="/board/programs">Programs</Link>
           <Link href="/board/settings">Settings</Link>
         </nav>
         <div className={s.toggles}>
+          <button type="button" aria-pressed={prefs.theme === "light"} onClick={() => setPrefs({ theme: prefs.theme === "light" ? "dark" : "light" })}>
+            <span className={s.switch} aria-hidden="true" />
+            Light theme
+          </button>
           <button type="button" aria-pressed={!prefs.motion} onClick={() => setPrefs({ motion: !prefs.motion })}>
             <span className={s.switch} aria-hidden="true" />
             Reduce motion
           </button>
           <button type="button" aria-pressed={prefs.sound} onClick={() => setPrefs({ sound: !prefs.sound })}>
             <span className={s.switch} aria-hidden="true" />
-            Flap sound
+            Printer sound
           </button>
         </div>
       </div>
