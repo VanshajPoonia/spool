@@ -117,6 +117,16 @@ GSoC moved out of the Programs card into a section of its own, interactive and d
 - [x] The ten most common tech tags are bars that grow on scroll; picking one filters this year's organisations, which you can also search by name, tech or topic, with links to each org's GSoC page and ideas list
 - [x] Phones get a vertical line that draws downward; reduced motion shows it drawn
 
+### 10. Restyle in the manner of Linear
+Asked for "subtle colours, heavily inspired by the Linear website". The strip bay's paper and holders give way to a quiet dark workspace; every feature and all copy stay.
+
+- [x] New tokens: near-black ground, grey surface steps, 1px rules, one indigo accent; status colours only as marks; Inter and Geist Mono; a light theme to match
+- [x] Threads are rows with Linear-style status circles, IDs like QR-2417, kind dots on label pills and a red-tinted silence count once stalled; groups have a header band
+- [x] Light primary buttons, outlined quiet ones, a translucent nav with the face chip and a Connect pill; section heads split title and lede with a hairline above
+- [x] The hero's bay is an app window with a breadcrumb, a clock and an activity line, lit from behind; empty "0 days" boxes are gone
+- [x] The stalled section is a view with a draggable limit in its toolbar and a silence meter on every row: the limit is a tick down the list and the bar past it turns red
+- [x] The board app follows: unread dots on the left, quiet statuses, pinned rows washed in accent; the field's planes go neutral with kind-coloured tails
+
 ---
 
 ### Known limits of this round
@@ -141,12 +151,12 @@ GSoC moved out of the Programs card into a section of its own, interactive and d
 - [ ] Due dates on your own tasks, feeding the deadline strip (item 8)
 - [ ] Plan cards in Cmd+K (item 12)
 
-### 10. Deadline reminders
+### 11. Deadline reminders
 - [ ] Follow programs (YC, each GSoC milestone, Hacktoberfest) in Settings
 - [ ] A strip on the board when a followed deadline is within 14 days
 - [ ] Browser notification at 7 days and 1 day, if notifications are on
 
-### 11. Is this repo worth contributing to?
+### 12. Is this repo worth contributing to?
 Signals on each discovered or shortlisted repo, read from public data:
 
 - [ ] Median time for maintainers to answer an outside PR (last 20 merged or closed PRs from non-members)
@@ -155,7 +165,7 @@ Signals on each discovered or shortlisted repo, read from public data:
 - [ ] Count of good first issues that are still unassigned
 - [ ] Licence
 
-### 12. More programs
+### 13. More programs
 Each one links to its own site, and shows dates only where that site publishes them in a form we can read reliably.
 
 - [ ] Outreachy
@@ -164,12 +174,12 @@ Each one links to its own site, and shows dates only where that site publishes t
 - [ ] Google Season of Docs
 - [ ] Summer of Bitcoin and other GSoC-style programs, if they publish dates
 
-### 13. Your logbook
+### 14. Your logbook
 - [ ] Merged PRs over time, repos contributed to, first and latest contribution
 - [ ] A streak measured in weeks, not days, so a quiet weekend doesn't break it
 - [ ] A downloadable image card of your year
 
-### 14. Jump anywhere (Cmd+K)
+### 15. Jump anywhere (Cmd+K)
 - [ ] Search threads, repos, saved orgs and pages from anywhere in the app
 - [ ] Shortcut-key hints for the actions that already have keys
 
@@ -192,3 +202,4 @@ Each one links to its own site, and shows dates only where that site publishes t
 ## Done
 
 - Landing redesign: page width capped at 1360px, one face (in the nav), carrier record, fresh-repo cards, countdown tickets (Oct 2026).
+- Landing in motion, led by Stripe's pacing (Oct 2026): everything after the hero moves with the scroll and rewinds when scrolled back. The plates draw on and act out their idea; a pinned product tour plays a morning in the app with a pointer, keys and five chapter bars; "How a thread becomes a row" pops out full screen and walks one evidence card per part sideways while the row builds; the field's planes fly as the page scrolls; a route diagram in the close shows reads going out to api.github.com and the write lane closed. The hero's sample day keeps its own clock, waits a second of rest before following a hovered row, and ignores fingers that are only scrolling. Reduced motion pins nothing.
