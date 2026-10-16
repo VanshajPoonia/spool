@@ -1,4 +1,5 @@
 import type { MarkState } from "@/components/kit/Kit";
+import { statusLabel } from "./format";
 import { lampFor, type Thread } from "./classify";
 import { watchStatus, type WatchedIssue, type WatchItem } from "./watch";
 
@@ -70,22 +71,11 @@ export type Card = {
   threadId: string | null;
 };
 
-const SAY: Record<string, string> = {
-  "CHANGES REQ": "Changes requested",
-  "CI FAILED": "CI failing",
-  "REVIEW ASKED": "Review asked",
-  "INCOMING PR": "Incoming PR",
-  "THEY REPLIED": "They replied",
-  "WITH AUTHOR": "With the author",
-  "IN REVIEW": "In review",
-};
-
 /* The strip speaks in printed capitals; a card speaks in sentence case. */
 function say(status: string) {
-  if (SAY[status]) return SAY[status];
   const d = status.match(/^STALLED (\d+)D$/);
   if (d) return `Quiet ${d[1]} days`;
-  return status.charAt(0) + status.slice(1).toLowerCase();
+  return statusLabel(status);
 }
 
 export type WatchInput = { key: string; item: WatchItem; issue: WatchedIssue | null | undefined };

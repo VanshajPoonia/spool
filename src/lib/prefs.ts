@@ -30,7 +30,7 @@ function apply(p: Prefs) {
   // The night shift is the default; the day shift is opt-in.
   if (p.theme === "light") html.dataset.theme = "light";
   else delete html.dataset.theme;
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", p.theme === "light" ? "#e3e7eb" : "#14181d");
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", p.theme === "light" ? "#fcfcfd" : "#08090a");
   setPrintMotion(p.motion && !reduced);
   // Sound needs a user gesture; it is only switched on from a click.
   if (!p.sound) setSound(false);

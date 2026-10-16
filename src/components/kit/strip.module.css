@@ -1,83 +1,39 @@
-/* ---------- holder ---------- */
+/* ---------- a thread row ---------- */
 
+/* On its own a row is a card; inside a group it lies flat (see .bay below). */
 .holder {
   container-type: inline-size;
   position: relative;
   display: flex;
-  flex-wrap: wrap;
   align-items: stretch;
-  gap: 4px;
   min-width: 0;
-  padding: 3px 3px 3px 9px;
-  border-radius: 5px;
-  background: var(--holder);
-  box-shadow: inset 0 1px 0 var(--holder-lip);
+  border-radius: 8px;
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule);
   list-style: none;
+  transition: background-color 140ms ease;
 }
-
-/* the holder's tab: the state, readable from across the room */
-.holder::before {
-  content: "";
-  position: absolute;
-  left: 2px;
-  top: 3px;
-  bottom: 3px;
-  width: 4px;
-  border-radius: 2px;
-  background: transparent;
-}
-
-.holder[data-state="you"]::before {
-  background: var(--move);
-}
-
-.holder[data-state="stalled"]::before {
-  background: var(--pencil);
-}
-
-.holder[data-state="done"]::before {
-  background: var(--landed);
-}
-
-.holder[data-state="them"]::before {
-  background: var(--holder-lip);
-}
-
-/* ---------- paper ---------- */
 
 .paper {
-  --title: 15px;
-  --cs: 6.4em;
-  --quietw: 4.4em;
+  --title: 14px;
+  /* the ID column's width; a list can set --row-idw so every title starts in the same place */
+  --idw: var(--row-idw, 4.8em);
   position: relative;
-  display: grid;
-  grid-template-columns: var(--cs) minmax(0, 1fr) auto auto auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   flex: 1;
   min-width: 0;
-  min-height: 50px;
+  min-height: 44px;
   margin: 0;
-  padding: 0;
+  padding: 6px 12px;
   border: 0;
-  border-radius: var(--radius-strip);
-  background: var(--strip-plain);
-  color: var(--strip-ink);
+  border-radius: inherit;
+  background: transparent;
+  color: var(--ink);
   text-align: left;
   text-decoration: none;
   font: inherit;
-  transition: transform 260ms var(--ease-slide);
-}
-
-.paper[data-kind="pr"] {
-  background: var(--strip-pr);
-}
-.paper[data-kind="issue"] {
-  background: var(--strip-issue);
-}
-.paper[data-kind="review"] {
-  background: var(--strip-review);
-}
-.paper[data-kind="talk"] {
-  background: var(--strip-talk);
 }
 
 a.paper,
@@ -85,228 +41,215 @@ button.paper {
   cursor: pointer;
 }
 
-a.paper:hover,
-button.paper:hover {
-  transform: translateX(4px);
+.holder:has(a.paper:hover),
+.holder:has(button.paper:hover) {
+  background: var(--bay-3);
 }
 
 .paper:focus-visible {
-  outline-offset: 2px;
-}
-
-.holder[data-size="sm"] .paper {
-  --title: 14px;
-  min-height: 40px;
-}
-
-.holder[data-size="lg"] .paper {
-  --title: 17px;
-  --cs: 7em;
-  min-height: 60px;
-}
-
-/* the strip coming out of the printer, at reading distance */
-.holder[data-size="xl"] {
-  padding: 5px 5px 5px 14px;
+  outline-offset: -2px;
   border-radius: 8px;
 }
 
-.holder[data-size="xl"]::before {
-  left: 4px;
-  top: 5px;
-  bottom: 5px;
-  width: 6px;
+/* ---------- status circle ---------- */
+
+.status {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--ink-3);
 }
 
-.holder[data-size="xl"] .paper {
-  --title: clamp(19px, 2vw, 26px);
-  --cs: 6.2em;
-  --quietw: 6em;
-  min-height: clamp(88px, 9vw, 116px);
-  border-radius: 5px;
+.status[data-state="you"] {
+  color: var(--move);
 }
 
-.holder[data-size="xl"] .cs {
-  font-size: clamp(15px, 1.5vw, 20px);
-  padding-left: 14px;
+.status[data-state="stalled"] {
+  color: var(--pencil);
 }
 
-.holder[data-size="xl"] .note,
-.holder[data-size="xl"] .last {
-  font-size: clamp(13px, 1.1vw, 15px);
+.status[data-state="done"] {
+  color: var(--brand);
 }
 
-.holder[data-size="xl"] .body {
-  padding: 10px 16px;
-}
-
-.holder[data-size="xl"] .kind {
-  font-size: 11px;
-}
-
-/* every box after the first is split off by a printed hairline */
-.paper > * + * {
-  border-left: 1px solid var(--strip-rule);
-}
+/* ---------- id, title, note ---------- */
 
 .cs {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-content: center;
-  column-gap: 0.4em;
-  padding: 5px 8px 5px 10px;
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
+  display: flex;
+  align-items: baseline;
+  flex: none;
+  min-width: var(--idw);
+  color: var(--ink-3);
   font-size: 13px;
-  line-height: 1.15;
-}
-
-.code {
-  font-weight: 700;
-  letter-spacing: 0.06em;
-}
-
-.num {
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
-.kind {
-  grid-column: 1 / -1;
-  margin-top: 3px;
-  color: var(--strip-ink-2);
-  font-family: var(--font-ui);
-  font-size: 10px;
-  font-weight: 700;
-  font-variation-settings: "wdth" 80;
-  letter-spacing: 0.12em;
-  white-space: nowrap;
+.num::before {
+  content: "-";
 }
 
 .body {
   display: grid;
-  align-content: center;
+  flex: 1;
   min-width: 0;
-  padding: 6px 12px;
 }
 
 .title {
   overflow: hidden;
   font-size: var(--title);
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: -0.006em;
+  font-weight: 500;
+  line-height: 1.35;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .title[data-struck] {
+  color: var(--ink-3);
   text-decoration: line-through;
-  text-decoration-color: var(--pencil);
-  text-decoration-thickness: 2px;
-}
-
-.holder[data-size="lg"] .title {
-  white-space: normal;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  text-decoration-thickness: 1px;
 }
 
 .note {
   overflow: hidden;
-  margin-top: 1px;
-  color: var(--strip-ink-2);
-  font-size: 13px;
-  line-height: 1.3;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  line-height: 1.4;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+/* ---------- label, last move, silence ---------- */
+
+.kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.kindDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--strip-plain);
+}
+
+.kind[data-kind="pr"] .kindDot {
+  background: var(--strip-pr);
+}
+
+.kind[data-kind="issue"] .kindDot {
+  background: var(--strip-issue);
+}
+
+.kind[data-kind="review"] .kindDot {
+  background: var(--strip-review);
+}
+
+.kind[data-kind="talk"] .kindDot {
+  background: var(--strip-talk);
 }
 
 .last {
   display: grid;
-  align-content: center;
   justify-items: end;
-  min-width: 6.5em;
-  padding: 5px 10px;
-  color: var(--strip-ink-2);
-  font-size: 13px;
-  line-height: 1.25;
+  flex: none;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  line-height: 1.35;
   white-space: nowrap;
 }
 
 .who {
-  max-width: 11em;
+  max-width: 12em;
   overflow: hidden;
+  color: var(--ink-2);
   text-overflow: ellipsis;
 }
 
 .age {
-  color: var(--strip-ink);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-weight: 700;
-  font-size: 13px;
-}
-
-.quiet {
-  display: grid;
-  align-content: center;
-  justify-items: center;
-  width: var(--quietw);
-  padding: 4px 6px;
-  line-height: 1;
-}
-
-.quietNum {
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-weight: 700;
-  font-size: 19px;
   font-variant-numeric: tabular-nums;
 }
 
-.holder[data-size="sm"] .quietNum {
-  font-size: 16px;
+.quiet {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  flex: none;
+  min-width: 3.4em;
+  color: var(--ink-3);
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
-.holder[data-size="lg"] .quietNum {
-  font-size: 22px;
+.quietNum {
+  color: var(--ink-2);
 }
 
-.holder[data-size="xl"] .quietNum {
-  font-size: clamp(26px, 2.6vw, 36px);
+/* past the limit: the count goes red, on a faint red tint that wipes in from the left as it crosses */
+.quiet[data-stalled] {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  padding: 2px 8px;
+  border-radius: 6px;
+  color: var(--pencil-text);
+}
+
+.quiet[data-stalled]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: color-mix(in oklab, var(--pencil) 16%, transparent);
+  animation: tint-wipe 500ms var(--ease-cubic) both;
+}
+
+@keyframes tint-wipe {
+  from {
+    clip-path: inset(0 100% 0 0 round 6px);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 6px);
+  }
+}
+
+.quiet[data-stalled] .quietNum {
+  color: var(--pencil-text);
 }
 
 .quietUnit {
-  margin-top: 4px;
-  color: var(--strip-ink-2);
-  font-size: 10px;
-  font-weight: 700;
-  font-variation-settings: "wdth" 80;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  margin-left: 1px;
 }
 
-/* answered: a graphite tick in the corner */
+/* answered: a small check after the title */
 .tick {
-  position: absolute;
-  top: 3px;
-  right: calc(var(--quietw) + 4px);
-  width: 20px;
-  height: 20px;
+  flex: none;
+  width: 16px;
+  height: 16px;
   fill: none;
-  stroke: var(--strip-ink);
-  stroke-width: 2.6;
+  stroke: var(--ink-3);
+  stroke-width: 1.7;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0.8;
-  border: 0;
 }
 
 .tick path {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: draw 420ms var(--ease-out) 120ms forwards;
+  animation: draw 380ms var(--ease-out) 100ms forwards;
 }
 
 @keyframes draw {
@@ -315,36 +258,80 @@ button.paper:hover {
   }
 }
 
+/* ---------- sizes ---------- */
+
+.holder[data-size="sm"] .paper {
+  --title: 13.5px;
+  min-height: 36px;
+  padding: 4px 10px;
+  gap: 10px;
+}
+
+.holder[data-size="lg"] .paper {
+  --title: 15px;
+  min-height: 56px;
+  padding: 8px 14px;
+}
+
+.holder[data-size="lg"] .note {
+  font-size: 13px;
+}
+
+/* the one row shown at reading distance */
+.holder[data-size="xl"] {
+  border-radius: 12px;
+}
+
+.holder[data-size="xl"] .paper {
+  --title: clamp(18px, 1.8vw, 22px);
+  --idw: 5.6em;
+  gap: 16px;
+  min-height: clamp(76px, 7vw, 92px);
+  padding: 12px 20px;
+}
+
+.holder[data-size="xl"] .status {
+  width: 20px;
+  height: 20px;
+}
+
+.holder[data-size="xl"] .cs,
+.holder[data-size="xl"] .quiet {
+  font-size: 15px;
+}
+
+.holder[data-size="xl"] .note {
+  font-size: 14px;
+}
+
+/* ---------- controls on the row ---------- */
+
 .aside {
   display: flex;
   align-items: center;
   gap: 2px;
-  padding: 0 2px;
-  color: var(--holder-ink);
+  padding: 0 6px 0 0;
+  color: var(--ink-2);
 }
 
-/* overlay controls slide out of the holder over the paper's right end */
+/* overlay controls fade in over the row's right end */
 .holder[data-aside="overlay"] .aside {
   position: absolute;
   z-index: 2;
-  top: 3px;
-  right: 3px;
-  bottom: 3px;
-  padding: 0 4px 0 10px;
-  border-radius: 0 3px 3px 0;
-  background: var(--holder);
+  top: 1px;
+  right: 1px;
+  bottom: 1px;
+  padding: 0 6px 0 28px;
+  border-radius: 0 8px 8px 0;
+  background: linear-gradient(90deg, transparent, var(--bay-3) 26px);
   opacity: 0;
-  transform: translateX(8px);
   pointer-events: none;
-  transition:
-    opacity 180ms var(--ease-out),
-    transform 220ms var(--ease-out);
+  transition: opacity 160ms var(--ease-out);
 }
 
 .holder[data-aside="overlay"]:hover .aside,
 .holder[data-aside="overlay"]:focus-within .aside {
   opacity: 1;
-  transform: none;
   pointer-events: auto;
 }
 
@@ -354,92 +341,76 @@ button.paper:hover {
   }
 }
 
-/* narrow strips fold the last-move box away; the silence box stays */
-@container (max-width: 540px) {
-  /* every size narrows here, so it has to outrank the size rules */
-  .holder[data-size] .paper {
-    --cs: minmax(3.2em, max-content);
-    --quietw: 3.8em;
+/* narrow rows keep status, id, title and silence */
+@container (max-width: 600px) {
+  .kind {
+    display: none;
   }
-  .title {
-    white-space: normal;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+}
+
+@container (max-width: 480px) {
+  .holder[data-size] .paper {
+    --idw: var(--row-idw-narrow, 0);
+    gap: 10px;
   }
   .last {
     display: none;
   }
-  .kind {
-    display: none;
-  }
   .cs {
-    grid-template-columns: 1fr;
-    padding-left: 8px;
+    font-size: 12px;
   }
 }
 
-/* ---------- bay ---------- */
+/* ---------- group ---------- */
 
 .bay {
   container-type: inline-size;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-content: start;
-  gap: 10px;
+  gap: 2px;
   min-width: 0;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 4px;
+  border-radius: 12px;
   background: var(--bay);
   box-shadow: inset 0 0 0 1px var(--rule);
 }
 
+/* the group's header band */
 .bayHead {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-height: 30px;
-  padding: 0 2px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: var(--bay-2);
 }
 
-/* the designator plate */
 .bayName {
-  padding: 4px 9px 3px;
-  border-radius: 3px;
-  background: var(--bay-3);
   color: var(--ink);
-  font-size: 13px;
-  font-weight: 800;
-  font-variation-settings: "wdth" 78;
-  letter-spacing: 0.12em;
-  line-height: 1.2;
-  text-transform: uppercase;
+  font-size: 13.5px;
+  font-weight: 500;
   white-space: nowrap;
 }
 
-.bay[data-which="you"] .bayName {
-  background: var(--move);
-  color: var(--move-ink);
-}
-
-.bay[data-which="stalled"] .bayName {
-  background: var(--pencil);
-  color: #fff;
-}
-
 .bayCount {
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-weight: 700;
-  font-size: 15px;
+  color: var(--ink-3);
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
+}
+
+.bayCount :global(.print) {
+  font-family: var(--font-ui);
+  font-weight: 500;
 }
 
 .bayHint {
   min-width: 0;
+  margin-left: auto;
   overflow: hidden;
   color: var(--ink-3);
-  font-size: 13px;
+  font-size: 12.5px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -451,13 +422,27 @@ button.paper:hover {
   margin-left: auto;
 }
 
+.bayHint + .bayTools {
+  margin-left: 0;
+}
+
 .rack {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 6px;
+  gap: 2px;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* inside a group, rows lie flat and light up on hover */
+.bay .holder {
+  background: transparent;
+  box-shadow: none;
+}
+
+.bay .holder:hover {
+  background: var(--bay-2);
 }
 
 @container (max-width: 460px) {

@@ -1,8 +1,20 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
-import { ArrowRight } from "lucide-react";
 import { carrier } from "@/lib/carriers";
 import s from "./kit.module.css";
+
+/*
+ * The arrow on an action. At rest it is a chevron; when its control is hovered or focused the shaft
+ * draws in and the head steps forward, so the arrow points the way the click goes.
+ */
+export function HoverArrow({ className }: { className?: string }) {
+  return (
+    <svg className={`${s.hoverArrow}${className ? ` ${className}` : ""}`} viewBox="0 0 10 10" aria-hidden="true">
+      <path className={s.arrowShaft} d="M0 5h7" />
+      <path className={s.arrowHead} d="M1 1l4 4-4 4" />
+    </svg>
+  );
+}
 
 /* A repo's callsign: a short code the strip printer sets, collision-free within any visible set. */
 export function Callsign({ repo, size = "md", title, code, onStrip = false }: { repo: string; size?: "sm" | "md" | "lg"; title?: string; code?: string; onStrip?: boolean }) {
@@ -62,14 +74,14 @@ type StripLinkProps = {
   className?: string;
 } & Omit<ComponentProps<typeof Link>, "href" | "className" | "children">;
 
-/* An action set as a strip in its holder: pull it and it slides out a little. */
+/* An action as a pill: light for the main way in, a quiet wash beside it. */
 export function StripLink({ href, children, icon, variant = "primary", className, ...rest }: StripLinkProps) {
   return (
     <Link href={href} className={`${s.stripLink} ${className ?? ""}`} data-variant={variant} {...rest}>
       <span className={s.stripLinkPaper}>
         <span className={s.stripLinkLabel}>{children}</span>
         <span className={s.stripLinkIcon} aria-hidden="true">
-          {icon ?? <ArrowRight size={18} strokeWidth={2.2} />}
+          {icon ?? <HoverArrow />}
         </span>
       </span>
     </Link>
@@ -90,7 +102,7 @@ export function StripButton({ children, icon, variant = "primary", className, ty
       <span className={s.stripLinkPaper}>
         <span className={s.stripLinkLabel}>{children}</span>
         <span className={s.stripLinkIcon} aria-hidden="true">
-          {icon ?? <ArrowRight size={18} strokeWidth={2.2} />}
+          {icon ?? <HoverArrow />}
         </span>
       </span>
     </button>

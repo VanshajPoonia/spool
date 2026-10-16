@@ -1,5 +1,4 @@
 import type { CSSProperties, ReactNode, Ref } from "react";
-import { PencilRing } from "./Kit";
 import s from "./strip.module.css";
 
 export type StripKind = "pr" | "issue" | "review" | "talk" | "plain";
@@ -7,11 +6,43 @@ export type StripState = "you" | "them" | "stalled" | "done" | "idle";
 
 const KIND_LABEL: Record<StripKind, string> = {
   pr: "PR",
-  issue: "ISSUE",
-  review: "REVIEW",
-  talk: "TALK",
+  issue: "Issue",
+  review: "Review",
+  talk: "Talk",
   plain: "",
 };
+
+/*
+ * A status circle, read the way Linear's are: yellow half-filled for your move, an open circle for
+ * theirs, a red square for stalled, a filled check for done, a dashed circle for anything idle.
+ */
+export function StatusIcon({ state, className }: { state: StripState; className?: string }) {
+  return (
+    <svg className={`${s.status}${className ? ` ${className}` : ""}`} data-state={state} viewBox="0 0 16 16" aria-hidden="true">
+      {state === "you" && (
+        <>
+          <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M8 3.9a4.1 4.1 0 0 1 0 8.2z" fill="currentColor" />
+        </>
+      )}
+      {state === "them" && <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" strokeWidth="1.5" />}
+      {state === "idle" && <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2.2 2.2" />}
+      {state === "stalled" && (
+        <>
+          <rect x="1.5" y="1.5" width="13" height="13" rx="3.2" fill="currentColor" />
+          <path d="M8 4.6v4.1" stroke="#fff" strokeWidth="1.7" strokeLinecap="round" />
+          <circle cx="8" cy="11.2" r="1" fill="#fff" />
+        </>
+      )}
+      {state === "done" && (
+        <>
+          <circle cx="8" cy="8" r="7" fill="currentColor" />
+          <path d="M5 8.3 7.1 10.3 11 6.2" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        </>
+      )}
+    </svg>
+  );
+}
 
 export type StripProps = {
   kind: StripKind;
@@ -34,7 +65,7 @@ export type StripProps = {
   /** a pencil line through the title: closed */
   struck?: boolean;
   size?: "sm" | "md" | "lg" | "xl";
-  /** the strip is synthetic demonstration data */
+  /** synthetic demonstration data; the section around it says so */
   sample?: boolean;
   /** extra printed box before the silence box */
   extra?: ReactNode;
@@ -58,8 +89,8 @@ export type StripProps = {
 };
 
 /*
- * A flight strip: printed paper in a black holder. The holder's tab says the state; the paper's
- * colour says what kind of thread it carries; the boxes read left to right, callsign to silence.
+ * A thread as one row: status circle, ID, title and note, a label for its kind, the last move, and the
+ * days since anyone spoke, tinted red once it stalls. Inside a group it lies flat; on its own it is a card.
  */
 export function Strip({
   kind,
@@ -95,10 +126,10 @@ export function Strip({
   const stalled = state === "stalled";
   const paper = (
     <>
+      <StatusIcon state={state} />
       <span className={s.cs}>
         <span className={s.code}>{callsign}</span>
         {num != null && <span className={s.num}>{num}</span>}
-        {KIND_LABEL[kind] && <span className={s.kind}>{sample ? `${KIND_LABEL[kind]} · SAMPLE` : KIND_LABEL[kind]}</span>}
       </span>
       <span className={s.body}>
         <span className={s.title} data-struck={struck || undefined}>
@@ -106,6 +137,12 @@ export function Strip({
         </span>
         {note && <span className={s.note}>{note}</span>}
       </span>
+      {KIND_LABEL[kind] && (
+        <span className={s.kind} data-kind={kind}>
+          <span className={s.kindDot} aria-hidden="true" />
+          {KIND_LABEL[kind]}
+        </span>
+      )}
       {(who || age) && (
         <span className={s.last}>
           {who && <span className={s.who}>{who}</span>}
@@ -113,18 +150,16 @@ export function Strip({
         </span>
       )}
       {extra}
-      {quiet != null && (
-        <span className={s.quiet} title={`${quiet} ${quiet === 1 ? "day" : "days"} since the last move`}>
-          <PencilRing on={stalled}>
-            <span className={s.quietNum}>{quietText ?? quiet}</span>
-          </PencilRing>
-          <span className={s.quietUnit}>{quiet === 1 ? "day" : "days"}</span>
-        </span>
-      )}
       {ticked && (
-        <svg className={s.tick} viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 13.5 9.2 18.4 20 5.6" pathLength={1} />
+        <svg className={s.tick} viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M3.5 8.4 6.6 11.4 12.6 4.8" pathLength={1} />
         </svg>
+      )}
+      {quiet != null && (
+        <span className={s.quiet} data-stalled={stalled || undefined} title={`${quiet} ${quiet === 1 ? "day" : "days"} since the last move`}>
+          <span className={s.quietNum}>{quietText ?? quiet}</span>
+          <span className={s.quietUnit}>d</span>
+        </span>
       )}
     </>
   );
@@ -136,6 +171,7 @@ export function Strip({
       data-state={state}
       data-size={size}
       data-aside={aside ? (asideOverlay ? "overlay" : "beside") : undefined}
+      data-sample={sample || undefined}
       style={style}
       {...data}
     >
@@ -178,13 +214,14 @@ type BayProps = {
   as?: "section" | "div";
 };
 
-/* A bay: a designated rack of strips. Your move is the one bay the console lights. */
+/* A group of threads under one status, the way a list view groups issues. */
 export function Bay({ name, which = "plain", count, hint, tools, children, empty, className, id, as = "section" }: BayProps) {
   const Tag = as;
   const headId = id ? `${id}-name` : undefined;
   return (
     <Tag className={`${s.bay}${className ? ` ${className}` : ""}`} data-which={which} id={id} aria-labelledby={headId}>
       <header className={s.bayHead}>
+        {which !== "plain" && <StatusIcon state={which} />}
         <h3 className={s.bayName} id={headId}>
           {name}
         </h3>

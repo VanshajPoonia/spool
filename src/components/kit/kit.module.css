@@ -1,21 +1,20 @@
-/* ---------- callsign ---------- */
+/* ---------- callsign: a repo's short ID ---------- */
 
 .callsign {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: none;
-  min-width: 3.1em;
-  height: 1.9em;
-  padding: 0 0.45em;
-  border-radius: 3px;
+  min-width: 2.6em;
+  height: 1.75em;
+  padding: 0 0.5em;
+  border-radius: 6px;
+  background: var(--bay-3);
   box-shadow: inset 0 0 0 1px var(--rule-2);
-  color: var(--ink);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 0.08em;
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   line-height: 1;
 }
 
@@ -24,26 +23,27 @@
 }
 
 .callsign[data-size="lg"] {
-  font-size: 16px;
+  font-size: 14px;
 }
 
-/* printed straight onto a strip: no box, just the code */
+/* set inside a row: just the ID */
 .callsign[data-on-strip] {
   min-width: 0;
   height: auto;
   padding: 0;
+  background: none;
   box-shadow: none;
-  color: var(--strip-ink);
+  color: inherit;
 }
 
-/* ---------- grease-pencil marks ---------- */
+/* ---------- marks ---------- */
 
 .mark {
   flex: none;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   fill: none;
-  stroke-width: 2.4;
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
   overflow: visible;
@@ -70,6 +70,7 @@
   stroke: var(--ink-3);
 }
 
+/* past the limit: a faint red tint behind the figure */
 .ringWrap {
   position: relative;
   display: inline-block;
@@ -77,46 +78,52 @@
 
 .ring {
   position: absolute;
-  left: -34%;
-  right: -34%;
-  top: -30%;
-  bottom: -30%;
-  width: 168%;
-  height: 160%;
+  inset: -2px -6px;
+  width: calc(100% + 12px);
+  height: calc(100% + 4px);
   max-width: none;
-  fill: none;
-  stroke: var(--pencil);
-  stroke-width: 2.6;
-  stroke-linecap: round;
-  vector-effect: non-scaling-stroke;
-  overflow: visible;
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--pencil) 18%, transparent);
   pointer-events: none;
+  z-index: -1;
+  animation: ring-wipe 500ms var(--ease-cubic) both;
 }
 
-.ring path {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: draw 620ms var(--ease-out) 240ms forwards;
-}
-
-@keyframes draw {
+@keyframes ring-wipe {
+  from {
+    clip-path: inset(0 100% 0 0 round 6px);
+  }
   to {
-    stroke-dashoffset: 0;
+    clip-path: inset(0 0 0 0 round 6px);
   }
 }
 
-/* ---------- a strip used as an action ---------- */
+.ring path {
+  display: none;
+}
 
+.ringWrap:has(.ring) {
+  color: var(--pencil);
+  z-index: 0;
+}
+
+/* ---------- actions ---------- */
+
+/* the main action: a light pill on the dark ground, the same shape as the nav's Connect */
 .stripLink {
   display: inline-flex;
-  padding: 3px 3px 3px 9px;
-  border-radius: 5px;
-  background: var(--holder);
-  box-shadow:
-    inset 0 1px 0 var(--holder-lip),
-    0 10px 18px -14px rgba(0, 0, 0, 0.8);
-  color: var(--strip-ink);
+  min-height: 40px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--console);
   text-decoration: none;
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.07),
+    0 3px 2px rgba(0, 0, 0, 0.04);
+  transition:
+    background-color var(--dur-quick) var(--ease-quad),
+    box-shadow var(--dur-quick) var(--ease-quad),
+    transform var(--dur-hover) var(--ease-quad);
 }
 
 .stripLinkPaper {
@@ -124,16 +131,11 @@
   flex: 1;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  min-height: 52px;
-  padding: 0 8px 0 18px;
-  border-radius: var(--radius-strip);
-  background: var(--strip-pr);
-  font-weight: 700;
-  font-size: 17px;
-  font-variation-settings: "wdth" 104;
-  letter-spacing: -0.005em;
-  transition: transform 260ms var(--ease-slide);
+  gap: 9px;
+  padding: 0 17px 0 19px;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 .stripLinkLabel {
@@ -143,36 +145,65 @@
 .stripLinkIcon {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  border-left: 1px solid var(--strip-rule);
 }
 
-.stripLink:hover .stripLinkPaper {
-  transform: translateX(6px);
+/* an icon passed in place of the arrow sits a step quieter than the label */
+.stripLinkIcon > svg:not(.hoverArrow) {
+  width: 16px;
+  height: 16px;
+  opacity: 0.75;
 }
 
-.stripLink:active .stripLinkPaper {
-  transform: translateX(2px);
+.stripLink:hover {
+  background: color-mix(in oklab, var(--ink) 88%, var(--console));
 }
 
-/* an empty holder: the quiet action */
+/* a press reads as a press */
+.stripLink:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* the quiet action: a 5% wash with a lit top edge */
 .stripLink[data-variant="quiet"] {
-  background: transparent;
-  box-shadow: inset 0 0 0 1px var(--rule-2);
+  background: var(--quiet-bg);
+  box-shadow: var(--quiet-ring);
   color: var(--ink);
 }
 
-.stripLink[data-variant="quiet"] .stripLinkPaper {
-  background: transparent;
-}
-
-.stripLink[data-variant="quiet"] .stripLinkIcon {
-  border-left-color: var(--rule-2);
-}
-
 .stripLink[data-variant="quiet"]:hover {
-  background: var(--bay-2);
+  background: var(--quiet-bg-hover);
+}
+
+/* ---------- the hover arrow ----------
+   A chevron at rest; on hover or focus the shaft fades in and the head steps 3px, making an arrow. */
+.hoverArrow {
+  width: 10px;
+  height: 10px;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.arrowShaft {
+  opacity: 0;
+  transition: opacity var(--dur-move) var(--ease-quart);
+}
+
+.arrowHead {
+  transition: transform var(--dur-move) var(--ease-quart);
+}
+
+:where(a, button):hover:not(:disabled) .arrowShaft,
+:where(a, button):focus-visible .arrowShaft {
+  opacity: 1;
+}
+
+:where(a, button):hover:not(:disabled) .arrowHead,
+:where(a, button):focus-visible .arrowHead {
+  transform: translateX(3px);
 }
 
 /* as a button */
@@ -187,14 +218,9 @@ button.stripLink:disabled {
   cursor: default;
   background: var(--bay-3);
   box-shadow: inset 0 0 0 1px var(--rule-2);
-}
-
-button.stripLink:disabled .stripLinkPaper {
-  background: var(--bay-2);
   color: var(--ink-3);
-  transform: none;
 }
 
 button.stripLink:disabled .stripLinkIcon {
-  border-left-color: var(--rule-2);
+  transform: none;
 }

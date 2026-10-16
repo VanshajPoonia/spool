@@ -1,94 +1,132 @@
-/* Spool: the flight strip bay.
-   Every thread is a printed strip in a holder; bays say whose move it is.
-   Dark console by default (the night shift), a light day shift on request. */
+/* Spool: a quiet dark workspace in the manner of Linear.
+   Near-black ground, hairline surfaces, white type; colour only where it carries meaning:
+   a status circle, a label dot, a count past its limit. Dark by default, light on request. */
 
 :root {
-  /* console and bays */
-  --console: #14181d;
-  --bay: #1a1f26;
-  --bay-2: #212831;
-  --bay-3: #2a323c;
-  --rule: #2b333d;
-  --rule-2: #3b4551;
+  /* surfaces */
+  --console: #08090a;
+  --bay: #0f1011;
+  --bay-2: #151618;
+  --bay-3: #1c1d20;
+  --surface-sel: #232428;
+  --rule: #202226;
+  --rule-2: #2c2e33;
 
-  /* ink on the console */
-  --ink: #eef1f3;
-  --ink-2: #b3bcc6;
-  --ink-3: #8b96a2;
+  /* type */
+  --ink: #f7f8f8;
+  /* the second voice: ledes and statements sit between the title and the notes */
+  --ink-soft: #c9ced6;
+  --ink-2: #9ca3ae;
+  --ink-3: #7d838d;
 
-  /* strip holders: dark plastic in both shifts */
-  --holder: #0c0f12;
-  --holder-lip: #303843;
-  --holder-ink: #c3ccd5;
+  /* the one interactive accent */
+  --accent: #7170ff;
+  --brand: #5e6ad2;
+  --brand-ink: #ffffff;
 
-  /* strips: printed paper, coloured by what kind of thread they carry */
-  --strip-pr: #f1dfa6;
-  --strip-issue: #b6d3f0;
-  --strip-review: #f3c1cd;
-  --strip-talk: #c5e5c4;
-  --strip-plain: #e6eaee;
-  --strip-ink: #15181c;
-  --strip-ink-2: #45474a;
-  --strip-rule: rgba(21, 24, 28, 0.22);
+  /* status: your move, stalled, done or approved, problems */
+  --move: #f2c94c;
+  --move-ink: #1a1400;
+  /* text set in a status colour: the same hue, darkened in light theme to hold 4.5:1 on its tint */
+  --move-text: var(--move);
+  --pencil-text: var(--pencil);
+  --pencil: #eb5757;
+  --alert: #f16a6a;
+  --landed: #4cb782;
+  --focus: #7170ff;
 
-  /* your move: the one bright signal on the console */
-  --move: #ffb21e;
-  --move-ink: #1d1404;
-  --focus: #ffb21e;
+  /* thread kinds, shown as label dots and tints */
+  --strip-pr: #9b8afb;
+  --strip-issue: #4ea7fc;
+  --strip-review: #f087b5;
+  --strip-talk: #4cb782;
+  --strip-plain: #8a8f98;
 
-  /* grease pencil */
-  --pencil: #d0352a;
-  --alert: #ff7c6d;
-  --landed: #6fd59a;
+  /* older names, kept as aliases for the surfaces that used them */
+  --strip-ink: var(--ink);
+  --strip-ink-2: var(--ink-2);
+  --strip-rule: var(--rule);
+  --holder: #151618;
+  --holder-lip: rgba(255, 255, 255, 0.07);
+  --holder-ink: var(--ink-2);
 
-  --radius: 6px;
-  --radius-strip: 3px;
+  --radius: 8px;
+  --radius-strip: 6px;
+  --glass: rgba(8, 9, 10, 0.72);
+  --lift: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 24px 48px -24px rgba(0, 0, 0, 0.9);
 
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* motion: one set of curves, each with a job */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* confident arrivals: entrances, reveals */
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-slide: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-slide: cubic-bezier(0.22, 1, 0.36, 1); /* a row changing groups */
+  --ease-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* hover colour and fills, 100 to 160ms */
+  --ease-quart: cubic-bezier(0.25, 1, 0.5, 1); /* controls that move: the hover arrow, pills */
+  --ease-cubic: cubic-bezier(0.215, 0.61, 0.355, 1); /* wipes and flashes */
+  --dur-hover: 100ms;
+  --dur-quick: 160ms;
+  --dur-move: 300ms;
 
-  --font-ui: var(--font-archivo), "Archivo", system-ui, sans-serif;
-  --font-print: var(--font-martian), "Martian Mono", ui-monospace, monospace;
-  /* the printer runs the face condensed */
-  --print-wdth: "wdth" 78;
+  /* the quiet pill: a 5% wash with a lit top edge, set on a dark ring */
+  --quiet-bg: color-mix(in oklab, var(--ink) 5%, transparent);
+  --quiet-bg-hover: color-mix(in oklab, var(--ink) 9%, transparent);
+  --quiet-ring:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.6),
+    0 4px 4px rgba(0, 0, 0, 0.1);
+  /* the edge a panel shows where the pointer is */
+  --shine: color-mix(in oklab, var(--ink) 34%, transparent);
+
+  --font-ui: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-print: var(--font-geist-mono), "Geist Mono", ui-monospace, monospace;
+  --print-wdth: normal;
 
   --gutter: clamp(20px, 4vw, 64px);
   /* landing content holds to one measure, centred on wide screens */
-  --page: 1320px;
+  --page: 1280px;
   --edge: max(var(--gutter), calc((100vw - var(--page)) / 2));
   color-scheme: dark;
 }
 
-/* the day shift */
+/* light */
 :root[data-theme="light"] {
-  --console: #e3e7eb;
-  --bay: #f3f5f7;
-  --bay-2: #e9edf1;
-  --bay-3: #dce2e8;
-  --rule: #c8d0d8;
-  --rule-2: #aeb8c3;
+  --console: #fcfcfd;
+  --bay: #ffffff;
+  --bay-2: #f6f7f8;
+  --bay-3: #eef0f2;
+  --surface-sel: #e9ebee;
+  --rule: #e8eaed;
+  --rule-2: #d9dce0;
 
-  --ink: #13171c;
-  --ink-2: #434d58;
-  --ink-3: #5a6571;
+  --ink: #0e0f11;
+  --ink-soft: #33373e;
+  --ink-2: #4c515a;
+  --ink-3: #6b7079;
 
-  --holder: #283039;
-  --holder-lip: #4a5562;
+  --accent: #5e6ad2;
+  --brand: #5e6ad2;
 
-  --strip-pr: #f0d98e;
-  --strip-issue: #a4c8ec;
-  --strip-review: #f1b3c3;
-  --strip-talk: #b2dcb1;
-  --strip-plain: #ffffff;
-
-  --move: #ffb21e;
-  --move-ink: #1d1404;
-  --focus: #9c5a00;
-
-  --pencil: #c62d22;
-  --alert: #b8291f;
+  --move: #d29b00;
+  --move-ink: #1a1400;
+  --move-text: #7a5a00;
+  --pencil: #d63b3b;
+  --pencil-text: #b02525;
+  --alert: #c23434;
   --landed: #16804a;
+  --focus: #5e6ad2;
+
+  --strip-pr: #7c66f0;
+  --strip-issue: #2f8de4;
+  --strip-review: #dc5b94;
+  --strip-talk: #2f9a63;
+  --strip-plain: #8a8f98;
+
+  --holder: #f6f7f8;
+  --holder-lip: rgba(0, 0, 0, 0.06);
+  --glass: rgba(252, 252, 253, 0.78);
+  --lift: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 24px 48px -28px rgba(20, 24, 40, 0.25);
+  --quiet-bg: rgba(255, 255, 255, 0.7);
+  --quiet-bg-hover: #ffffff;
+  --quiet-ring: inset 0 0 0 1px var(--rule-2), 0 1px 2px rgba(20, 24, 40, 0.05);
+  --shine: color-mix(in oklab, var(--ink) 26%, transparent);
   color-scheme: light;
 }
 
@@ -116,14 +154,16 @@ body {
   font-family: var(--font-ui);
   font-size: 16px;
   line-height: 1.5;
+  letter-spacing: -0.011em;
+  font-feature-settings: "cv11", "ss01";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: clip;
 }
 
 ::selection {
-  background: var(--move);
-  color: var(--move-ink);
+  background: color-mix(in oklab, var(--accent) 40%, transparent);
+  color: var(--ink);
 }
 
 ::-webkit-scrollbar {
@@ -162,7 +202,7 @@ button {
 
 input,
 textarea {
-  caret-color: var(--move);
+  caret-color: var(--accent);
 }
 
 ::placeholder {
@@ -173,7 +213,7 @@ textarea {
 :focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 img,
@@ -214,9 +254,9 @@ p {
 
 kbd {
   padding: 2px 6px;
-  border-radius: 3px;
+  border-radius: 4px;
   background: var(--bay-3);
-  box-shadow: inset 0 -1px 0 var(--rule-2);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
   color: var(--ink-2);
   font-family: var(--font-print);
   font-variation-settings: var(--print-wdth);
@@ -241,9 +281,9 @@ kbd {
   display: inline-block;
   font-family: var(--font-print);
   font-variation-settings: var(--print-wdth);
-  font-weight: 700;
+  font-weight: 500;
   white-space: pre;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   font-variant-numeric: tabular-nums;
 }
 
@@ -260,7 +300,49 @@ kbd {
   color: var(--ink-3);
 }
 
-/* grease pencil marks draw on once, the way a controller makes them */
+/* ---------- a lit edge ----------
+   A panel's hairline brightens where the pointer is, and only there: a light on the rim, not a glow.
+   <Shine /> writes --mx and --my and sets data-lit while the pointer is over the panel. */
+[data-shine]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 0%), var(--shine), transparent 72%);
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  opacity: 0;
+  transition: opacity var(--dur-move) var(--ease-quad);
+  pointer-events: none;
+}
+
+[data-shine][data-lit]::after {
+  opacity: 1;
+}
+
+/* ---------- work in progress ----------
+   Text that is still waiting on something (a search, a token check) carries a slow highlight across it,
+   so the wait reads as work. It settles to plain text when motion is off. */
+.shimmer {
+  background: linear-gradient(90deg, currentColor 0%, currentColor 38%, var(--ink) 50%, currentColor 62%, currentColor 100%) 0 0 / 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2.2s linear infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+/* marks draw on once */
 @keyframes pencil-draw {
   from {
     stroke-dashoffset: var(--len, 120);
@@ -270,13 +352,17 @@ kbd {
   }
 }
 
+/* Reduced motion or the motion switch settles everything at once. Delays go too: a staggered piece would
+   otherwise sit in its first, hidden frame until its turn came. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
     scroll-behavior: auto !important;
   }
 }
@@ -285,6 +371,8 @@ html[data-motion="off"] *,
 html[data-motion="off"] *::before,
 html[data-motion="off"] *::after {
   animation-duration: 0.01ms !important;
+  animation-delay: 0s !important;
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
+  transition-delay: 0s !important;
 }
