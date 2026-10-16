@@ -37,8 +37,8 @@ function Countdown({ label, days, sub, href }: { label: string; days: number | n
     <div className={s.cd}>
       <span className={s.cdLabel}>{label}</span>
       <div className={s.cdRow}>
-        <PrintText value={days === null ? "--" : String(Math.max(0, days))} length={3} align="right" style={{ fontSize: "29px" }} intro label={days === null ? "" : `${days} days`} />
-        <span className={s.cdUnit}>DAYS</span>
+        <PrintText value={days === null ? "--" : String(Math.max(0, days))} length={3} intro label={days === null ? "" : `${days} days`} />
+        <span className={s.cdUnit}>{days === 1 ? "day" : "days"}</span>
       </div>
       <span className={s.cdSub}>
         {sub}
@@ -221,25 +221,28 @@ export function ProgramsView({ data }: { data: Programs }) {
                 Counting your own PRs needs GitHub. <Link href="/board/settings">Connect a read-only token</Link> and they show up here.
               </p>
             ) : (
-              !oct && !octErr && <div className={p.loading}><PrintText value="COUNTING" length={8} style={{ fontSize: "17px" }} intro decorative /></div>
+              !oct && !octErr && (
+                <div className={p.loading}>
+                  <span className="shimmer">Counting your October PRs…</span>
+                </div>
+              )
             )}
             {oct && (
               <>
-                <div className={s.octCounts}>
+                <p className={s.octCounts}>
                   {(
                     [
-                      ["Opened", oct.total, undefined],
-                      ["Merged", oct.merged, "go"],
-                      ["Open", oct.open, undefined],
-                      ["Closed", oct.closed, "stop"],
+                      ["opened", oct.total, undefined],
+                      ["merged", oct.merged, "go"],
+                      ["open", oct.open, undefined],
+                      ["closed", oct.closed, "stop"],
                     ] as [string, number, "go" | "stop" | undefined][]
                   ).map(([l, n, tone]) => (
-                    <div key={l}>
-                      <span>{l}</span>
-                      <PrintText value={String(n)} length={2} align="right" style={{ fontSize: "22px" }} tone={tone} intro />
-                    </div>
+                    <span key={l}>
+                      <strong data-tone={tone}>{n}</strong> {l}
+                    </span>
                   ))}
-                </div>
+                </p>
                 <ul className={p.list}>
                   {oct.items.slice(0, 12).map((i) => (
                     <li key={i.id} className={s.octItem} data-state={i.state}>

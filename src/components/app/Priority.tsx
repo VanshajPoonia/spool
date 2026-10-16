@@ -6,11 +6,30 @@ import { PRIOS, type Prio } from "@/lib/plan";
 import { setPrio, type PlanStore } from "@/lib/store";
 import s from "./priority.module.css";
 
-export function PriorityTag({ p, full }: { p: Prio; full?: boolean }) {
+/* Priority as Linear draws it: three bars, as many lit as the priority is high. Grey, never a fill. */
+export function PriorityTag({ p, full }: { p: Prio | null; full?: boolean }) {
+  // no priority: three short dashes in the same slot, as Linear draws it, so titles still line up
+  // and the mark can't be read as a low level
+  if (p === null) {
+    return (
+      <span className={s.tag} data-p="none" title="No priority">
+        <svg className={s.bars} viewBox="0 0 16 16" aria-hidden="true">
+          {[0, 1, 2].map((i) => (
+            <rect key={i} x={1.5 + i * 4.75} y="7.25" width="3.5" height="1.5" rx="0.75" />
+          ))}
+        </svg>
+      </span>
+    );
+  }
+  const lit = 4 - p;
   return (
     <span className={s.tag} data-p={p} title={`${PRIOS[p].short} ${PRIOS[p].label}: ${PRIOS[p].hint}`}>
-      {PRIOS[p].short}
-      {full && <span className={s.word}>{PRIOS[p].label}</span>}
+      <svg className={s.bars} viewBox="0 0 16 16" aria-hidden="true">
+        {[0, 1, 2].map((i) => (
+          <rect key={i} x={2 + i * 4.5} y={10 - i * 3.5} width="3" height={4 + i * 3.5} rx="1" data-lit={i < lit || undefined} />
+        ))}
+      </svg>
+      <span className={full ? s.word : "sr-only"}>{full ? PRIOS[p].label : `${PRIOS[p].short} ${PRIOS[p].label}`}</span>
     </span>
   );
 }

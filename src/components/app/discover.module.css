@@ -26,11 +26,18 @@
 
 .matched [data-m] {
   color: var(--ink-2);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .stars {
   display: inline-flex;
+}
+
+/* star counts are figures in a row: tabular Inter, not the printer's face */
+.stars :global(.print) {
+  font-family: var(--font-ui);
+  color: var(--ink-2);
+  font-weight: 500;
 }
 
 .comments {
@@ -38,9 +45,8 @@
   align-items: center;
   gap: 6px;
   color: var(--ink-3);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-size: 13px;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
 }
 
 .short {
@@ -55,25 +61,27 @@
 .short li {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 4px 4px 6px;
-  border-radius: 4px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  gap: 6px;
+  height: 32px;
+  padding: 0 2px 0 6px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
 }
 
 .short a {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   color: var(--ink);
-  font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
   text-decoration: none;
 }
 
 .short a:hover {
   text-decoration: underline;
+  text-decoration-color: var(--rule-2);
+  text-underline-offset: 3px;
 }
 
 .short button {

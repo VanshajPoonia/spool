@@ -5,6 +5,7 @@ import { ArrowUpRight, BellOff, Clock, Pin, PinOff } from "lucide-react";
 import { StateMark } from "@/components/kit/Kit";
 import { Strip, type StripKind, type StripState } from "@/components/kit/Strip";
 import { carrier } from "@/lib/carriers";
+import { statusLabel } from "@/lib/format";
 import { ago, type Thread } from "@/lib/classify";
 import { threadKey, type Prio } from "@/lib/plan";
 import { snooze, togglePin, type PlanStore } from "@/lib/store";
@@ -126,7 +127,7 @@ export const ThreadRow = memo(function ThreadRow({ t, code, now, fresh, pinned, 
       title={
         <>
           {pinned && <Pin size={13} className={s.pinMark} aria-hidden="true" />}
-          {prio && <PriorityTag p={prio} />}
+          <PriorityTag p={prio} />
           {t.title}
         </>
       }
@@ -134,14 +135,14 @@ export const ThreadRow = memo(function ThreadRow({ t, code, now, fresh, pinned, 
         <>
           <span className={s.status}>
             <StateMark state={t.tone ?? "idle"} />
-            {t.status}
+            {statusLabel(t.status)}
           </span>
           {note ? `Note: ${note}` : t.reason}
         </>
       }
       who={t.lastActor ? `@${t.lastActor}` : undefined}
       age={now ? ago(t.lastAt, now) : undefined}
-      quiet={t.next === "done" ? null : t.quietDays}
+      quiet={t.next === "done" || t.quietDays < 1 ? null : t.quietDays}
       state={stripState(t)}
       struck={t.state === "closed"}
       onClick={() => onSelect(t)}

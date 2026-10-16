@@ -1,18 +1,58 @@
+/* The bay, as a Linear list view: a head with live counts, a view bar of filters, then every group in
+   one column, flat on the panel, each opened by its header band. */
 .page {
-  padding: 24px var(--gutter) 80px;
+  padding: 0 28px 80px;
 }
 
 @media (min-width: 1500px) {
   .page[data-detail] {
-    padding-right: calc(var(--gutter) + 512px);
+    padding-right: calc(28px + 512px);
   }
 }
+
+.head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  margin: 0 -28px;
+  padding: 20px 28px 16px;
+}
+
+.h1 {
+  font-size: 20px;
+  font-weight: 510;
+  line-height: 1.2;
+  letter-spacing: -0.016em;
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  color: var(--ink-3);
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.summary [data-k="stalled"] strong {
+  color: var(--pencil);
+}
+
+/* ---------- the view bar ---------- */
 
 .top {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin: 0 -28px 20px;
+  padding: 0 28px 14px;
+  border-bottom: 1px solid var(--rule);
 }
 
 .top > * {
@@ -23,24 +63,27 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .search {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 1 1 280px;
-  height: 40px;
-  padding: 0 8px 0 12px;
-  border-radius: 4px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  flex: 1 1 260px;
+  height: 32px;
+  padding: 0 6px 0 10px;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
   color: var(--ink-3);
+  transition: box-shadow var(--dur-quick) var(--ease-quad);
 }
 
 .search:focus-within {
-  box-shadow: inset 0 0 0 2px var(--focus);
+  box-shadow:
+    inset 0 0 0 1px var(--accent),
+    0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
 }
 
 .search input {
@@ -50,6 +93,7 @@
   border: 0;
   background: transparent;
   color: var(--ink);
+  font-size: 13.5px;
   outline: none;
 }
 
@@ -57,23 +101,32 @@
   color: var(--ink-3);
 }
 
+.search kbd {
+  padding: 1px 6px;
+  font-size: 11px;
+}
+
+/* a segmented control: the picked segment is a raised chip */
 .seg {
   display: flex;
-  padding: 3px;
-  border-radius: 5px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
 }
 
 .seg button {
-  height: 34px;
-  padding: 0 12px;
+  height: 26px;
+  padding: 0 10px;
   border: 0;
-  border-radius: 3px;
+  border-radius: 6px;
   background: transparent;
   color: var(--ink-2);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
+  transition:
+    background-color var(--dur-hover) var(--ease-quad),
+    color var(--dur-hover) var(--ease-quad);
 }
 
 .seg button:hover {
@@ -81,154 +134,160 @@
 }
 
 .seg button[aria-pressed="true"] {
-  background: var(--strip-plain);
-  color: var(--strip-ink);
+  background: var(--surface-sel);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
 }
 
-/* show-only toggles: the board's two alarms, each with its count */
+/* show-only toggles: the board's two alarms, each with its mark and count */
 .quick {
   display: flex;
   gap: 6px;
 }
 
-.quick button {
+.quick button,
+.tool {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 40px;
-  padding: 0 8px 0 12px;
+  gap: 7px;
+  height: 32px;
+  padding: 0 10px 0 11px;
   border: 0;
-  border-radius: 4px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
   color: var(--ink-2);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
   transition:
-    color 200ms var(--ease-out),
-    background-color 200ms var(--ease-out),
-    box-shadow 200ms var(--ease-out);
+    color var(--dur-hover) var(--ease-quad),
+    background-color var(--dur-hover) var(--ease-quad),
+    box-shadow var(--dur-hover) var(--ease-quad);
 }
 
-.quick button:hover:not(:disabled) {
+.quick button:hover:not(:disabled),
+.tool:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--ink) 5%, transparent);
   color: var(--ink);
-  background: var(--bay-3);
 }
 
 .quick button[aria-pressed="true"] {
+  background: var(--surface-sel);
+  box-shadow: inset 0 0 0 1px var(--ink-3);
   color: var(--ink);
-  background: var(--bay-3);
-  box-shadow: inset 0 0 0 2px var(--ink-2);
 }
 
-.quick button:disabled {
-  opacity: 0.55;
+.quick button:disabled,
+.tool:disabled {
+  opacity: 0.45;
   cursor: default;
 }
 
+.quick :global(.print) {
+  font-family: var(--font-ui);
+  font-weight: 500;
+}
+
 .quickLamp {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 .quickLamp[data-k="delayed"] {
   background: var(--pencil);
-  border-radius: 1px;
+  border-radius: 2px;
 }
 
 .quickLamp[data-k="new"] {
-  background: var(--move);
+  background: var(--accent);
   border-radius: 50%;
+}
+
+.tool svg {
+  color: var(--ink-3);
 }
 
 .order {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 30px;
-  padding: 0 10px;
+  height: 26px;
+  padding: 0 9px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 6px;
   background: transparent;
-  box-shadow: inset 0 0 0 1px var(--rule);
-  color: var(--ink-2);
-  font-size: 13px;
-  font-weight: 600;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  font-weight: 500;
   white-space: nowrap;
+  transition:
+    background-color var(--dur-hover) var(--ease-quad),
+    color var(--dur-hover) var(--ease-quad);
 }
 
 .order:hover {
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
   color: var(--ink);
-  background: var(--bay-3);
 }
 
-.tool {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 40px;
-  padding: 0 12px;
-  border: 0;
-  border-radius: 4px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
-  color: var(--ink-2);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.tool:hover:not(:disabled) {
-  color: var(--ink);
-  background: var(--bay-3);
-}
-
-.tool:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
+/* repo filters: the callsign, the name and how many threads live there */
 .carriers {
   position: relative;
   display: flex;
   max-width: 100%;
   gap: 6px;
   overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
 }
 
 .carriers button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   flex: none;
-  height: 34px;
-  padding: 0 10px 0 6px;
+  height: 28px;
+  padding: 0 10px 0 5px;
   border: 0;
-  border-radius: 4px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
   color: var(--ink-2);
-  font-size: 13px;
+  font-size: 12.5px;
+  transition:
+    background-color var(--dur-hover) var(--ease-quad),
+    color var(--dur-hover) var(--ease-quad);
 }
 
 .carriers button:hover {
+  background: color-mix(in oklab, var(--ink) 5%, transparent);
   color: var(--ink);
 }
 
 .carriers button[aria-pressed="true"] {
-  box-shadow: inset 0 0 0 2px var(--ink-2);
+  background: var(--surface-sel);
+  box-shadow: inset 0 0 0 1px var(--ink-3);
   color: var(--ink);
 }
 
-.carrierName {
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
+.carrierCode {
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
+  color: var(--ink-2);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .carrierCount {
   color: var(--ink-3);
-  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .help {
@@ -236,10 +295,7 @@
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 8px 20px;
   margin: 0;
-  padding: 16px;
-  border-radius: 8px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  padding: 14px 0 2px;
 }
 
 .help div {
@@ -251,94 +307,107 @@
 .help dd {
   margin: 0;
   color: var(--ink-2);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .error {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   margin-bottom: 20px;
-  padding: 12px 14px;
-  border-radius: 8px;
-  background: color-mix(in oklab, var(--pencil) 14%, var(--bay-2));
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--pencil) 50%, transparent);
+  padding: 10px 10px 10px 12px;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--alert) 8%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--alert) 32%, transparent);
 }
 
 .errorFace {
   flex: none;
-  padding: 6px 9px;
-  border-radius: 4px;
-  background: var(--holder);
-  color: var(--strip-plain);
-  font-size: 16px;
+  padding: 4px 7px 3px;
+  border-radius: 6px;
+  background: var(--bay-3);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+  font-size: 12px;
   line-height: 1;
 }
 
 .error p {
   flex: 1;
   color: var(--ink);
+  font-size: 13.5px;
 }
 
 .error button {
-  height: 36px;
+  height: 30px;
   padding: 0 14px;
   border: 0;
-  border-radius: 4px;
-  background: var(--strip-plain);
-  box-shadow: 0 0 0 2px var(--holder);
-  color: var(--strip-ink);
-  font-weight: 700;
+  border-radius: 999px;
+  background: var(--quiet-bg);
+  box-shadow: var(--quiet-ring);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
 }
 
-/* first load: a strip feeding through the printer */
+/* first load: the face watching while Spool reads GitHub */
 .loader {
   display: grid;
   place-items: center;
-  min-height: 40vh;
+  align-content: center;
+  gap: 14px;
+  min-height: 46vh;
+  color: var(--ink-3);
+  font-size: 14px;
 }
 
-.loaderStrip {
-  padding: 14px 22px 13px;
-  border-radius: 5px;
-  background: var(--strip-pr);
-  box-shadow: 0 0 0 4px var(--holder);
-  color: var(--strip-ink);
-  font-size: clamp(22px, 3vw, 34px);
+.loaderFace {
+  padding: 5px 9px 4px;
+  border-radius: 7px;
+  background: var(--bay-3);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+  font-size: 15px;
   line-height: 1;
 }
 
-.columns {
+/* ---------- groups: one column, flat on the panel ---------- */
+
+.columns,
+.lower {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  align-items: start;
+  gap: 18px;
 }
 
 .lower {
-  display: grid;
-  gap: 12px;
-  margin-top: 12px;
+  margin-top: 18px;
 }
 
 .group {
   min-width: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .collapse {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 6px;
   background: transparent;
-  color: var(--ink-2);
-  transition: transform 260ms var(--ease-out);
+  color: var(--ink-3);
+  transition:
+    transform 260ms var(--ease-out),
+    background-color var(--dur-hover) var(--ease-quad),
+    color var(--dur-hover) var(--ease-quad);
 }
 
 .collapse:hover {
-  background: var(--bay-3);
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
   color: var(--ink);
 }
 
@@ -347,49 +416,52 @@
 }
 
 .empty {
-  padding: 12px 4px;
+  padding: 12px 14px;
   color: var(--ink-3);
-  font-size: 15px;
+  font-size: 13.5px;
 }
 
 .rows {
   display: grid;
-  gap: 6px;
+  gap: 1px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-/* a strip on the board: new since you last looked, selected, or dimmed while another is open */
+/* a row on the board: new since you last looked, selected, or dimmed while another is open.
+   The ID column is wide enough for the longest callsign and number, so titles line up. */
 .row {
+  --row-idw: 5.9em;
+  --row-idw-narrow: 4.9em;
   transition:
-    opacity 200ms var(--ease-out),
-    box-shadow 200ms var(--ease-out);
+    opacity var(--dur-quick) var(--ease-quad),
+    background-color var(--dur-hover) var(--ease-quad),
+    box-shadow var(--dur-quick) var(--ease-quad);
 }
 
-/* new since you last looked: a dot on the holder's corner */
+/* new since you last looked: an unread dot at the row's left edge */
 .row[data-fresh]::after {
   content: "";
   position: absolute;
   z-index: 3;
-  top: -4px;
-  right: -4px;
-  width: 11px;
-  height: 11px;
+  top: 50%;
+  left: 2px;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
   border-radius: 50%;
-  background: var(--move);
-  box-shadow: 0 0 0 2px var(--bay);
+  background: var(--accent);
 }
 
 .row[data-selected] {
-  box-shadow:
-    inset 0 1px 0 var(--holder-lip),
-    0 0 0 2px var(--move);
+  background: var(--bay-3);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
 }
 
-/* pinned: the strip is cocked, pushed along its holder the way a controller flags one */
-.row[data-pinned] > :first-child {
-  margin-left: 14px;
+/* pinned: a pin before the title, and a faint accent wash */
+.row[data-pinned] {
+  background: color-mix(in oklab, var(--accent) 6%, transparent);
 }
 
 .row[data-dim] {
@@ -403,26 +475,30 @@
 .pinMark {
   display: inline-block;
   margin-right: 5px;
+  color: var(--accent);
   vertical-align: -1px;
 }
 
-/* the status, printed at the start of the note line */
+/* the priority bars sit in a fixed slot before the title */
+.row [data-p]:not([aria-haspopup] *) {
+  margin-right: 7px;
+}
+
+/* the status, set at the start of the note line */
 .status {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   margin-right: 8px;
-  color: var(--strip-ink);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-weight: 700;
-  font-size: 12px;
+  color: var(--ink-2);
+  font-weight: 500;
+  font-size: 12.5px;
   vertical-align: 1px;
 }
 
 .status svg {
-  width: 15px;
-  height: 15px;
+  width: 13px;
+  height: 13px;
 }
 
 .actions {
@@ -433,22 +509,25 @@
 .iconBtn {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 7px;
   background: transparent;
-  color: var(--holder-ink);
+  color: var(--ink-3);
   text-decoration: none;
+  transition:
+    background-color var(--dur-hover) var(--ease-quad),
+    color var(--dur-hover) var(--ease-quad);
 }
 
 .iconBtn:hover {
-  background: color-mix(in oklab, var(--holder-ink) 16%, transparent);
-  color: #fff;
+  background: color-mix(in oklab, var(--ink) 8%, transparent);
+  color: var(--ink);
 }
 
 .iconBtn[aria-pressed="true"] {
-  color: var(--move);
+  color: var(--accent);
 }
 
 .snooze {
@@ -461,21 +540,22 @@
   top: calc(100% + 6px);
   right: 0;
   display: grid;
-  min-width: 170px;
-  padding: 6px;
-  border-radius: 6px;
+  min-width: 176px;
+  padding: 5px;
+  border-radius: 10px;
   background: var(--bay-2);
   box-shadow:
     inset 0 0 0 1px var(--rule-2),
-    0 18px 40px rgba(0, 0, 0, 0.45);
+    0 18px 40px -8px rgba(0, 0, 0, 0.5);
   color: var(--ink);
-  animation: pop 200ms var(--ease-out);
+  animation: pop 160ms var(--ease-out);
+  transform-origin: top right;
 }
 
 @keyframes pop {
   from {
     opacity: 0;
-    transform: translateY(-4px) scale(0.98);
+    transform: scale(0.96);
   }
 }
 
@@ -483,34 +563,29 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 34px;
+  height: 32px;
   padding: 0 10px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 6px;
   background: transparent;
   color: var(--ink);
-  font-size: 14px;
+  font-size: 13.5px;
   text-align: left;
 }
 
 .menu button:hover {
-  background: var(--bay-3);
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
 }
 
 .note {
   margin-top: 24px;
   color: var(--ink-3);
-}
-
-@media (max-width: 1180px) {
-  .columns {
-    grid-template-columns: 1fr;
-  }
+  font-size: 14px;
 }
 
 @container (max-width: 520px) {
   .order {
-    width: 30px;
+    width: 26px;
     padding: 0;
     justify-content: center;
   }
@@ -524,10 +599,18 @@
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .page {
-    padding-top: 16px;
+    padding: 0 16px 64px;
   }
+  .head,
+  .top {
+    margin-inline: -16px;
+    padding-inline: 16px;
+  }
+}
+
+@media (max-width: 760px) {
   .keys {
     display: none;
   }

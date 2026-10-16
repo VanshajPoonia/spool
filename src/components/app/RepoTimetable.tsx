@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { PrintText } from "@/components/print/PrintText";
 import { StateMark } from "@/components/kit/Kit";
 import { aggregate, fmtDays } from "@/lib/aggregate";
 import { carrier } from "@/lib/carriers";
+import { statusLabel } from "@/lib/format";
 import { ago } from "@/lib/classify";
 import { fmtDate } from "@/lib/time";
 import { useBoard } from "./BoardProvider";
@@ -53,10 +53,10 @@ export function RepoTimetable() {
           {c.code}
         </span>
         <div className={s.headText}>
-          <h1 className="sr-only">{full}</h1>
-          <span className={s.repoPrint}>
-            <PrintText value={full.toUpperCase()} length={Math.min(32, Math.max(16, full.length))} intro decorative />
-          </span>
+          <h1 className={s.title}>
+            <span className={s.owner}>{params.owner}/</span>
+            {params.name}
+          </h1>
           <p>
             {r?.language ? `${r.language} · ` : ""}
             {r?.first ? `You first showed up ${fmtDate(r.first, true)}` : "No history with this repo yet"}
@@ -70,7 +70,7 @@ export function RepoTimetable() {
 
       {historyLoading && !history ? (
         <div className={p.loading}>
-          <PrintText value="LOADING" length={7} style={{ fontSize: "21px" }} intro decorative />
+          <span className="shimmer">Reading this repo from GitHub…</span>
         </div>
       ) : !r ? (
         <p className={p.empty}>Spool hasn&rsquo;t seen you in {full}. It appears here once you open a PR or issue there.</p>
@@ -88,12 +88,14 @@ export function RepoTimetable() {
             ).map(([b, label, n, tone]) => (
               <button key={b} type="button" className={s.count} aria-pressed={bucket === b} onClick={() => setBucket(b)}>
                 <span>{label}</span>
-                <PrintText value={String(n)} length={3} align="right" style={{ fontSize: "27px" }} tone={tone} intro />
+                <span className={s.countNum} data-tone={tone}>
+                  {n}
+                </span>
               </button>
             ))}
             <div className={s.count} data-static="">
               <span>Median to merge</span>
-              <PrintText value={fmtDays(r.medianDays).toUpperCase()} length={5} align="right" style={{ fontSize: "27px" }} intro />
+              <span className={s.countNum}>{fmtDays(r.medianDays)}</span>
             </div>
           </div>
 
@@ -117,7 +119,7 @@ export function RepoTimetable() {
                       </div>
                       <span className={s.status}>
                         <StateMark state={t.tone ?? "idle"} />
-                        <PrintText value={t.status} length={12} style={{ fontSize: "12px" }} tone={t.tone} />
+                        {statusLabel(t.status)}
                       </span>
                     </li>
                   ))}

@@ -1,56 +1,72 @@
+/* the three countdowns as one line of figures, divided by hairlines */
 .cds {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
 }
 
 .cd {
   display: grid;
-  gap: 10px;
-  margin: 4px;
-  padding: 14px 16px;
-  border-radius: 5px;
-  background: var(--strip-plain);
-  box-shadow: 0 0 0 4px var(--holder);
-  color: var(--strip-ink);
+  align-content: start;
+  gap: 6px;
+  padding: 18px 22px 18px;
+  border-left: 1px solid var(--rule);
+}
+
+.cd:first-child {
+  padding-left: 0;
+  border-left: 0;
 }
 
 .cdLabel {
-  font-weight: 700;
-  font-size: 16px;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .cdRow {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.cdRow :global(.print) {
+  font-family: var(--font-ui);
+  color: var(--ink);
+  font-size: 30px;
+  font-weight: 510;
+  letter-spacing: -0.02em;
 }
 
 .cdUnit {
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-weight: 700;
-  font-size: 20px;
-  letter-spacing: 0.06em;
+  color: var(--ink-3);
+  font-size: 14px;
 }
 
 .cdSub {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--strip-ink-2);
-  font-size: 14px;
-  font-weight: 500;
+  color: var(--ink-3);
+  font-size: 12.5px;
 }
 
 .cdSub a {
   display: inline-grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 3px;
-  background: var(--holder);
-  color: var(--strip-plain);
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  color: var(--ink-3);
+  transition:
+    background-color var(--dur-hover) var(--ease-quad),
+    color var(--dur-hover) var(--ease-quad);
+}
+
+.cdSub a:hover {
+  background: color-mix(in oklab, var(--ink) 8%, transparent);
+  color: var(--ink);
 }
 
 .col {
@@ -73,8 +89,8 @@
   align-items: center;
   column-gap: 8px;
   color: var(--ink-3);
-  font-size: 13.5px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .stations li[data-passed] {
@@ -82,7 +98,7 @@
 }
 
 .stations li[data-next] {
-  color: var(--move);
+  color: var(--ink);
 }
 
 .dot {
@@ -105,11 +121,10 @@
 
 .stDate {
   grid-column: 2;
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
+  color: var(--ink-3);
   font-size: 11.5px;
   font-weight: 400;
-  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
 }
 
 .orgHead {
@@ -124,7 +139,8 @@
 
 .orgHead h3 {
   flex: 1;
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 510;
 }
 
 .orgSearch {
@@ -140,7 +156,9 @@
 }
 
 .orgSearch:focus-within {
-  box-shadow: inset 0 0 0 2px var(--move);
+  box-shadow:
+    inset 0 0 0 1px var(--accent),
+    0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
 }
 
 .orgSearch input {
@@ -175,57 +193,62 @@
 }
 
 .tech span {
-  padding: 1px 7px;
-  border-radius: 3px;
-  background: var(--bay-2);
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--rule);
   color: var(--ink-3);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
   font-size: 11.5px;
+  line-height: 20px;
 }
 
+/* a tech you follow is picked out the way a chosen chip is */
 .tech span[data-m] {
-  background: var(--ink);
-  color: var(--console);
+  background: var(--surface-sel);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
 }
 
 .ideas {
-  height: 32px;
+  height: 28px;
   padding: 0 12px;
-  border-radius: 4px;
-  background: var(--bay-3);
+  border-radius: 999px;
+  background: var(--quiet-bg);
+  box-shadow: var(--quiet-ring);
   color: var(--ink);
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 32px;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 28px;
   text-decoration: none;
+  transition: background-color var(--dur-quick) var(--ease-quad);
 }
 
 .ideas:hover {
-  background: var(--ink);
-  color: var(--console);
+  background: var(--quiet-bg-hover);
 }
 
+/* the month's counts as one line, the way the bay's head reads */
 .octCounts {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  margin: 14px 0 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 12px 0 4px;
+  color: var(--ink-3);
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
 }
 
-.octCounts > div {
-  display: grid;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 6px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
+.octCounts strong {
+  color: var(--ink);
+  font-weight: 500;
 }
 
-.octCounts span {
-  color: var(--ink-2);
-  font-size: 13px;
-  font-weight: 700;
+.octCounts strong[data-tone="go"] {
+  color: var(--landed);
+}
+
+.octCounts strong[data-tone="stop"] {
+  color: var(--alert);
 }
 
 .octItem {
@@ -238,8 +261,8 @@
 }
 
 .octState {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12.5px;
+  font-weight: 500;
   text-align: right;
   color: var(--ink-2);
 }
@@ -265,10 +288,14 @@
   .cds {
     grid-template-columns: 1fr;
   }
-  .stations {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .cd {
+    padding-left: 0;
+    border-left: 0;
   }
-  .octCounts {
+  .cd + .cd {
+    border-top: 1px solid var(--rule);
+  }
+  .stations {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .octItem {

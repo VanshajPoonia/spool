@@ -3,11 +3,12 @@
   align-items: center;
   gap: 6px;
   margin-bottom: 10px;
+  margin-top: 18px;
   color: var(--ink-3);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
   text-decoration: none;
-  transition: color 200ms var(--ease-out);
+  transition: color var(--dur-hover) var(--ease-quad);
 }
 
 .back:hover {
@@ -23,22 +24,25 @@
 
 .seg {
   display: flex;
-  padding: 3px;
-  border-radius: 5px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
 }
 
 .seg button {
-  height: 34px;
-  padding: 0 12px;
+  height: 28px;
+  padding: 0 11px;
   border: 0;
-  border-radius: 3px;
+  border-radius: 6px;
   background: transparent;
   color: var(--ink-2);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
   white-space: nowrap;
+  transition:
+    background-color var(--dur-hover) var(--ease-quad),
+    color var(--dur-hover) var(--ease-quad);
 }
 
 .seg button:hover {
@@ -46,9 +50,9 @@
 }
 
 .seg button[aria-pressed="true"] {
-  background: var(--bay-3);
+  background: var(--surface-sel);
   color: var(--ink);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
 }
 
 .search {
@@ -56,16 +60,19 @@
   flex: 1 1 220px;
   align-items: center;
   gap: 8px;
-  height: 40px;
-  padding: 0 12px;
-  border-radius: 5px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  height: 34px;
+  padding: 0 11px;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
   color: var(--ink-3);
+  transition: box-shadow var(--dur-quick) var(--ease-quad);
 }
 
 .search:focus-within {
-  box-shadow: inset 0 0 0 2px var(--move);
+  box-shadow:
+    inset 0 0 0 1px var(--accent),
+    0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
 }
 
 .search input {
@@ -75,58 +82,59 @@
   background: transparent;
   color: var(--ink);
   outline: none;
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
 .select {
   display: grid;
-  gap: 4px;
+  gap: 5px;
   color: var(--ink-3);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .select select {
-  height: 40px;
+  height: 34px;
   min-width: 140px;
   max-width: 220px;
   padding: 0 10px;
   border: 0;
-  border-radius: 5px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
   color: var(--ink);
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
 .select select:focus-visible {
-  outline: 2px solid var(--move);
-  outline-offset: 0;
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
 }
 
 .count {
   display: flex;
   align-items: center;
   gap: 14px;
-  color: var(--ink-2);
-  font-size: 14px;
+  color: var(--ink-3);
+  font-size: 13px;
 }
 
 .count button {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 600;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
   text-decoration: underline;
+  text-decoration-color: var(--rule-2);
   text-underline-offset: 3px;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+  gap: 10px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -135,21 +143,25 @@
 .card {
   display: grid;
   grid-template-rows: auto auto auto 1fr auto;
-  gap: 12px;
-  padding: 18px;
-  border-radius: 10px;
-  background: var(--bay);
-  box-shadow:
-    inset 0 1px 0 var(--rule),
-    inset 0 0 0 1px var(--rule);
+  gap: 10px;
+  padding: 16px 16px 12px;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--ink) 2%, transparent);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  transition: box-shadow var(--dur-quick) var(--ease-quad);
   animation: rise 420ms var(--ease-out) both;
   animation-delay: calc(min(var(--i, 0), 12) * 30ms);
+}
+
+.card:hover {
+  box-shadow: inset 0 0 0 1px var(--rule-2);
 }
 
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    filter: blur(2px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -167,10 +179,11 @@
 .logo {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  background: var(--ink);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
 
@@ -182,11 +195,9 @@
 }
 
 .logo span {
-  color: var(--console);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-weight: 700;
-  font-size: 24px;
+  color: #0e0f11;
+  font-weight: 590;
+  font-size: 18px;
 }
 
 .title {
@@ -197,8 +208,8 @@
 
 .name {
   overflow: hidden;
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 510;
   white-space: nowrap;
   text-overflow: ellipsis;
   text-decoration: none;
@@ -206,16 +217,18 @@
 
 .name:hover {
   text-decoration: underline;
+  text-decoration-color: var(--rule-2);
   text-underline-offset: 3px;
 }
 
 .years {
   color: var(--ink-3);
-  font-size: 13px;
+  font-size: 12.5px;
 }
 
+/* new to GSoC this year: indigo, the colour for what is new */
 .years[data-first] {
-  color: var(--move);
+  color: var(--accent);
 }
 
 .save {
@@ -224,17 +237,17 @@
   width: 36px;
   height: 36px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 8px;
   background: transparent;
   color: var(--ink-3);
   transition:
-    color 200ms var(--ease-out),
-    background-color 200ms var(--ease-out),
-    transform 200ms var(--ease-out);
+    color var(--dur-hover) var(--ease-quad),
+    background-color var(--dur-hover) var(--ease-quad),
+    transform var(--dur-hover) var(--ease-quad);
 }
 
 .save:hover {
-  background: var(--rule);
+  background: color-mix(in oklab, var(--ink) 8%, transparent);
   color: var(--ink);
 }
 
@@ -243,7 +256,7 @@
 }
 
 .save[aria-pressed="true"] {
-  color: var(--move);
+  color: var(--accent);
 }
 
 .save[aria-pressed="true"] svg {
@@ -259,8 +272,8 @@
 
 .tagline {
   color: var(--ink-2);
-  font-size: 15px;
-  line-height: 1.45;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .tags {
@@ -270,31 +283,36 @@
 }
 
 .tags span {
-  padding: 2px 8px;
-  border-radius: 3px;
-  background: var(--bay-2);
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--rule);
   color: var(--ink-3);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-size: 12px;
+  font-size: 11.5px;
+  line-height: 20px;
 }
 
+/* a tech you follow, picked out the way a chosen chip is */
 .tags span[data-m] {
-  background: var(--ink);
-  color: var(--console);
+  background: var(--surface-sel);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
 }
 
 .meta {
   align-self: end;
   color: var(--ink-3);
-  font-size: 13px;
+  font-size: 12.5px;
 }
 
+/* the links: text with an icon; the one that matters most is a quiet pill */
 .links {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  padding-top: 12px;
+  align-items: center;
+  gap: 2px 4px;
+  margin: 2px -6px 0;
+  padding-top: 10px;
   border-top: 1px solid var(--rule);
 }
 
@@ -302,37 +320,33 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 32px;
-  padding: 0 10px;
-  border-radius: 4px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
-  color: var(--ink-2);
-  font-size: 13px;
-  font-weight: 600;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  font-weight: 500;
   text-decoration: none;
   transition:
-    color 200ms var(--ease-out),
-    background-color 200ms var(--ease-out);
+    color var(--dur-hover) var(--ease-quad),
+    background-color var(--dur-hover) var(--ease-quad);
 }
 
 .links a:hover {
-  background: var(--bay-3);
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
   color: var(--ink);
 }
 
-/* the one action on a card is a strip in its holder */
 .links a[data-primary] {
-  background: var(--strip-pr);
-  box-shadow: 0 0 0 2px var(--holder);
-  color: var(--strip-ink);
-  transition: transform 260ms var(--ease-slide);
+  margin-right: 4px;
+  padding: 0 11px;
+  background: var(--quiet-bg);
+  box-shadow: var(--quiet-ring);
+  color: var(--ink);
 }
 
 .links a[data-primary]:hover {
-  background: var(--strip-pr);
-  color: var(--strip-ink);
-  transform: translateX(3px);
+  background: var(--quiet-bg-hover);
 }
 
 .more {

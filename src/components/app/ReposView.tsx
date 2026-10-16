@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import { ArrowUpRight, GitFork, Star } from "lucide-react";
-import { PrintText } from "@/components/print/PrintText";
+import { StatusIcon } from "@/components/kit/Strip";
 import { Callsign } from "@/components/kit/Kit";
 import { aggregate, fmtDays } from "@/lib/aggregate";
 import { ago } from "@/lib/classify";
@@ -38,20 +38,17 @@ export function ReposView() {
             {history ? Math.min(100, history.prs.length) : 100} PRs and {history ? Math.min(60, history.issues.length) : 60} issues.
           </p>
         </div>
-        <div className={s.totals}>
-          <div>
-            <span>Repos</span>
-            <PrintText value={String(totals.repos)} length={3} align="right" style={{ fontSize: "21px" }} />
-          </div>
-          <div>
-            <span>Merged</span>
-            <PrintText value={String(totals.merged)} length={3} align="right" style={{ fontSize: "21px" }} tone="go" />
-          </div>
-          <div>
-            <span>Open</span>
-            <PrintText value={String(totals.open)} length={3} align="right" style={{ fontSize: "21px" }} />
-          </div>
-        </div>
+        <p className={s.totals}>
+          <span>
+            <strong>{totals.repos}</strong> repos
+          </span>
+          <span data-k="merged">
+            <strong>{totals.merged}</strong> merged
+          </span>
+          <span>
+            <strong>{totals.open}</strong> open
+          </span>
+        </p>
       </div>
 
       {historyError && (
@@ -70,7 +67,7 @@ export function ReposView() {
         </div>
         {historyLoading && !history ? (
           <div className={p.loading}>
-            <PrintText value="LOADING" length={7} style={{ fontSize: "21px" }} intro decorative />
+            <span className="shimmer">Reading your PRs and issues from GitHub…</span>
           </div>
         ) : contributed.length === 0 ? (
           <p className={p.empty}>No PRs or issues found yet.</p>
@@ -111,7 +108,7 @@ export function ReposView() {
                         <span data-k="o" style={{ flexGrow: r.open.length }} />
                       </span>
                     ) : (
-                      <span className={p.muted}>Issues only</span>
+                      <span className={p.muted}>No PRs yet</span>
                     )}
                     <span className={s.outcomeText}>
                       {r.merged.length}/{r.closed.length}/{r.open.length}
@@ -124,7 +121,12 @@ export function ReposView() {
                     {fmtDays(r.medianDays)}
                   </span>
                   <span role="cell" className={s.now}>
-                    {r.onYou > 0 && <span data-k="you">{r.onYou} on you</span>}
+                    {r.onYou > 0 && (
+                      <span data-k="you">
+                        <StatusIcon state="you" />
+                        {r.onYou} on you
+                      </span>
+                    )}
                     {r.onThem > 0 && <span>{r.onThem} on them</span>}
                     {r.onYou === 0 && r.onThem === 0 && <span className={p.muted}>Quiet</span>}
                   </span>

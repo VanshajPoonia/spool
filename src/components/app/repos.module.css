@@ -1,22 +1,20 @@
+/* the totals as one line of counts, the way the bay's head reads */
 .totals {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  color: var(--ink-3);
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
 }
 
-.totals > div {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
+.totals strong {
+  color: var(--ink);
+  font-weight: 500;
 }
 
-.totals span:first-child {
-  color: var(--ink-2);
-  font-weight: 700;
-  font-size: 14px;
+.totals [data-k="merged"] strong {
+  color: var(--landed);
 }
 
 .table {
@@ -34,26 +32,28 @@
 }
 
 .labels {
-  padding: 12px 4px 8px;
+  padding: 12px 8px 8px;
   color: var(--ink-3);
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 500;
 }
 
 .row {
-  min-height: 60px;
-  padding: 8px 4px;
+  min-height: 56px;
+  padding: 8px;
   border-top: 1px solid var(--rule);
-  border-radius: 4px;
+  border-radius: 8px;
   color: inherit;
   text-decoration: none;
-  transition: background-color 180ms var(--ease-out);
+  transition: background-color var(--dur-hover) var(--ease-quad);
 }
 
 .row:hover {
-  background: var(--rule);
+  background: color-mix(in oklab, var(--ink) 4%, transparent);
+}
+
+.row:hover + .row {
+  border-top-color: transparent;
 }
 
 .repo {
@@ -75,15 +75,20 @@
   text-overflow: ellipsis;
 }
 
+.repoName strong {
+  font-size: 14px;
+  font-weight: 500;
+}
+
 .repoName span {
   color: var(--ink-3);
-  font-size: 13px;
+  font-size: 12.5px;
 }
 
 .num {
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-size: 14px;
+  color: var(--ink-2);
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
 }
 
 .outcome {
@@ -94,12 +99,12 @@
 .bar {
   display: flex;
   gap: 2px;
-  height: 8px;
+  height: 6px;
 }
 
 .bar span {
   min-width: 0;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 .bar [data-k="m"] {
@@ -111,14 +116,13 @@
 }
 
 .bar [data-k="o"] {
-  background: var(--ink-2);
+  background: var(--ink-3);
 }
 
 .outcomeText {
   color: var(--ink-3);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
   font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
 }
 
 .now {
@@ -129,17 +133,25 @@
   color: var(--ink-2);
 }
 
+/* threads on you: the half circle carries the yellow, the words stay in ink */
 .now [data-k="you"] {
-  color: var(--move);
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.now [data-k="you"] svg {
+  width: 13px;
+  height: 13px;
 }
 
 .last {
   color: var(--ink-3);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
   font-size: 12.5px;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .own {
@@ -166,10 +178,13 @@
   align-items: center;
   gap: 6px;
   color: var(--ink-2);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-size: 13px;
+  font-size: 12.5px;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.ownStat svg {
+  color: var(--ink-3);
 }
 
 .ownStat[data-hot] {
@@ -201,6 +216,16 @@
     grid-template-columns: auto minmax(0, 1fr) auto;
   }
   .own li > :nth-child(n + 4) {
+    display: none;
+  }
+}
+
+@container (max-width: 600px) {
+  .table {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .labels > :nth-child(3),
+  .row > :nth-child(3) {
     display: none;
   }
 }

@@ -134,7 +134,7 @@ export function DiscoverView() {
           </div>
           {!repos ? (
             <div className={p.loading}>
-              <PrintText value="SEARCHING" length={9} style={{ fontSize: "19px" }} intro decorative />
+              <span className="shimmer">Searching GitHub…</span>
             </div>
           ) : repos.length === 0 ? (
             <p className={p.empty}>{interests.length ? "No young repos matched. Try a broader topic." : "Add an interest to start."}</p>
@@ -184,7 +184,7 @@ export function DiscoverView() {
           </div>
           {!issues ? (
             <div className={p.loading}>
-              <PrintText value="SEARCHING" length={9} style={{ fontSize: "19px" }} intro decorative />
+              <span className="shimmer">Searching GitHub…</span>
             </div>
           ) : issues.length === 0 ? (
             <p className={p.empty}>No unclaimed good first issues in your languages right now.</p>

@@ -262,7 +262,7 @@ export function SettingsView() {
   };
 
   return (
-    <div className={p.page}>
+    <div className={`${p.page} ${s.column}`}>
       <div className={p.head}>
         <div>
           <h1 className={p.h1}>Settings</h1>
@@ -270,7 +270,7 @@ export function SettingsView() {
         </div>
       </div>
 
-      <div className={p.grid2}>
+      <div className={s.stack}>
         <section className={p.panel}>
           <div className={p.panelHead}>
             <h2>GitHub</h2>
@@ -378,7 +378,7 @@ export function SettingsView() {
         </div>
       </section>
 
-      <div className={p.grid2}>
+      <div className={s.stack}>
         <section className={p.panel}>
           <div className={p.panelHead}>
             <h2>What Spool remembers</h2>

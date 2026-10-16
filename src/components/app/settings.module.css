@@ -1,15 +1,29 @@
+/* Settings, as Linear lays them out: one readable column of sections, each a stack of labelled rows. */
+.column > * {
+  max-width: 760px;
+}
+
+.column > :first-child {
+  max-width: none;
+}
+
+.stack {
+  display: grid;
+  gap: 28px;
+}
+
 .account {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 18px 0 8px;
+  gap: 14px;
+  padding: 16px 0 6px;
 }
 
 .account img {
-  width: 56px;
-  height: 56px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  box-shadow: 0 0 0 3px var(--bay-3);
+  box-shadow: 0 0 0 1px var(--rule-2);
 }
 
 .account div {
@@ -18,14 +32,13 @@
 }
 
 .account strong {
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-size: 17px;
+  font-size: 15px;
+  font-weight: 510;
 }
 
 .account span {
   color: var(--ink-2);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .row {
@@ -43,25 +56,30 @@
   display: grid;
   gap: 8px;
   padding-top: 14px;
+  color: var(--ink-3);
+  font-size: 13px;
 }
 
 .tokenForm code {
   padding: 1px 5px;
-  border-radius: 3px;
+  border-radius: 4px;
   background: var(--bay-3);
+  color: var(--ink-2);
   font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-size: 12.5px;
+  font-size: 12px;
 }
 
 .tokenForm a {
-  color: var(--ink);
-  font-weight: 600;
+  color: var(--ink-2);
+  font-weight: 500;
+  text-decoration-color: var(--rule-2);
+  text-underline-offset: 3px;
 }
 
 .label {
-  font-weight: 700;
-  font-size: 14px;
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 500;
 }
 
 .tokenRow {
@@ -74,29 +92,32 @@
 .tokenRow input {
   flex: 1 1 200px;
   min-width: 0;
-  height: 40px;
-  padding: 0 12px;
+  height: 34px;
+  padding: 0 11px;
   border: 0;
-  border-radius: 4px;
-  background: var(--console);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
   color: var(--ink);
   font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-size: 14px;
+  font-size: 13px;
+  transition: box-shadow var(--dur-quick) var(--ease-quad);
 }
 
 .tokenRow input:focus {
   outline: none;
-  box-shadow: inset 0 0 0 2px var(--move);
+  box-shadow:
+    inset 0 0 0 1px var(--accent),
+    0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
 }
 
 .err {
   color: var(--alert);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13.5px;
+  font-weight: 500;
 }
 
+/* a setting: its label, then its control, a hairline under */
 .field {
   display: grid;
   min-width: 0;
@@ -113,6 +134,8 @@
   display: flex;
   align-items: center;
   gap: 14px;
+  color: var(--ink-3);
+  font-size: 13px;
 }
 
 .slider input {
@@ -120,30 +143,44 @@
   accent-color: var(--ink-2);
 }
 
+.slider :global(.print) {
+  font-family: var(--font-ui);
+  color: var(--ink);
+  font-size: 18px !important;
+  font-weight: 510;
+}
+
 .seg {
   display: inline-flex;
   justify-self: start;
-  padding: 3px;
-  border-radius: 5px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
 }
 
 .seg button {
-  height: 34px;
-  padding: 0 12px;
+  height: 28px;
+  padding: 0 11px;
   border: 0;
-  border-radius: 3px;
+  border-radius: 6px;
   background: transparent;
   color: var(--ink-2);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
+  transition:
+    background-color var(--dur-hover) var(--ease-quad),
+    color var(--dur-hover) var(--ease-quad);
+}
+
+.seg button:hover {
+  color: var(--ink);
 }
 
 .seg button[aria-pressed="true"] {
-  background: var(--bay-3);
+  background: var(--surface-sel);
   color: var(--ink);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
 }
 
 .toggles {
@@ -160,20 +197,27 @@
   border: 0;
   background: transparent;
   color: var(--ink-2);
-  font-weight: 600;
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: color var(--dur-hover) var(--ease-quad);
 }
 
 .toggles button:hover {
   color: var(--ink);
 }
 
+/* a switch: a 30px pill that fills with brand indigo when on */
 .switch {
   position: relative;
-  width: 38px;
-  height: 22px;
-  border-radius: 11px;
+  flex: none;
+  width: 30px;
+  height: 18px;
+  border-radius: 999px;
   background: var(--bay-3);
-  transition: background-color 220ms var(--ease-out);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  transition:
+    background-color var(--dur-quick) var(--ease-quad),
+    box-shadow var(--dur-quick) var(--ease-quad);
 }
 
 .switch::after {
@@ -181,27 +225,29 @@
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: var(--ink-2);
-  transition: transform 260ms var(--ease-out);
+  transition:
+    transform var(--dur-move) var(--ease-quart),
+    background-color var(--dur-quick) var(--ease-quad);
 }
 
-/* on: the little strip slides right in its holder */
 .toggles button[aria-pressed="true"] .switch {
-  background: var(--holder);
+  background: var(--brand);
+  box-shadow: none;
 }
 
 .toggles button[aria-pressed="true"] .switch::after {
-  transform: translateX(16px);
-  background: var(--strip-pr);
+  transform: translateX(12px);
+  background: #fff;
 }
 
 .msg {
   margin-top: 12px;
   color: var(--ink-2);
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
 .toggles button:disabled {
@@ -210,33 +256,37 @@
 }
 
 .toggles .linkBtn {
-  color: var(--ink);
-  font-size: 14px;
+  color: var(--ink-2);
+  font-size: 13.5px;
   text-decoration: underline;
+  text-decoration-color: var(--rule-2);
   text-underline-offset: 3px;
 }
 
 .guestNote {
   display: grid;
   gap: 6px;
-  margin-bottom: 16px;
+  margin: 16px 0;
   padding: 14px 16px;
-  border-radius: 6px;
-  background: var(--bay-2);
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--ink) 2.5%, transparent);
   box-shadow: inset 0 0 0 1px var(--rule-2);
   color: var(--ink-2);
-  font-size: 15px;
+  font-size: 13.5px;
+  line-height: 1.55;
 }
 
 .guestNote strong {
   color: var(--ink);
+  font-weight: 500;
 }
 
+/* what Spool remembers: two columns of label and count, divided by hairlines */
 .memory {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
-  gap: 8px;
-  margin: 0 0 14px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  column-gap: 32px;
+  margin: 6px 0 14px;
 }
 
 .memory div {
@@ -244,24 +294,21 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 10px;
-  padding: 10px 12px;
-  border-radius: 5px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule);
 }
 
 .memory dt {
   color: var(--ink-2);
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
 .memory dd {
   margin: 0;
   color: var(--ink);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
 .memory div[data-empty] dd {
@@ -270,20 +317,22 @@
 
 .memory + p {
   margin-bottom: 14px;
+  color: var(--ink-3);
+  font-size: 13px;
 }
 
 .meters {
   display: grid;
   gap: 16px;
-  margin: 0 0 14px;
+  margin: 14px 0;
   padding: 0;
   list-style: none;
 }
 
 .meters li {
   display: grid;
-  gap: 6px;
-  font-size: 14px;
+  gap: 7px;
+  font-size: 13.5px;
 }
 
 .meterHead {
@@ -296,14 +345,14 @@
 
 .meterHead strong {
   color: var(--ink);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-size: 13.5px;
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
 .meter {
   display: block;
-  height: 6px;
+  height: 5px;
   border-radius: 3px;
   background: var(--bay-3);
   overflow: hidden;

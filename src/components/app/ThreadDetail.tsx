@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Pin, PinOff, X } from "lucide-react";
-import { PrintText } from "@/components/print/PrintText";
 import { Callsign, StateMark } from "@/components/kit/Kit";
+import { statusLabel } from "@/lib/format";
 import { ago, type Thread } from "@/lib/classify";
 import { fetchTimeline, type TimelineEvent } from "@/lib/github";
 import { COLS, threadKey } from "@/lib/plan";
@@ -94,7 +94,9 @@ export function ThreadDetail({ t, code, mode, now, onClose }: { t: Thread; code?
 
       <div className={s.status}>
         <StateMark state={t.tone ?? "idle"} />
-        <PrintText value={t.status} length={12} style={{ fontSize: "19px" }} tone={t.tone} intro />
+        <span className={s.statusText} data-tone={t.tone}>
+          {statusLabel(t.status)}
+        </span>
       </div>
       <p className={s.reason}>{t.reason}</p>
 
@@ -191,7 +193,7 @@ export function ThreadDetail({ t, code, mode, now, onClose }: { t: Thread; code?
       {err && <p className={s.err}>{err}</p>}
       {!events && !err && (
         <div className={s.loading}>
-          <PrintText value="LOADING" length={7} style={{ fontSize: "15px" }} intro decorative />
+          <span className="shimmer">Reading the timeline…</span>
         </div>
       )}
       {events && events.length === 0 && <p className={s.muted}>No events returned.</p>}

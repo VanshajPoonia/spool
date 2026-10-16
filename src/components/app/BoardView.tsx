@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDownUp, CheckCheck, ChevronDown, Keyboard, Search } from "lucide-react";
-import { Callsign } from "@/components/kit/Kit";
 import { Bay } from "@/components/kit/Strip";
 import { PrintText } from "@/components/print/PrintText";
+import { carrier } from "@/lib/carriers";
 import type { Thread } from "@/lib/classify";
 import { FACES } from "@/lib/faces";
 import { prioRank, threadKey, type Prio } from "@/lib/plan";
@@ -23,12 +23,13 @@ function Loader() {
     const id = window.setInterval(() => setI((x) => x + 1), 1300);
     return () => window.clearInterval(id);
   }, []);
-  const words = ["FETCHING", "YOUR PRS", "ISSUES", "REVIEWS", "MENTIONS"];
+  const words = ["your PRs", "issues", "reviews", "mentions"];
   return (
     <div className={s.loader} role="status" aria-label="Loading your bay from GitHub">
-      <span className={s.loaderStrip}>
-        <PrintText value={words[i % words.length]} length={9} decorative />
+      <span className={s.loaderFace}>
+        <PrintText value={i % 2 ? FACES.watch : FACES.focus} length={5} decorative />
       </span>
+      <span className="shimmer">Reading {words[i % words.length]} from GitHub…</span>
     </div>
   );
 }
@@ -233,6 +234,24 @@ export function BoardView() {
 
   return (
     <div className={s.page} data-detail={selected ? "" : undefined}>
+      <div className={s.head}>
+        <h1 className={s.h1}>Your bay</h1>
+        {!firstLoad && (
+          <p className={s.summary}>
+            <span>
+              <strong>{groups.you.length}</strong> on you
+            </span>
+            <span>
+              <strong>{groups.them.length}</strong> on them
+            </span>
+            {delayed > 0 && (
+              <span data-k="stalled">
+                <strong>{delayed}</strong> stalled
+              </span>
+            )}
+          </p>
+        )}
+      </div>
       <div className={s.top}>
         <div className={s.tools}>
           <label className={s.search}>
@@ -257,7 +276,7 @@ export function BoardView() {
             <button type="button" aria-pressed={only === "new"} onClick={() => setOnly((o) => (o === "new" ? null : "new"))} disabled={!fresh.size && only !== "new"}>
               <span className={s.quickLamp} data-k="new" aria-hidden="true" />
               New
-              <PrintText value={String(fresh.size)} length={2} align="right" tone={fresh.size ? "wait" : "dim"} label={`${fresh.size}`} />
+              <PrintText value={String(fresh.size)} length={2} align="right" tone={fresh.size ? undefined : "dim"} label={`${fresh.size}`} />
             </button>
           </div>
           <button type="button" className={s.tool} onClick={seeAll} disabled={fresh.size === 0} title="Mark everything seen (Shift E)">
@@ -272,7 +291,7 @@ export function BoardView() {
           <div className={s.carriers} role="group" aria-label="Filter by repo">
             {repos.slice(0, 14).map(([r, n]) => (
               <button key={r} type="button" aria-pressed={repo === r} onClick={() => setRepo((cur) => (cur === r ? null : r))} title={r}>
-                <Callsign repo={r} size="sm" code={codeFor(r)} />
+                <span className={s.carrierCode}>{codeFor(r) ?? carrier(r).code}</span>
                 <span className={s.carrierName}>{r.split("/")[1]}</span>
                 <span className={s.carrierCount}>{n}</span>
               </button>

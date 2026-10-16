@@ -1,42 +1,43 @@
-/* Priority: a small signal-coloured plate. P1 is the sign colour, the loudest thing on a card. */
+/* Priority: Linear's three bars, lit up to the level. Grey like every other label; colour stays in the status marks. */
 
 .tag {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: 3px;
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  gap: 6px;
+  color: var(--ink-2);
+  font-size: 12.5px;
+  font-weight: 500;
   line-height: 1;
   white-space: nowrap;
+  vertical-align: -2px;
 }
 
-.tag[data-p="1"] {
-  background: var(--move);
-  color: var(--move-ink);
+.bars {
+  flex: none;
+  width: 14px;
+  height: 14px;
 }
 
-.tag[data-p="2"] {
-  background: color-mix(in oklab, var(--move) 14%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--move) 55%, transparent);
-  color: var(--move);
+.bars rect {
+  fill: color-mix(in oklab, var(--ink) 18%, transparent);
 }
 
-.tag[data-p="3"] {
-  background: transparent;
-  box-shadow: inset 0 0 0 1px var(--rule);
-  color: var(--ink-2);
+.bars rect[data-lit] {
+  fill: var(--ink-2);
+}
+
+.tag[data-p="none"] .bars rect {
+  fill: var(--ink-3);
+  opacity: 0.6;
+}
+
+/* the highest priority reads a step brighter */
+.tag[data-p="1"] .bars rect[data-lit] {
+  fill: var(--ink);
 }
 
 .word {
-  font-family: var(--font-ui);
-  font-weight: 700;
-  letter-spacing: 0;
+  color: inherit;
 }
 
 .wrap {
@@ -47,21 +48,21 @@
 .trigger {
   display: grid;
   place-items: center;
-  min-width: 32px;
-  height: 32px;
-  padding: 0 4px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 7px;
   background: transparent;
   color: var(--ink-3);
   transition:
-    color 200ms var(--ease-out),
-    background-color 200ms var(--ease-out),
-    transform 160ms var(--ease-out);
+    color var(--dur-hover) var(--ease-quad),
+    background-color var(--dur-hover) var(--ease-quad),
+    transform var(--dur-hover) var(--ease-quad);
 }
 
 .trigger:hover {
-  background: var(--bay-3);
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
   color: var(--ink);
 }
 
@@ -83,20 +84,21 @@
   }
 }
 
+/* menus open from their trigger, the way Linear's do: a short scale from 0.96 */
 .menu {
   position: absolute;
   z-index: 80;
   top: calc(100% + 6px);
   right: 0;
   display: grid;
-  width: 230px;
-  padding: 6px;
-  border-radius: 6px;
+  width: 236px;
+  padding: 5px;
+  border-radius: 10px;
   background: var(--bay-2);
   box-shadow:
-    inset 0 0 0 1px var(--rule),
-    0 18px 40px rgba(0, 0, 0, 0.55);
-  animation: pop 180ms var(--ease-out);
+    inset 0 0 0 1px var(--rule-2),
+    0 18px 40px -8px rgba(0, 0, 0, 0.55);
+  animation: pop 160ms var(--ease-out);
   transform-origin: top right;
 }
 
@@ -109,19 +111,19 @@
 @keyframes pop {
   from {
     opacity: 0;
-    transform: scale(0.96) translateY(-4px);
+    transform: scale(0.96);
   }
 }
 
 .menu button {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) 16px;
+  grid-template-columns: 22px minmax(0, 1fr) 16px;
   align-items: center;
   gap: 8px;
-  min-height: 44px;
+  min-height: 40px;
   padding: 4px 8px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 6px;
   background: transparent;
   color: var(--ink);
   text-align: left;
@@ -129,29 +131,34 @@
 
 .menu button:hover,
 .menu button:focus-visible {
-  background: var(--bay-3);
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
+  outline: none;
 }
 
 .itemText {
   display: grid;
   gap: 1px;
-  font-size: 14px;
+  font-size: 13.5px;
+}
+
+.itemText strong {
+  font-weight: 500;
 }
 
 .itemText span {
   color: var(--ink-3);
-  font-size: 12.5px;
+  font-size: 12px;
 }
 
 .none {
   display: grid;
   place-items: center;
-  width: 28px;
+  width: 22px;
   color: var(--ink-3);
 }
 
 .check {
-  color: var(--move);
+  color: var(--accent);
 }
 
 :global(html[data-motion="off"]) .menu,

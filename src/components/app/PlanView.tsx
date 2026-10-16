@@ -22,6 +22,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { ArrowDownWideNarrow, ArrowUpRight, CircleDot, Eye, GitPullRequest, GripVertical, MoreHorizontal, NotebookPen, Plus, X } from "lucide-react";
 import { PrintText } from "@/components/print/PrintText";
 import { Callsign, StateMark } from "@/components/kit/Kit";
+import { StatusIcon, type StripState } from "@/components/kit/Strip";
 import { ago } from "@/lib/classify";
 import {
   buildCards,
@@ -49,6 +50,8 @@ type Keys = Record<Col, string[]>;
 
 const COL_IDS = COLS.map((c) => c.id);
 const COL_TITLE = Object.fromEntries(COLS.map((c) => [c.id, c.title])) as Record<Col, string>;
+/* Each column's glyph, read the way Linear's workflow states are: backlog dashed, in progress half full, done checked. */
+const COL_STATE: Record<Col, StripState> = { inbox: "idle", next: "them", doing: "you", waiting: "them", done: "done" };
 const DONE_SHOWN = 6;
 
 /* Drags start anywhere on a card except its buttons and links; the grip is the exception, it's made for dragging. */
@@ -416,13 +419,12 @@ function Column({ col, title, sub, count, keys, empty, foot, children }: { col: 
   const { setNodeRef, isOver } = useDroppable({ id: `col:${col}` });
   return (
     <section className={s.col} data-col={col} data-over={isOver || undefined} aria-labelledby={`plan-${col}`}>
-      <header className={s.colHead}>
-        <div>
-          <h2 id={`plan-${col}`}>{title}</h2>
-          <p>{sub}</p>
-        </div>
-        <PrintText value={String(count)} length={2} align="right" style={{ fontSize: "17px" }} label={`${count}`} tone={col === "doing" && count > 2 ? "wait" : undefined} />
+      <header className={s.colHead} title={sub}>
+        <StatusIcon state={COL_STATE[col]} />
+        <h2 id={`plan-${col}`}>{title}</h2>
+        <PrintText value={String(count)} length={2} label={`${count}`} tone={col === "doing" && count > 2 ? "wait" : undefined} />
       </header>
+      <p className={s.colSub}>{sub}</p>
       <SortableContext id={col} items={keys} strategy={verticalListSortingStrategy}>
         <ul ref={setNodeRef} className={s.list}>
           {children}
@@ -544,7 +546,12 @@ function CardBody({
         <div className={s.status} title={card.detail ?? undefined}>
           <StateMark state={card.lamp} />
           <span>{card.status}</span>
-          {card.yourMove && <span className={s.move}>Your move</span>}
+          {card.yourMove && (
+            <span className={s.move}>
+              <StatusIcon state="you" />
+              Your move
+            </span>
+          )}
         </div>
       )}
       <div className={s.foot}>
