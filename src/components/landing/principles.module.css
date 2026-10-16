@@ -1,0 +1,131 @@
+/* The statement under the hero, then three plates that draw what it says. */
+.principles {
+  --fig-line: color-mix(in oklab, var(--ink) 30%, var(--console));
+  padding-bottom: clamp(72px, 8vw, 120px);
+}
+
+/* ---------- the plates ---------- */
+
+.figs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: clamp(56px, 7vw, 104px) 0 0;
+}
+
+.fig {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  align-content: start;
+  margin: 0;
+  padding: 0 clamp(20px, 2.6vw, 40px);
+}
+
+.fig:first-child {
+  padding-left: 0;
+}
+
+.fig:last-child {
+  padding-right: 0;
+}
+
+/* hairlines between the plates, the height of the plate */
+.fig + .fig {
+  border-left: 1px solid var(--rule);
+}
+
+.art {
+  width: 100%;
+  height: clamp(176px, 17vw, 232px);
+  margin: 0 0 clamp(24px, 2.8vw, 36px);
+  overflow: visible;
+}
+
+.art path {
+  fill: none;
+  stroke: var(--tone, var(--fig-line));
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+/* outlines are filled with the ground, so near shapes hide what is behind them */
+.art path[data-t="solid"] {
+  fill: var(--console);
+}
+
+.art path[data-fill="tint"] {
+  fill: color-mix(in oklab, var(--tone) 16%, var(--console));
+}
+
+.art path[data-fill="tone"] {
+  fill: var(--tone);
+  stroke: none;
+}
+
+.art path[data-t="dash"] {
+  stroke-dasharray: 3 4;
+  stroke-width: 1;
+}
+
+.art path[data-t="thread"] {
+  stroke-width: 1.4;
+}
+
+/* a short light that runs the length of a thread and winds onto the spool; the scroll moves it */
+.art path[data-t="beam"] {
+  stroke: color-mix(in oklab, var(--tone) 50%, #fff);
+  stroke-width: 2.2;
+  stroke-dasharray: 0.07 1;
+  stroke-dashoffset: 0.07;
+  opacity: 0;
+}
+
+/* a slab that stops being stalled, or a mark that changes hands, eases between colours */
+.figs[data-scrub] .art path {
+  transition:
+    stroke 360ms var(--ease-quad),
+    fill 360ms var(--ease-quad);
+}
+
+.caption {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.body {
+  max-width: 36ch;
+  color: var(--ink-2);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+@media (max-width: 860px) {
+  .figs {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+
+  .fig {
+    padding: 0;
+  }
+
+  .fig + .fig {
+    padding-top: 40px;
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .art {
+    height: 200px;
+  }
+}

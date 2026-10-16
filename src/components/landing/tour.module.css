@@ -1,0 +1,1346 @@
+/* The product in use: the app window on a dotted stage, a pointer working it, five chapters underneath. */
+
+/* ---------- the runway ----------
+   With motion on, the stage and its chapters pin under the nav while a tall runway scrolls past; how far along
+   it the page is decides which moment of the morning the window shows. */
+.runway[data-pin] {
+  height: 340svh;
+}
+
+.runway[data-pin] .frame {
+  position: sticky;
+  top: 76px;
+}
+
+.runway[data-pin] .stage {
+  padding-top: clamp(14px, 2.4vw, 28px);
+  padding-bottom: clamp(14px, 2.4vw, 28px);
+}
+
+.runway[data-pin] .window {
+  height: clamp(420px, calc(100svh - 310px), 580px);
+}
+
+/* ---------- the stage ----------
+   A field of dots under the window, fading out toward the edges, with a little of the accent coming up
+   from behind it: the way a product is set on a page, without a gradient poster behind it. */
+.stage {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(20px, 4vw, 56px) clamp(8px, 4vw, 56px);
+  border-radius: 24px;
+  box-shadow: inset 0 0 0 1px var(--rule);
+  background: color-mix(in oklab, var(--bay) 55%, var(--console));
+  overflow: hidden;
+}
+
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--ink) 16%, transparent) 1px, transparent 1.4px);
+  background-size: 18px 18px;
+  mask-image: radial-gradient(70% 80% at 50% 45%, #000 20%, transparent 78%);
+  pointer-events: none;
+}
+
+.stage::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 15%;
+  right: 15%;
+  bottom: -30%;
+  height: 70%;
+  background: radial-gradient(50% 50% at 50% 50%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 70%);
+  filter: blur(20px);
+  pointer-events: none;
+}
+
+/* ---------- the window ---------- */
+
+.window {
+  position: relative;
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  height: clamp(520px, 44vw, 580px);
+  padding: 7px 7px 7px 0;
+  border-radius: 16px;
+  background: color-mix(in oklab, var(--console) 55%, var(--bay));
+  box-shadow:
+    inset 0 0 0 1px var(--rule),
+    inset 0 1px 0 color-mix(in oklab, var(--ink) 7%, transparent),
+    0 30px 60px -30px rgba(0, 0, 0, 0.8);
+  text-align: left;
+  overflow: hidden;
+  user-select: none;
+  cursor: default;
+}
+
+/* sidebar */
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 8px 10px 6px 12px;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.workspace {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 34px;
+  margin-bottom: 8px;
+  padding: 0 6px;
+}
+
+.face {
+  display: inline-flex;
+  padding: 3px 6px 2px;
+  border-radius: 6px;
+  background: var(--bay-3);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+  font-size: 11.5px;
+  line-height: 1;
+}
+
+.wsName {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 590;
+  letter-spacing: -0.01em;
+}
+
+.wsCaret {
+  color: var(--ink-3);
+}
+
+.nav,
+.repos {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav li,
+.repos li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-quick) var(--ease-quad),
+    color var(--dur-quick) var(--ease-quad);
+}
+
+.nav li svg {
+  flex: none;
+  color: var(--ink-3);
+}
+
+.nav li[data-on] {
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
+  color: var(--ink);
+}
+
+.nav li[data-on] svg {
+  color: var(--ink-2);
+}
+
+.navCount {
+  margin-left: auto;
+  color: var(--move-text);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sideHead {
+  margin: 18px 0 4px;
+  padding: 0 8px;
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.repoCode {
+  display: grid;
+  place-items: center;
+  flex: none;
+  min-width: 26px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-3);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.repoName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* the inset panel */
+
+.main {
+  position: relative;
+  min-width: 0;
+  border-radius: 10px;
+  background: var(--bay);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  overflow: hidden;
+}
+
+.tabs {
+  display: none;
+}
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  animation: pane-in 420ms var(--ease-out) both;
+}
+
+@keyframes pane-in {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+
+/* ---------- sign on ---------- */
+
+.connect,
+.loading {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 10px;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+}
+
+.connectFace {
+  margin-bottom: 6px;
+  padding: 5px 9px 4px;
+  border-radius: 8px;
+  background: var(--bay-3);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1;
+}
+
+.connectTitle {
+  font-size: 19px;
+  font-weight: 560;
+  letter-spacing: -0.016em;
+}
+
+.connectText {
+  max-width: 34ch;
+  margin-bottom: 14px;
+  color: var(--ink-2);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.fieldLabel {
+  width: min(100%, 340px);
+  color: var(--ink-2);
+  font-size: 12.5px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  width: min(100%, 340px);
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  transition: box-shadow var(--dur-quick) var(--ease-quad);
+}
+
+.field[data-focus] {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--accent) 70%, transparent),
+    0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+
+.placeholder {
+  color: var(--ink-3);
+  font-family: var(--font-print);
+  font-size: 13px;
+}
+
+/* the token types in a character at a time, hidden as it goes */
+.dots {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink-2);
+  animation: type-in 1ms linear calc(var(--i) * 52ms) backwards;
+}
+
+@keyframes type-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.caret {
+  width: 1.5px;
+  height: 17px;
+  margin-left: 4px;
+  background: var(--accent);
+  animation: caret 1s steps(1) infinite;
+}
+
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+.signon {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  margin-top: 8px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--console);
+  font-size: 13.5px;
+  font-weight: 560;
+}
+
+.loading {
+  color: var(--ink-2);
+  font-size: 13.5px;
+}
+
+/* ---------- the bay ---------- */
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 52px;
+  padding: 0 16px 0 20px;
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+
+.headTitle {
+  font-size: 15px;
+  font-weight: 560;
+  letter-spacing: -0.01em;
+}
+
+.headCount {
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.headCount > span:first-child {
+  color: var(--ink);
+}
+
+.headStalled {
+  color: var(--pencil-text);
+  animation: pane-in 400ms var(--ease-out) both;
+}
+
+.headNote {
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.sync {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: auto;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sync[data-on] svg {
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.list {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-height: 0;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.list > div {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.rack {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* rows arrive from GitHub one after another when the bay first fills */
+.row {
+  position: relative;
+  border-radius: 8px;
+  animation: row-in 460ms var(--ease-out) calc(var(--i) * 70ms) backwards;
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.row > * {
+  transition:
+    background-color var(--dur-quick) var(--ease-quad),
+    box-shadow var(--dur-quick) var(--ease-quad);
+}
+
+/* the priority bars sit before the title, as the app's rows have them */
+.prio {
+  display: inline-flex;
+  margin-right: 7px;
+  vertical-align: -1px;
+}
+
+.row[data-hover] > * {
+  background: var(--bay-3);
+}
+
+/* the keyboard's place in the list: a raised row with a bar of the accent on its left edge */
+.row[data-sel] > * {
+  background: var(--surface-sel);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+}
+
+.row[data-sel]::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 9px;
+  bottom: 9px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+/* ---------- the drawer ---------- */
+
+.drawer {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(360px, 62%);
+  padding: 18px 20px;
+  border-left: 1px solid var(--rule-2);
+  background: var(--bay-2);
+  box-shadow: -24px 0 48px -24px rgba(0, 0, 0, 0.7);
+  transform: translateX(104%);
+  transition: transform 420ms var(--ease-out);
+}
+
+.drawer[data-open] {
+  transform: none;
+}
+
+.drawerTop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.drawerCode {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 26px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.drawerRef {
+  display: grid;
+  color: var(--ink-2);
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+
+.drawerRef span:last-child {
+  color: var(--ink-3);
+}
+
+.drawerTitle {
+  font-size: 17px;
+  font-weight: 560;
+  line-height: 1.3;
+  letter-spacing: -0.014em;
+}
+
+.drawerStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.drawerReason {
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.drawerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.drawerOpen,
+.drawerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 11px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.drawerOpen {
+  background: var(--ink);
+  color: var(--console);
+}
+
+.drawerBtn {
+  background: var(--quiet-bg);
+  box-shadow: var(--quiet-ring);
+  color: var(--ink);
+}
+
+.drawerPrio {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.drawerLabel {
+  width: 64px;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+.prioWrap {
+  position: relative;
+}
+
+.prioTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 9px;
+  border-radius: 7px;
+  background: color-mix(in oklab, var(--ink) 5%, transparent);
+  color: var(--ink-2);
+  font-size: 12.5px;
+}
+
+.prioTrigger[data-set] > span {
+  animation: stamp 320ms var(--ease-out);
+}
+
+@keyframes stamp {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.4;
+  }
+  60% {
+    transform: scale(1.08);
+  }
+}
+
+.prioNone {
+  color: var(--ink-3);
+}
+
+/* a menu opens from its trigger, a short scale from 0.96 */
+.menu {
+  position: absolute;
+  z-index: 3;
+  top: calc(100% + 6px);
+  left: 0;
+  display: grid;
+  width: 220px;
+  padding: 5px;
+  border-radius: 10px;
+  background: var(--bay-3);
+  box-shadow:
+    inset 0 0 0 1px var(--rule-2),
+    0 18px 40px -8px rgba(0, 0, 0, 0.6);
+  transform-origin: top left;
+  animation: pop 160ms var(--ease-out);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+.menuItem {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.menuItem:first-child {
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
+}
+
+.menuText {
+  display: grid;
+  font-size: 13px;
+}
+
+.menuText strong {
+  font-weight: 500;
+}
+
+.menuText span {
+  color: var(--ink-3);
+  font-size: 11.5px;
+}
+
+.facts {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.facts div {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 12px;
+  font-size: 12.5px;
+}
+
+.facts dt {
+  color: var(--ink-3);
+}
+
+.facts dd {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+/* ---------- moments over the window ---------- */
+
+/* a jump in time, the way a recording cuts: a pill drops in at the top of the panel */
+.skip {
+  position: absolute;
+  z-index: 8;
+  top: 64px;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100% - 32px);
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--bay-3) 88%, transparent);
+  backdrop-filter: blur(10px);
+  box-shadow:
+    inset 0 0 0 1px var(--rule-2),
+    0 12px 30px -10px rgba(0, 0, 0, 0.7);
+  color: var(--ink);
+  font-size: 13px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  animation: drop-in 460ms var(--ease-out) both;
+}
+
+.skip svg {
+  flex: none;
+  color: var(--move);
+}
+
+@keyframes drop-in {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translate(-50%, -10px);
+  }
+}
+
+.toast {
+  position: absolute;
+  z-index: 8;
+  left: 16px;
+  bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--bay-3);
+  box-shadow:
+    inset 0 0 0 1px var(--rule-2),
+    0 12px 30px -10px rgba(0, 0, 0, 0.7);
+  color: var(--ink);
+  font-size: 13px;
+  white-space: nowrap;
+  animation: toast-in 380ms var(--ease-out) both;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* the key just pressed, as a recording shows it */
+.keys {
+  position: absolute;
+  z-index: 9;
+  left: 50%;
+  bottom: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  padding: 0 14px 0 6px;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--console) 82%, transparent);
+  backdrop-filter: blur(10px);
+  box-shadow:
+    inset 0 0 0 1px var(--rule-2),
+    0 16px 34px -12px rgba(0, 0, 0, 0.8);
+  color: var(--ink-2);
+  font-size: 13px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  animation: key-in 620ms var(--ease-out) both;
+}
+
+.keys kbd {
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: var(--bay-3);
+  box-shadow:
+    inset 0 0 0 1px var(--rule-2),
+    inset 0 -2px 0 color-mix(in oklab, var(--console) 70%, transparent);
+  color: var(--ink);
+  font-family: var(--font-print);
+  font-size: 12.5px;
+  font-weight: 500;
+  animation: key-press 260ms var(--ease-out) 60ms both;
+}
+
+@keyframes key-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px) scale(0.96);
+  }
+}
+
+@keyframes key-press {
+  40% {
+    transform: translateY(1px) scale(0.94);
+    background: color-mix(in oklab, var(--accent) 30%, var(--bay-3));
+  }
+}
+
+/* ---------- the pointer ---------- */
+
+.cursor {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  transition: transform var(--move, 0ms) cubic-bezier(0.45, 0.05, 0.2, 1);
+  will-change: transform;
+}
+
+.arrow {
+  position: absolute;
+  top: -2px;
+  left: -3px;
+  width: 20px;
+  max-width: none;
+  height: 22px;
+  overflow: visible;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.55));
+  transform-origin: 3px 2px;
+  transition: transform 140ms var(--ease-out);
+}
+
+.arrow path {
+  fill: #fff;
+  stroke: #0b0b0c;
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+}
+
+.arrow[data-tap] {
+  animation: tap 260ms var(--ease-out);
+}
+
+.cursor[data-press="hold"] .arrow {
+  transform: scale(0.88);
+}
+
+@keyframes tap {
+  35% {
+    transform: scale(0.84);
+  }
+}
+
+.touch {
+  display: none;
+  position: absolute;
+  top: -14px;
+  left: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: color-mix(in oklab, #fff 20%, transparent);
+  box-shadow:
+    inset 0 0 0 1.5px color-mix(in oklab, #fff 65%, transparent),
+    0 6px 16px -4px rgba(0, 0, 0, 0.6);
+  transition: transform 140ms var(--ease-out);
+}
+
+.touch[data-tap] {
+  animation: tap 260ms var(--ease-out);
+}
+
+.cursor[data-press="hold"] .touch {
+  transform: scale(0.82);
+}
+
+.ripple {
+  position: absolute;
+  top: -16px;
+  left: -16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid color-mix(in oklab, var(--accent) 80%, #fff);
+  animation: ripple 560ms var(--ease-out) both;
+}
+
+@keyframes ripple {
+  from {
+    opacity: 0.9;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+/* a card in the hand rides along under the pointer */
+.ghost {
+  position: absolute;
+  top: -14px;
+  left: -46px;
+  width: 196px;
+  transform: rotate(-2.5deg);
+  animation: lift 260ms var(--ease-out) both;
+}
+
+.ghost .card {
+  background: var(--bay-3);
+  box-shadow:
+    inset 0 0 0 1px var(--rule-2),
+    0 22px 40px -14px rgba(0, 0, 0, 0.85);
+}
+
+@keyframes lift {
+  from {
+    transform: rotate(0deg) scale(0.98);
+  }
+}
+
+/* ---------- the plan ---------- */
+
+.next {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  margin: 14px 16px 4px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  animation: pane-in 460ms var(--ease-out) both;
+}
+
+.nextLabel {
+  padding-top: 2px;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+.nextBody {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.nextRef {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+.nextTitle {
+  font-size: 15px;
+  font-weight: 560;
+  letter-spacing: -0.01em;
+}
+
+.nextWhy {
+  color: var(--ink-2);
+  font-size: 12.5px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  min-height: 0;
+  padding: 12px 16px 16px;
+}
+
+.col {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  padding: 4px;
+  border-radius: 10px;
+  transition: background-color 200ms var(--ease-quad);
+}
+
+.col[data-col="doing"]:has(.colEmpty) {
+  background: color-mix(in oklab, var(--move) 4%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--move) 22%, transparent);
+}
+
+.colHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 4px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.colCount {
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.cards {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cardSlot {
+  border-radius: 9px;
+}
+
+/* the card's place while it's in the hand */
+.cardSlot[data-lifted] .card {
+  opacity: 0.35;
+  box-shadow: none;
+  outline: 1px dashed var(--rule-2);
+  outline-offset: -1px;
+  background: transparent;
+}
+
+.cardSlot[data-landed] .card {
+  animation: settle 420ms var(--ease-out);
+}
+
+@keyframes settle {
+  0% {
+    transform: scale(1.04) rotate(-1.5deg);
+    box-shadow:
+      inset 0 0 0 1px var(--rule-2),
+      0 22px 40px -14px rgba(0, 0, 0, 0.85);
+  }
+}
+
+.colEmpty {
+  display: grid;
+  place-items: center;
+  height: 64px;
+  border-radius: 9px;
+  outline: 1px dashed var(--rule-2);
+  outline-offset: -1px;
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+.card {
+  display: grid;
+  gap: 7px;
+  padding: 10px 11px;
+  border-radius: 9px;
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  text-align: left;
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: var(--ink-3);
+  font-size: 11.5px;
+}
+
+.cardRef {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip {
+  display: grid;
+  place-items: center;
+  flex: none;
+  min-width: 24px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-2);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.cardTitle {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.cardState {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-2);
+  font-size: 11.5px;
+}
+
+.cardState svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* ---------- chapters ----------
+   Five steps under the window, each with a bar that fills as you scroll through it, the way Stripe's carousels fill. */
+.chapters {
+  margin-top: clamp(16px, 2vw, 24px);
+}
+
+.chapterList {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 24px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chapter {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 0 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-3);
+  text-align: left;
+  transition: color var(--dur-quick) var(--ease-quad);
+}
+
+.chapter:hover,
+.chapter[aria-current] {
+  color: var(--ink);
+}
+
+.bar {
+  position: relative;
+  height: 2px;
+  margin-bottom: 8px;
+  border-radius: 2px;
+  background: var(--rule-2);
+  overflow: hidden;
+}
+
+/* each bar fills with the scroll through its chapter */
+.barFill {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.chapterTitle {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.chapterBody {
+  color: var(--ink-3);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.chapter[aria-current] .chapterBody {
+  color: var(--ink-2);
+}
+
+/* ---------- narrower ---------- */
+
+@media (max-width: 1080px) {
+  .window {
+    grid-template-columns: minmax(0, 1fr);
+    padding-left: 7px;
+  }
+  .side {
+    display: none;
+  }
+  .tabs {
+    display: flex;
+    gap: 2px;
+    padding: 8px 10px 0;
+  }
+  .tabs span {
+    padding: 5px 10px;
+    border-radius: 6px;
+    color: var(--ink-3);
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+  .tabs span[data-on] {
+    background: color-mix(in oklab, var(--ink) 7%, transparent);
+    color: var(--ink);
+  }
+  .pane {
+    height: calc(100% - 37px);
+  }
+}
+
+@media (max-width: 860px) {
+  /* on a phone the chapters are a row of bars with the current one described under them */
+  .chapterList {
+    gap: 6px;
+  }
+  .chapterBody {
+    display: none;
+  }
+  .chapterTitle {
+    font-size: 12.5px;
+  }
+  .board {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 10px;
+    gap: 6px;
+  }
+  .col[data-col="next"] {
+    display: none;
+  }
+  .colHead {
+    gap: 6px;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 12px;
+    text-overflow: ellipsis;
+  }
+  .colHead svg {
+    flex: none;
+    width: 13px;
+    height: 13px;
+  }
+  .colCount {
+    display: none;
+  }
+  .arrow {
+    display: none;
+  }
+  .touch {
+    display: block;
+  }
+  .drawer {
+    width: 100%;
+    border-left: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .stage {
+    padding: 6px;
+    border-radius: 18px;
+  }
+  .window {
+    height: 540px;
+    padding: 5px;
+    border-radius: 14px;
+  }
+  .runway[data-pin] .frame {
+    top: 64px;
+  }
+  .runway[data-pin] .stage {
+    padding: 6px;
+  }
+  .runway[data-pin] .window {
+    height: clamp(400px, calc(100svh - 230px), 540px);
+  }
+  .head {
+    gap: 10px;
+    padding: 0 12px 0 14px;
+  }
+  .headCount:nth-of-type(2),
+  .headNote {
+    display: none;
+  }
+  .sync {
+    font-size: 0;
+  }
+  .list {
+    padding: 6px;
+  }
+  .next {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+    margin: 10px 10px 2px;
+    padding: 10px 12px;
+  }
+  .nextWhy {
+    display: none;
+  }
+  .card {
+    padding: 8px;
+  }
+  .cardRef,
+  .cardState {
+    display: none;
+  }
+  .cardTitle {
+    font-size: 12px;
+  }
+  .ghost {
+    width: 130px;
+    left: -30px;
+  }
+  .keys {
+    bottom: 12px;
+  }
+  .skip {
+    font-size: 12px;
+    white-space: normal;
+    height: auto;
+    min-height: 34px;
+    padding: 7px 14px;
+    width: max-content;
+    text-align: center;
+  }
+}

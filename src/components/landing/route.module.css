@@ -1,0 +1,250 @@
+/* Where the token goes: two nodes on a field of dots, three lanes between them, a light on the open ones. */
+.route {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 230px) minmax(0, 1fr) minmax(0, 230px);
+  align-items: center;
+  max-width: 1040px;
+  margin: 0 auto clamp(28px, 3.4vw, 44px);
+  padding: clamp(20px, 2.6vw, 32px) 0;
+}
+
+.route::before {
+  content: "";
+  position: absolute;
+  inset: 0 -4%;
+  z-index: -1;
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--ink) 14%, transparent) 1px, transparent 1.4px);
+  background-size: 16px 16px;
+  mask-image: radial-gradient(50% 60% at 50% 50%, #000 30%, transparent 85%);
+  pointer-events: none;
+}
+
+/* ---------- the two ends ---------- */
+
+.node {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 4px 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--bay);
+  box-shadow:
+    inset 0 0 0 1px var(--rule-2),
+    inset 0 1px 0 color-mix(in oklab, var(--ink) 6%, transparent),
+    var(--lift);
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--bay-3);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-2);
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 560;
+  letter-spacing: -0.01em;
+}
+
+.note {
+  grid-column: 1 / -1;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+/* ---------- the lanes ---------- */
+
+.lanes {
+  display: grid;
+  gap: 12px;
+  padding: 0 clamp(10px, 1.6vw, 20px);
+}
+
+.lane {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+}
+
+/* labels sit on a patch of the ground so the dots don't run through the words */
+.label {
+  order: -1;
+  padding: 0 8px;
+  border-radius: 4px;
+  background: var(--console);
+  color: var(--ink-3);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.lane[data-dir="never"] .label {
+  color: var(--pencil-text);
+}
+
+.line {
+  position: relative;
+  width: 100%;
+  height: 9px;
+}
+
+.line::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 4px;
+  height: 1px;
+  background: var(--rule-2);
+}
+
+/* an arrowhead at the end things travel toward */
+.lane:not([data-dir="never"]) .line::after {
+  content: "";
+  position: absolute;
+  top: 1.5px;
+  width: 6px;
+  height: 6px;
+  border-top: 1px solid var(--ink-3);
+  border-right: 1px solid var(--ink-3);
+}
+
+.lane[data-dir="out"] .line::after {
+  right: 1px;
+  transform: rotate(45deg);
+}
+
+.lane[data-dir="back"] .line::after {
+  left: 1px;
+  transform: rotate(-135deg);
+}
+
+/* the closed lane: dashed, with a stop in the middle */
+.lane[data-dir="never"] .line::before {
+  background: repeating-linear-gradient(90deg, color-mix(in oklab, var(--pencil) 45%, transparent) 0 4px, transparent 4px 9px);
+}
+
+.stop {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--pencil) 16%, var(--console));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--pencil) 50%, transparent);
+  color: var(--pencil-text);
+  transform: translate(-50%, -50%);
+}
+
+/* the light: a short bright head with a tail, run end to end while the route is on screen */
+.beam {
+  position: absolute;
+  inset: 3px 0;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.beam::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent calc(100% - 96px), color-mix(in oklab, var(--accent) 80%, #fff) 100%);
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.lane[data-dir="back"] .beam::before {
+  background: linear-gradient(270deg, transparent calc(100% - 96px), color-mix(in oklab, var(--move) 85%, #fff) 100%);
+  transform: translateX(100%);
+}
+
+/* the scroll carries each light from one end of its lane to the other */
+.route[data-scrub] .beam::before {
+  opacity: 1;
+}
+
+.route[data-scrub] .lane[data-dir="out"] .beam::before {
+  transform: translateX(calc(var(--out, 0) * 200% - 100%));
+}
+
+.route[data-scrub] .lane[data-dir="back"] .beam::before {
+  transform: translateX(calc(100% - var(--back, 0) * 200%));
+}
+
+/* ---------- phones: the route stands up, the browser on top ---------- */
+
+@media (max-width: 720px) {
+  .route {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 16px 0;
+  }
+  .lanes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding: 0;
+  }
+  .lane {
+    gap: 8px;
+  }
+  .label {
+    order: 0;
+    font-size: 11.5px;
+  }
+  .line {
+    width: 9px;
+    height: 56px;
+  }
+  .line::before {
+    left: 4px;
+    right: auto;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    height: auto;
+  }
+  .lane[data-dir="never"] .line::before {
+    background: repeating-linear-gradient(180deg, color-mix(in oklab, var(--pencil) 45%, transparent) 0 4px, transparent 4px 9px);
+  }
+  .lane[data-dir="out"] .line::after {
+    top: auto;
+    right: auto;
+    bottom: 1px;
+    left: 1.5px;
+    transform: rotate(135deg);
+  }
+  .lane[data-dir="back"] .line::after {
+    top: 1px;
+    left: 1.5px;
+    transform: rotate(-45deg);
+  }
+  .beam {
+    inset: 0 3px;
+  }
+  .beam::before {
+    background: linear-gradient(180deg, transparent calc(100% - 40px), color-mix(in oklab, var(--accent) 80%, #fff) 100%);
+    transform: translateY(-100%);
+  }
+  .lane[data-dir="back"] .beam::before {
+    background: linear-gradient(0deg, transparent calc(100% - 40px), color-mix(in oklab, var(--move) 85%, #fff) 100%);
+    transform: translateY(100%);
+  }
+  .route[data-scrub] .lane[data-dir="out"] .beam::before {
+    transform: translateY(calc(var(--out, 0) * 200% - 100%));
+  }
+  .route[data-scrub] .lane[data-dir="back"] .beam::before {
+    transform: translateY(calc(100% - var(--back, 0) * 200%));
+  }
+}

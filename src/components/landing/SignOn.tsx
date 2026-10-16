@@ -3,12 +3,14 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FormEvent, useRef, useState } from "react";
-import { ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+import { HoverArrow } from "@/components/kit/Kit";
 import { PrintText } from "@/components/print/PrintText";
 import { FACES } from "@/lib/faces";
 import { verifyToken } from "@/lib/github";
 import { saveAuth, updateSettings, useAuth } from "@/lib/store";
 import { useSectionFace } from "./mood";
+import { Route } from "./Route";
 import { SectionHead } from "./SectionHead";
 import sec from "./section.module.css";
 import s from "./signon.module.css";
@@ -66,7 +68,7 @@ export function SignOnForm({ onPhase, after = "/board" }: { onPhase?: (p: SignOn
   }
 
   return (
-    <form className={s.form} data-phase={phase} onSubmit={submit} noValidate>
+    <form className={s.form} data-phase={phase} onSubmit={submit} noValidate data-shine>
       <div className={s.main}>
         {auth && phase !== "ok" ? (
           <div className={s.signedOn}>
@@ -77,7 +79,7 @@ export function SignOnForm({ onPhase, after = "/board" }: { onPhase?: (p: SignOn
               <Link href="/board" className={s.submit}>
                 <span className={s.submitPaper}>
                   Go to your bay
-                  <ArrowRight size={18} strokeWidth={2.2} aria-hidden="true" />
+                  <HoverArrow />
                 </span>
               </Link>
               <Link href="/board/settings" className={s.alt}>
@@ -124,8 +126,14 @@ export function SignOnForm({ onPhase, after = "/board" }: { onPhase?: (p: SignOn
             <div className={s.row}>
               <button type="submit" className={s.submit} disabled={phase === "checking" || phase === "ok"}>
                 <span className={s.submitPaper}>
-                  {phase === "checking" ? "Checking with GitHub…" : phase === "ok" ? "Signed on" : "Check token and sign on"}
-                  <ArrowRight size={18} strokeWidth={2.2} aria-hidden="true" />
+                  {phase === "checking" ? (
+                    <span className="shimmer">Checking with GitHub…</span>
+                  ) : phase === "ok" ? (
+                    "Signed on"
+                  ) : (
+                    "Check token and sign on"
+                  )}
+                  <HoverArrow />
                 </span>
               </button>
               <Link href="/board?demo=1" className={s.alt}>
@@ -176,11 +184,12 @@ export function SignOn() {
 
   return (
     <section ref={ref} id="connect" className={sec.section} aria-labelledby="connect-title">
-      <SectionHead id="connect-title" title="Your token stays on this machine.">
+      <SectionHead id="connect-title" title="Your token stays on this machine." center>
         Spool reads GitHub with a personal access token you paste once. It&rsquo;s kept in this browser&rsquo;s local storage
         and sent only to api.github.com. Spool never posts, comments, or changes anything on GitHub. The token is optional:
         without one you can browse as a guest, and what you save carries over when you sign on.
       </SectionHead>
+      <Route />
       <SignOnForm onPhase={setPhase} />
     </section>
   );

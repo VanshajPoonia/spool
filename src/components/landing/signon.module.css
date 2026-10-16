@@ -1,11 +1,18 @@
+/* the close: the form sits centred under the centred head, a window of its own */
 .form {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.8fr);
   gap: clamp(16px, 2vw, 28px);
-  padding: clamp(16px, 2vw, 28px);
-  border-radius: 12px;
-  background: var(--bay-2);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: clamp(18px, 2.2vw, 32px);
+  border-radius: 16px;
+  background: var(--bay);
+  box-shadow:
+    inset 0 0 0 1px var(--rule),
+    inset 0 1px 0 color-mix(in oklab, var(--ink) 6%, transparent),
+    var(--lift);
 }
 
 .main {
@@ -16,45 +23,47 @@
 
 .label {
   margin-bottom: 8px;
-  font-weight: 700;
-  font-size: 16px;
+  font-weight: 500;
+  font-size: 15px;
 }
 
 .inputRow {
   display: flex;
-  padding: 3px;
-  border-radius: 6px;
-  background: var(--holder);
-  box-shadow: inset 0 1px 0 var(--holder-lip);
+  border-radius: 8px;
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
 }
 
-/* the token is typed onto a blank strip */
+.inputRow:focus-within {
+  box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 3px color-mix(in oklab, var(--accent) 25%, transparent);
+}
+
 .input {
   flex: 1;
   min-width: 0;
-  height: 50px;
+  height: 44px;
   padding: 0 14px;
   border: 0;
-  border-radius: 4px 0 0 4px;
-  background: var(--strip-plain);
-  color: var(--strip-ink);
-  caret-color: var(--strip-ink);
+  border-radius: 8px 0 0 8px;
+  background: transparent;
+  color: var(--ink);
+  caret-color: var(--accent);
   font-family: var(--font-print);
   font-variation-settings: var(--print-wdth);
   font-size: 15px;
 }
 
 .input::placeholder {
-  color: var(--strip-ink-2);
+  color: var(--ink-3);
 }
 
 .input:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
+  outline: none;
 }
 
+/* a refused token is a problem, so it takes Alert, never the stalled red */
 .form[data-phase="error"] .input {
-  box-shadow: inset 0 0 0 2px var(--pencil);
+  box-shadow: inset 0 0 0 1px var(--alert);
 }
 
 .eye {
@@ -62,14 +71,14 @@
   place-items: center;
   width: 50px;
   border: 0;
-  border-left: 1px solid var(--strip-rule);
-  border-radius: 0 4px 4px 0;
-  background: var(--strip-plain);
-  color: var(--strip-ink);
+  border-left: 1px solid var(--rule);
+  border-radius: 0 8px 8px 0;
+  background: transparent;
+  color: var(--ink-3);
 }
 
 .eye:hover {
-  background: color-mix(in oklab, var(--strip-plain) 88%, var(--strip-ink));
+  color: var(--ink);
 }
 
 .help {
@@ -91,7 +100,7 @@
 
 .help a {
   color: var(--ink);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .error {
@@ -110,32 +119,39 @@
   margin-top: 8px;
 }
 
+/* the same light pill as every main action on the page */
 .submit {
   display: inline-flex;
-  padding: 3px 3px 3px 9px;
+  padding: 0;
   border: 0;
-  border-radius: 5px;
-  background: var(--holder);
-  box-shadow: inset 0 1px 0 var(--holder-lip);
-  color: var(--strip-ink);
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--console);
   text-decoration: none;
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.07),
+    0 3px 2px rgba(0, 0, 0, 0.04);
+  transition:
+    background-color var(--dur-quick) var(--ease-quad),
+    transform var(--dur-hover) var(--ease-quad);
 }
 
 .submitPaper {
   display: inline-flex;
   align-items: center;
-  gap: 16px;
-  min-height: 50px;
-  padding: 0 16px 0 18px;
-  border-radius: var(--radius-strip);
-  background: var(--strip-pr);
-  font-weight: 700;
-  font-size: 16px;
-  transition: transform 260ms var(--ease-slide);
+  gap: 9px;
+  min-height: 42px;
+  padding: 0 17px 0 19px;
+  font-weight: 500;
+  font-size: 15px;
 }
 
-.submit:hover:not(:disabled) .submitPaper {
-  transform: translateX(6px);
+.submit:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--ink) 88%, var(--console));
+}
+
+.submit:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .submit:disabled {
@@ -148,8 +164,9 @@
 
 .alt {
   color: var(--ink-2);
-  font-weight: 600;
-  font-size: 15px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: color var(--dur-hover) var(--ease-quad);
 }
 
 .alt:hover {
@@ -170,15 +187,15 @@
   gap: 16px;
   padding: 4px 4px 4px 12px;
   border-radius: 8px;
-  background: var(--holder);
-  box-shadow: inset 0 1px 0 var(--holder-lip);
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule);
 }
 
 .fields {
   display: grid;
   margin: 0;
   border-radius: 5px;
-  background: var(--strip-plain);
+  background: var(--surface-sel);
   color: var(--strip-ink);
 }
 
@@ -194,20 +211,17 @@
 }
 
 .fields dt {
-  color: var(--strip-ink-2);
-  font-size: 10px;
-  font-weight: 700;
-  font-variation-settings: "wdth" 80;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .fields dd {
   margin: 0;
+  color: var(--ink);
   font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-weight: 700;
-  font-size: 15px;
+  font-weight: 500;
+  font-size: 14px;
 }
 
 .controller {
@@ -221,17 +235,14 @@
   justify-content: space-between;
   gap: 10px;
   padding: 10px 12px 12px 2px;
-  color: var(--strip-plain);
+  color: var(--ink);
   font-size: 18px;
 }
 
 .status > span:first-child {
-  font-size: 11px;
-  font-weight: 700;
-  font-variation-settings: "wdth" 80;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  opacity: 0.75;
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .status[data-phase="ok"] {

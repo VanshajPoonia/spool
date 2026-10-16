@@ -1,157 +1,214 @@
-/* Headline and the way in on the left, a live sample bay on the right. */
+/* The headline across the column, the way in under it, then the app itself at full width, on a lit stage. */
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
-  align-items: center;
-  gap: clamp(32px, 4.4vw, 72px);
-  padding: calc(64px + clamp(40px, 7svh, 88px)) var(--edge) clamp(48px, 8svh, 96px);
-}
-
-.copy {
-  min-width: 0;
+  position: relative;
+  padding: calc(64px + clamp(56px, 11svh, 132px)) var(--edge) clamp(32px, 4vw, 64px);
+  isolation: isolate;
 }
 
 .title {
-  max-width: 15ch;
-  font-size: clamp(38px, 4.4vw, 66px);
-  line-height: 1.02;
-  font-weight: 760;
-  font-variation-settings: "wdth" 90;
-  letter-spacing: -0.02em;
+  max-width: 17em;
+  font-size: clamp(40px, 4.9vw, 70px);
+  line-height: 1;
+  font-weight: 510;
+  letter-spacing: -0.034em;
+  text-wrap: balance;
+}
+
+/* ---------- the entrance ----------
+   The headline rises word by word out of a blur, the copy follows, then the window lights up from the
+   left under a sweeping mask, the way a screen comes on. All CSS: nothing waits on script, and reduced
+   motion or the motion switch settles every piece at once. */
+.word {
+  display: inline-block;
+  animation: rise 900ms var(--ease-out) both;
+  animation-delay: calc(60ms + var(--i) * 42ms);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(20%);
+  }
+}
+
+@keyframes rise-soft {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(8px);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* An oversized gradient mask slides across: solid on its left quarter, clear on its right, so the window
+   fills in from the left edge with a soft leading edge. The mask exists only while it runs. */
+@keyframes light-up {
+  from {
+    opacity: 0;
+    mask-image: linear-gradient(to right, #000 25%, rgb(0 0 0 / 0.9) 50%, transparent);
+    mask-size: 400% 100%;
+    mask-repeat: no-repeat;
+    mask-position: 150% 0;
+  }
+  to {
+    opacity: 1;
+    mask-image: linear-gradient(to right, #000 25%, rgb(0 0 0 / 0.9) 50%, transparent);
+    mask-size: 400% 100%;
+    mask-repeat: no-repeat;
+    mask-position: 0 0;
+  }
+}
+
+/* ---------- under the headline ---------- */
+
+.sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px 48px;
+  margin-top: clamp(24px, 2.6vw, 36px);
+}
+
+.copy {
+  max-width: 600px;
 }
 
 .offer {
-  max-width: 42ch;
-  margin-top: clamp(16px, 1.6vw, 24px);
-  color: var(--ink-2);
-  font-size: clamp(17px, 1.35vw, 20px);
+  max-width: 44ch;
+  color: var(--ink-soft);
+  font-size: clamp(17px, 1.45vw, 20px);
   line-height: 1.5;
+  letter-spacing: -0.012em;
+  animation: rise-soft 800ms var(--ease-out) 380ms both;
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: clamp(24px, 2.6vw, 36px);
-}
-
-.actions > a {
-  flex: 1 1 auto;
+  margin-top: clamp(24px, 2.4vw, 32px);
+  animation: rise-soft 800ms var(--ease-out) 470ms both;
 }
 
 .guest {
-  max-width: 52ch;
+  max-width: 56ch;
   margin-top: 16px;
   color: var(--ink-3);
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 13.5px;
+  line-height: 1.55;
+  animation: rise-soft 800ms var(--ease-out) 540ms both;
 }
 
 .guest a {
   color: var(--ink-2);
-  font-weight: 700;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--rule-2);
+  transition:
+    color var(--dur-hover) var(--ease-quad),
+    text-decoration-color var(--dur-hover) var(--ease-quad);
 }
 
 .guest a:hover {
   color: var(--ink);
+  text-decoration-color: var(--ink-3);
 }
 
-/* ---------- the console ---------- */
+/* the live next-deadline link, set where Linear puts its "New" line */
+.next {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 6px;
+  color: var(--ink-2);
+  font-size: 14px;
+  text-decoration: none;
+  animation: rise-soft 800ms var(--ease-out) 600ms both;
+  transition: color var(--dur-hover) var(--ease-quad);
+}
 
-.console {
-  min-width: 0;
-  padding: 14px;
-  border-radius: 12px;
-  background: var(--bay-2);
+.next:hover {
+  color: var(--ink);
+}
+
+.nextLabel {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.nextText {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- the stage ---------- */
+
+/* The product shot gets a stage of its own, the way Cursor mounts its app on a toned plate: a raised
+   tray, lit along its top edge, with the window set into it. No other panel on the page sits on one. */
+.stage {
+  position: relative;
+  margin-top: clamp(48px, 6vw, 84px);
+  padding: clamp(8px, 1.4vw, 18px);
+  border-radius: 24px;
+  background:
+    linear-gradient(to bottom, color-mix(in oklab, var(--ink) 4%, transparent), transparent 60%),
+    color-mix(in oklab, var(--bay) 70%, var(--console));
   box-shadow:
     inset 0 0 0 1px var(--rule),
-    0 30px 60px -36px rgba(0, 0, 0, 0.7);
+    inset 0 1px 0 color-mix(in oklab, var(--ink) 9%, transparent);
 }
 
-.consoleHead {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 4px 6px 14px;
+/* the window lights up; the stage's drop and floor light stay outside the mask */
+.stage > * {
+  animation: light-up 1100ms var(--ease-out) 300ms backwards;
 }
 
-.face {
-  flex: none;
-  padding: 6px 10px;
-  border-radius: 4px;
-  background: var(--holder);
-  color: var(--strip-plain);
-  font-size: 20px;
-  line-height: 1;
+/* the drop and a floor of light under the window, the way a product is lit on a table */
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow: var(--lift);
+  pointer-events: none;
+  animation: fade-in 700ms var(--ease-out) 900ms both;
 }
 
-.position {
-  display: grid;
-  min-width: 0;
-}
-
-.positionName {
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.positionNote {
-  overflow: hidden;
-  color: var(--ink-3);
-  font-size: 13px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.clock {
-  margin-left: auto;
-  color: var(--ink-2);
-  font-size: 18px;
-}
-
-.bays {
-  display: grid;
-  gap: 10px;
-}
-
-.rack {
-  display: grid;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.empty {
-  padding: 14px 4px;
-  color: var(--ink-3);
-  font-size: 14px;
-}
-
-@media (max-width: 1080px) {
-  .hero {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .title {
-    max-width: 18ch;
-  }
+.stage::after {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  left: 6%;
+  right: 6%;
+  top: 30%;
+  bottom: -18%;
+  background: radial-gradient(50% 55% at 50% 60%, color-mix(in oklab, var(--ink) 7%, transparent), transparent 72%);
+  pointer-events: none;
+  animation: fade-in 1400ms var(--ease-out) 500ms both;
 }
 
 @media (max-width: 860px) {
   .hero {
-    padding-top: calc(56px + 32px);
+    padding-top: calc(56px + 44px);
+  }
+  .stage {
+    padding: 5px;
+    border-radius: 18px;
+  }
+  .next {
+    padding-bottom: 0;
   }
 }
 
 @media (max-width: 560px) {
   .actions > a {
-    flex-basis: 100%;
-  }
-  .positionNote {
-    display: none;
-  }
-  .console {
-    padding: 10px;
-    margin-inline: -6px;
+    flex: 1 1 100%;
   }
 }

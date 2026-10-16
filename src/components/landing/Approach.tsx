@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pause, PlaneLanding, Play } from "lucide-react";
+import { PlaneLanding } from "lucide-react";
 import { StripButton } from "@/components/kit/Kit";
 import { Strip } from "@/components/kit/Strip";
 import { PrintText } from "@/components/print/PrintText";
@@ -12,6 +12,7 @@ import { ARRIVALS, PARKED, STALLED_FLIGHT, type SampleFlight } from "@/lib/sampl
 import type { Field, FlightRef, Phase } from "./field/field";
 import { useFlip } from "./flip";
 import { useInView, useSectionFace } from "./mood";
+import { onScrollFrame } from "./scroll";
 import { SectionHead } from "./SectionHead";
 import sec from "./section.module.css";
 import s from "./approach.module.css";
@@ -19,7 +20,11 @@ import s from "./approach.module.css";
 /*
  * The airfield: PRs as flights, review as the hold, the merge as a landing on MAIN.
  * The 3D field loads only as the section comes near; the strip below it says the same thing in words.
+ * The planes fly as the page scrolls and hold when it stops. A landing someone asks for plays out on its own.
  */
+
+// How many pixels of scroll move the field on by a second.
+const PX_PER_SECOND = 110;
 
 const ALL = [...ARRIVALS, STALLED_FLIGHT, ...PARKED];
 const CODES = assignCodes(ALL.map((f) => f.repo));
@@ -61,7 +66,8 @@ export function Approach() {
   const [hidden, setHidden] = useState(false);
   const [status, setStatus] = useState<"idle" | "ready" | "failed">("idle");
   const [gen, setGen] = useState(0);
-  const [paused, setPaused] = useState(false);
+  // a landing someone asked for runs on the clock; the rest of the time the scroll drives the field
+  const [flying, setFlying] = useState(false);
   const [view, setView] = useState<View>({ id: ARRIVALS[0].id, phase: "holding", serial: 0 });
   const [landed, setLanded] = useState<Landed[]>([]);
   const [say, setSay] = useState("");
@@ -85,7 +91,25 @@ export function Approach() {
     };
   }, []);
 
-  // Start loading the field a screen before it arrives.
+  // Load three.js and build the field while the visitor is still reading the top of the page: together they
+  // take a few hundred milliseconds, and doing that as the field scrolls in would stall the scroll.
+  useEffect(() => {
+    let idle = 0;
+    const load = () =>
+      void import("./field/field")
+        .then(() => setNear(true))
+        .catch(() => {});
+    const timer = window.setTimeout(() => {
+      if ("requestIdleCallback" in window) idle = window.requestIdleCallback(load, { timeout: 4000 });
+      else load();
+    }, 2000);
+    return () => {
+      window.clearTimeout(timer);
+      if (idle) window.cancelIdleCallback(idle);
+    };
+  }, []);
+
+  // Or a screen before it arrives, if the visitor gets there first.
   useEffect(() => {
     const el = sceneRef.current;
     if (!el) return;
@@ -117,6 +141,7 @@ export function Approach() {
       if (phase === "landed") {
         setSay(`${name} landed. Merged into main.`);
         asked.current = null;
+        window.setTimeout(() => setFlying(false), 1600);
       }
     }
   }, []);
@@ -153,8 +178,21 @@ export function Approach() {
   }, [near, still, onFocus]);
 
   useEffect(() => {
-    fieldRef.current?.setRunning(status === "ready" && visible && !paused && !hidden);
-  }, [status, gen, visible, paused, hidden]);
+    fieldRef.current?.setRunning(status === "ready" && visible && flying && !hidden);
+  }, [status, gen, visible, flying, hidden]);
+
+  // Every pixel the page scrolls, either way, moves the planes on while the field is in view.
+  useEffect(() => {
+    const field = fieldRef.current;
+    if (status !== "ready" || !field || still || flying || !visible) return;
+    let lastY = window.scrollY;
+    return onScrollFrame(() => {
+      const y = window.scrollY;
+      const d = Math.abs(y - lastY);
+      lastY = y;
+      if (d) return () => field.drive(d / PX_PER_SECOND);
+    });
+  }, [status, gen, still, flying, visible]);
 
   // Without WebGL the strip still walks through the landing, one press at a time.
   const stepByHand = () => {
@@ -169,7 +207,7 @@ export function Approach() {
   const press = () => {
     asked.current = view.id;
     if (status === "failed") return stepByHand();
-    setPaused(false);
+    if (!still) setFlying(true);
     fieldRef.current?.clear();
   };
 
@@ -219,15 +257,11 @@ export function Approach() {
         </div>
         <div className={s.tools}>
           <span className={sec.tag}>Sample data</span>
-          {!still && status === "ready" && (
-            <button type="button" className={s.tool} onClick={() => setPaused((p) => !p)} aria-pressed={paused} aria-label={paused ? "Play the airfield" : "Pause the airfield"}>
-              {paused ? <Play size={16} aria-hidden="true" /> : <Pause size={16} aria-hidden="true" />}
-            </button>
-          )}
+          {!still && status === "ready" && <span className={s.hint}>Scroll to fly</span>}
         </div>
       </div>
 
-      <div ref={deckRef} className={`${sec.panel} ${s.deck}`}>
+      <div ref={deckRef} className={`${sec.panel} ${s.deck}`} data-shine>
         <ol className={s.rail} aria-label="How a PR lands">
           {PHASES.map((p, i) => (
             <li key={p.key} className={s.plate} data-key={p.key} data-now={i === now || undefined} data-past={i < now || undefined} aria-current={i === now ? "step" : undefined}>
@@ -288,8 +322,9 @@ export function Approach() {
         </div>
 
         <p className={s.caption}>
-          The paper is the strip&rsquo;s colour: buff for your PRs, pink for one you reviewed, white for drafts parked at the stand. The tail wears the repo&rsquo;s colours.
-          The one circling alone, ringed in red, has been stalled for {STALLED_FLIGHT.quiet} days.
+          Every plane is one PR. Its tail carries the kind&rsquo;s colour, the same as the dot on its row: violet for your PRs,
+          pink for one you reviewed, grey for drafts parked at the stand. The one circling alone, ringed in red, has been stalled
+          for {STALLED_FLIGHT.quiet} days.
         </p>
         <p className="sr-only" aria-live="polite">
           {say}

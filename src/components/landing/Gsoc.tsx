@@ -11,6 +11,7 @@ import { usePrefs } from "@/lib/prefs";
 import { daysUntil, gsocPhase, gsocStations } from "@/lib/program-dates";
 import type { Gsoc as GsocData } from "@/lib/programs";
 import { fmtDate, useNow } from "@/lib/time";
+import { LiveTag } from "./LiveTag";
 import { useFlip } from "./flip";
 import { useSectionFace } from "./mood";
 import { SectionHead } from "./SectionHead";
@@ -273,7 +274,7 @@ export function Gsoc({ data, fetchedAt }: { data: GsocData | null; fetchedAt: st
         your evaluations on the line, and filter this year&rsquo;s {data.orgCount} organisations by the tech you already know.
       </SectionHead>
 
-      <div className={`${sec.panel} ${s.season}`}>
+      <div className={`${sec.panel} ${s.season}`} data-shine>
         <header className={s.seasonHead}>
           <span className={s.phase}>
             <span className={s.phaseLabel}>Now</span>
@@ -340,7 +341,7 @@ export function Gsoc({ data, fetchedAt }: { data: GsocData | null; fetchedAt: st
       </div>
 
       <div ref={exploreRef} className={s.explore}>
-        <div className={`${sec.panel} ${s.techs}`}>
+        <div className={`${sec.panel} ${s.techs}`} data-shine>
           <p className={s.count}>
             <PrintText value={String(matches.length)} length={String(data.orgCount).length} introOnView label={`${matches.length}`} />
             <span>{countText}</span>
@@ -418,7 +419,7 @@ export function Gsoc({ data, fetchedAt }: { data: GsocData | null; fetchedAt: st
       </div>
 
       <p className={s.fetched}>
-        <span className={`${sec.tag} ${sec.tagLive}`}>Live</span>
+        <LiveTag>Live</LiveTag>
         From the GSoC program site, fetched {fmtDate(fetchedAt)} at {fetchedAt.slice(11, 16)} UTC.
       </p>
     </section>

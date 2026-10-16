@@ -11,14 +11,32 @@ const COLS = 24;
 const ROWS = 3;
 // On phones the same message wraps onto a narrower, taller strip so the print stays legible.
 const NCOLS = 12;
-const NROWS = 5;
+// six rows: a deadline wraps to two lines and keeps its date whole ("APPLY BY" / "NOV 2")
+const NROWS = 6;
 const PRINTABLE = /^[A-Z0-9 .,:;!?'"\-_/\\()<>^~*+=#$%&@|]$/;
+
+const MONTHS = /^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[A-Z]*$/;
+const SEASONS = /^(WINTER|SPRING|SUMMER|FALL)$/;
+
+/* Words to wrap, with a date kept whole: "NOV 2" and "WINTER 2027" never split across rows. */
+function tokens(line: string) {
+  const words = line.split(" ").filter(Boolean);
+  const out: string[] = [];
+  for (let i = 0; i < words.length; i++) {
+    const next = words[i + 1];
+    if (next && /^\d{1,4}$/.test(next) && (MONTHS.test(words[i]) || SEASONS.test(words[i]))) {
+      out.push(`${words[i]} ${next}`);
+      i++;
+    } else out.push(words[i]);
+  }
+  return out;
+}
 
 function wrapWords(lines: string[], cols: number, rows: number) {
   const out: string[] = [];
   for (const line of lines) {
     let cur = "";
-    for (const w of line.split(" ").filter(Boolean)) {
+    for (const w of tokens(line)) {
       if (!cur) cur = w.slice(0, cols);
       else if (`${cur} ${w}`.length <= cols) cur = `${cur} ${w}`;
       else {
@@ -100,7 +118,7 @@ export function Footer({ lines }: { lines: string[] }) {
 
       <div className={s.cols}>
         <div className={s.brand}>
-          <span className={s.word}>SPOOL</span>
+          <span className={s.word}>Spool</span>
           <p>Read-only toward GitHub. Your token stays in this browser.</p>
         </div>
         <nav aria-label="Footer" className={s.links}>

@@ -1,0 +1,561 @@
+/* The hero's Spool window: the app frame, the sidebar on it, the bay and the activity pane inset. */
+.window {
+  position: relative;
+  display: grid;
+  grid-template-columns: 212px minmax(0, 1fr) minmax(0, 300px);
+  min-height: 540px;
+  padding: 7px 7px 7px 0;
+  border-radius: 16px;
+  background: color-mix(in oklab, var(--console) 55%, var(--bay));
+  box-shadow:
+    inset 0 0 0 1px var(--rule),
+    inset 0 1px 0 color-mix(in oklab, var(--ink) 7%, transparent);
+  text-align: left;
+}
+
+/* ---------- sidebar ---------- */
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 8px 10px 6px 12px;
+  color: var(--ink-2);
+  font-size: 13px;
+  user-select: none;
+}
+
+.workspace {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 34px;
+  margin-bottom: 8px;
+  padding: 0 6px;
+}
+
+.face {
+  display: inline-flex;
+  padding: 3px 6px 2px;
+  border-radius: 6px;
+  background: var(--bay-3);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+  font-size: 11.5px;
+  line-height: 1;
+}
+
+.wsName {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 590;
+  letter-spacing: -0.01em;
+}
+
+.wsCaret {
+  color: var(--ink-3);
+}
+
+.nav,
+.repos {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav li,
+.repos li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.nav li svg {
+  flex: none;
+  color: var(--ink-3);
+}
+
+.nav li[data-on] {
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
+  color: var(--ink);
+}
+
+.nav li[data-on] svg {
+  color: var(--ink-2);
+}
+
+.navCount {
+  margin-left: auto;
+  color: var(--ink-3);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sideHead {
+  margin: 18px 0 4px;
+  padding: 0 8px;
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.repoCode {
+  display: grid;
+  place-items: center;
+  flex: none;
+  min-width: 26px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-3);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.repoName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.repos li {
+  transition:
+    background-color var(--dur-quick) var(--ease-quad),
+    color var(--dur-quick) var(--ease-quad);
+}
+
+.repos li[data-on] {
+  background: color-mix(in oklab, var(--ink) 4%, transparent);
+  color: var(--ink);
+}
+
+.repos li[data-on] .repoCode {
+  color: var(--ink-2);
+}
+
+.synced {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: auto;
+  padding: 8px 8px 2px;
+  color: var(--ink-3);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- the inset panel: bay and activity ---------- */
+
+.main,
+.detail {
+  min-width: 0;
+  background: var(--bay);
+}
+
+.main {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  border-radius: 10px 0 0 10px;
+  box-shadow:
+    inset 1px 0 0 var(--rule),
+    inset 0 1px 0 var(--rule),
+    inset 0 -1px 0 var(--rule);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 12px 0 18px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.barTitle {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.006em;
+}
+
+.sample {
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-3);
+  font-family: var(--font-print);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 20px;
+  text-transform: uppercase;
+}
+
+.clock {
+  margin-left: auto;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.play {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--quiet-bg);
+  box-shadow: var(--quiet-ring);
+  color: var(--ink);
+  transition: background-color var(--dur-quick) var(--ease-quad);
+}
+
+.play:hover {
+  background: var(--quiet-bg-hover);
+}
+
+.list {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 10px;
+}
+
+/* inside the window the groups lie flat on the panel */
+.list > div {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.rack {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item[data-picked] > * {
+  background: var(--bay-3);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+}
+
+.empty {
+  padding: 10px 12px;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+/* ---------- the day scrubber ---------- */
+
+.scrub {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px 14px;
+  border-top: 1px solid var(--rule);
+}
+
+.scrubLabel {
+  color: var(--ink-3);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.track {
+  position: relative;
+  height: 20px;
+}
+
+.track input {
+  --p: 0%;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+/* touch screens: the track reads the finger itself and lets vertical drags scroll the page */
+@media (pointer: coarse) {
+  .track {
+    touch-action: pan-y;
+  }
+  .track input {
+    pointer-events: none;
+  }
+}
+
+.track input::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--ink-2) var(--p), var(--rule-2) var(--p));
+}
+
+.track input::-moz-range-track {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--ink-2) var(--p), var(--rule-2) var(--p));
+}
+
+.track input::-webkit-slider-thumb {
+  width: 14px;
+  height: 14px;
+  margin-top: -5.5px;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--ink) 12%, transparent);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.track input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+/* every event of the day is a tick; the ones the clock has passed turn yellow */
+.ticks {
+  position: absolute;
+  left: 7px;
+  right: 7px;
+  top: 14px;
+  height: 5px;
+  pointer-events: none;
+}
+
+.ticks span {
+  position: absolute;
+  width: 2px;
+  height: 5px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--rule-2);
+  transition: background-color var(--dur-quick) var(--ease-quad);
+}
+
+.ticks span[data-passed] {
+  background: var(--move);
+}
+
+/* ---------- activity ---------- */
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  padding: 18px 20px;
+  border-radius: 0 10px 10px 0;
+  border-left: 1px solid var(--rule);
+  box-shadow:
+    inset -1px 0 0 var(--rule),
+    inset 0 1px 0 var(--rule),
+    inset 0 -1px 0 var(--rule);
+}
+
+.detailId {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.detailRepo {
+  overflow: hidden;
+  font-weight: 400;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.detailTitle {
+  margin-top: 8px;
+  font-size: 17px;
+  font-weight: 510;
+  line-height: 1.3;
+  letter-spacing: -0.014em;
+  text-wrap: balance;
+}
+
+.detailState {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.detailQuiet {
+  margin-left: auto;
+  color: var(--ink-3);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+.detailState[data-state="stalled"] .detailQuiet {
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--pencil) 16%, transparent);
+  color: var(--pencil);
+  font-weight: 500;
+}
+
+.detailHead {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* a timeline: marks joined by a hairline, newest last */
+.log {
+  display: grid;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.log li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+  padding: 7px 0;
+  opacity: 0.62;
+}
+
+.log li > svg {
+  margin-top: 1px;
+}
+
+.log li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 7.5px;
+  top: 27px;
+  bottom: -5px;
+  width: 1px;
+  background: var(--rule-2);
+}
+
+.log li[data-now] {
+  opacity: 1;
+  animation: log-in 520ms var(--ease-out) both;
+}
+
+@keyframes log-in {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translateY(8px);
+  }
+}
+
+.logBody {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.logStatus {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.logNote {
+  color: var(--ink-3);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.logTime {
+  color: var(--ink-3);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- narrower ---------- */
+
+/* the sidebar goes first, then the activity drops under the bay */
+@media (max-width: 1180px) {
+  .window {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 270px);
+    padding-left: 7px;
+  }
+  .side {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .window {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    padding: 6px;
+    border-radius: 14px;
+  }
+  .main {
+    border-radius: 10px 10px 0 0;
+    box-shadow:
+      inset 1px 0 0 var(--rule),
+      inset -1px 0 0 var(--rule),
+      inset 0 1px 0 var(--rule);
+  }
+  .detail {
+    padding: 14px 16px 16px;
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+    border-radius: 0 0 10px 10px;
+    box-shadow:
+      inset 1px 0 0 var(--rule),
+      inset -1px 0 0 var(--rule),
+      inset 0 -1px 0 var(--rule);
+  }
+  .detailTitle {
+    font-size: 15px;
+  }
+  /* on a phone only the last two moves show */
+  .log li:not(:nth-last-child(-n + 2)) {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .bar {
+    padding: 0 10px 0 14px;
+  }
+  .sample {
+    display: none;
+  }
+  .list {
+    padding: 6px;
+  }
+  .scrub {
+    padding: 10px 14px 12px;
+    gap: 10px;
+  }
+}

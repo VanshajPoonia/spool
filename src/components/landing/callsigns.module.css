@@ -19,8 +19,8 @@
   margin-bottom: 6px;
   padding: 0 6px;
   color: var(--ink-2);
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .tab {
@@ -70,10 +70,9 @@
 }
 
 .tabCount {
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 500;
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
 }
 
 .tabCount span {
@@ -95,15 +94,28 @@
 }
 
 /* the callsign at reading distance, printed on a strip of its own */
+/* the repo's callsign at reading distance, the same tile the repo page uses */
 .bigCode {
+  display: grid;
+  place-items: center;
   flex: none;
-  padding: 10px 14px 9px;
-  border-radius: 5px;
-  background: var(--strip-pr);
-  box-shadow: 0 0 0 4px var(--holder);
-  color: var(--strip-ink);
-  font-size: clamp(28px, 3vw, 40px);
+  min-width: 52px;
+  height: 52px;
+  padding: 0 10px;
+  border-radius: 12px;
+  background: var(--bay-3);
+  box-shadow:
+    inset 0 0 0 1px var(--rule-2),
+    inset 0 1px 0 color-mix(in oklab, var(--ink) 6%, transparent);
+  color: var(--ink);
+  font-size: 18px;
   line-height: 1;
+}
+
+.bigCode :global(.print) {
+  font-family: var(--font-ui);
+  font-weight: 590;
+  letter-spacing: 0.02em;
 }
 
 .recordTitle {
@@ -114,9 +126,9 @@
 
 .recordTitle h3 {
   overflow: hidden;
-  font-size: clamp(19px, 1.7vw, 24px);
-  font-weight: 700;
-  letter-spacing: -0.012em;
+  font-size: clamp(18px, 1.6vw, 22px);
+  font-weight: 510;
+  letter-spacing: -0.016em;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -171,23 +183,28 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  min-height: 56px;
-  padding: 8px 14px;
+  min-height: 48px;
+  padding: 6px 14px;
   border: 0;
-  border-radius: 8px;
-  background: var(--bay);
+  border-radius: 10px;
+  background: transparent;
   box-shadow: inset 0 0 0 1px var(--rule);
   color: var(--ink-2);
   text-align: left;
-  transition: background-color 200ms var(--ease-out);
+  transition:
+    background-color var(--dur-hover) var(--ease-quad),
+    box-shadow var(--dur-hover) var(--ease-quad),
+    color var(--dur-hover) var(--ease-quad);
 }
 
 .bucket:hover {
-  background: var(--bay-3);
+  background: color-mix(in oklab, var(--ink) 4%, transparent);
 }
 
+/* the picked outcome is raised, like a picked chip */
 .bucket[aria-pressed="true"] {
-  box-shadow: inset 0 0 0 2px var(--ink-2);
+  background: var(--surface-sel);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
   color: var(--ink);
 }
 
@@ -195,13 +212,18 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-weight: 700;
-  font-size: 15px;
+  font-weight: 500;
+  font-size: 14px;
 }
 
 .bucketCount {
-  font-size: 24px;
+  font-size: 22px;
   line-height: 1;
+}
+
+.bucketCount :global(.print) {
+  font-family: var(--font-ui);
+  font-weight: 510;
 }
 
 .list {

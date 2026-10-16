@@ -1,0 +1,601 @@
+/* How a thread becomes a row: a panel that pops out to fill the screen, a row that builds at the top, and a line of
+   cards the scroll carries past underneath. */
+
+.section {
+  padding-top: clamp(40px, 5vw, 72px);
+}
+
+/* ---------- the runway and the panel ---------- */
+
+.runway[data-pin] {
+  height: 340svh;
+  margin: 0 calc(-1 * var(--edge));
+}
+
+.runway[data-pin] .frame {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+}
+
+.pop {
+  --ix: 0px;
+  --iy: 0px;
+  --r: 0px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 2.6vh, 32px);
+  padding: clamp(22px, 3vw, 44px);
+  border-radius: 16px;
+  background: var(--bay);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+
+/* pinned, the panel fills the screen, cut back to a card by the scroll while it pops out and settles back */
+.runway[data-pin] .pop {
+  position: absolute;
+  inset: 0;
+  padding: calc(64px + clamp(14px, 3.4vh, 40px)) var(--edge) clamp(14px, 3vh, 32px);
+  border-radius: 0;
+  box-shadow: none;
+  clip-path: inset(var(--iy) var(--ix) round var(--r));
+  will-change: clip-path;
+}
+
+/* the panel's edge, drawn just inside the cut so it follows the panel as it opens and closes */
+.runway[data-pin] .pop::before {
+  content: "";
+  position: absolute;
+  inset: var(--iy) var(--ix);
+  border-radius: var(--r);
+  box-shadow:
+    inset 0 0 0 1px var(--rule-2),
+    inset 0 1px 0 color-mix(in oklab, var(--ink) 6%, transparent);
+  pointer-events: none;
+}
+
+/* ---------- the row at the top ---------- */
+
+.top {
+  display: grid;
+  gap: clamp(12px, 2.4vh, 28px);
+}
+
+.head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: end;
+  gap: 12px clamp(32px, 6vw, 96px);
+}
+
+.h2 {
+  max-width: 16ch;
+  font-size: clamp(28px, 3.2vw, 44px);
+  line-height: 1.06;
+  font-weight: 510;
+  letter-spacing: -0.024em;
+}
+
+.lede {
+  max-width: 52ch;
+  color: var(--ink-soft);
+  font-size: clamp(15px, 1.25vw, 17.5px);
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+}
+
+.stage {
+  position: relative;
+  padding-top: 58px;
+}
+
+/* ---------- callouts ---------- */
+
+.marks {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 58px;
+  pointer-events: none;
+}
+
+.mark {
+  position: absolute;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-left: -12px;
+  border-radius: 7px;
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-2);
+  font-family: var(--font-print);
+  font-size: 11.5px;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity 360ms var(--ease-out),
+    transform 360ms var(--ease-out),
+    left 360ms var(--ease-out),
+    background-color var(--dur-quick) var(--ease-quad),
+    color var(--dur-quick) var(--ease-quad);
+}
+
+/* the leader drops from the letter to the part it names */
+.mark::after {
+  content: "";
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  width: 1px;
+  height: 26px;
+  background: repeating-linear-gradient(to bottom, var(--rule-2) 0 3px, transparent 3px 6px);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 420ms var(--ease-out) 120ms;
+}
+
+.mark[data-on] {
+  opacity: 1;
+  transform: none;
+}
+
+.mark[data-on]::after {
+  transform: scaleY(1);
+}
+
+.mark[data-lit] {
+  background: var(--ink);
+  box-shadow: none;
+  color: var(--console);
+}
+
+.mark[data-lit]::after {
+  background: repeating-linear-gradient(to bottom, var(--ink-2) 0 3px, transparent 3px 6px);
+}
+
+/* ---------- the row while it prints ---------- */
+
+.blank,
+.blankWide {
+  display: inline-block;
+  height: 0.7em;
+  border-radius: 3px;
+  background: var(--rule);
+  vertical-align: middle;
+}
+
+.blank {
+  width: 3.2em;
+}
+
+.blankWide {
+  width: min(16em, 60%);
+}
+
+.titlePrint {
+  font-family: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  white-space: pre-wrap;
+}
+
+/* pointing at a part of the key dims every other part of the row */
+.pop [data-paper] > * {
+  transition: opacity 220ms var(--ease-quad);
+}
+
+.pop[data-focus] [data-paper] > * {
+  opacity: 0.22;
+}
+
+.pop[data-focus="A"] [data-paper] > [data-part="A"],
+.pop[data-focus="B"] [data-paper] > [data-part="B"],
+.pop[data-focus="C"] [data-paper] > [data-part="C"],
+.pop[data-focus="D"] [data-paper] > [data-part="D"],
+.pop[data-focus="E"] [data-paper] > [data-part="E"] {
+  opacity: 1;
+}
+
+.caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+/* ---------- the cards ---------- */
+
+.rail {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  margin: 0 calc(-1 * var(--edge));
+  overflow: hidden;
+}
+
+.runway:not([data-pin]) .rail {
+  margin: 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.track {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(14px, 1.6vw, 24px);
+  width: max-content;
+  margin: 0;
+  padding: 6px var(--edge);
+  list-style: none;
+  will-change: transform;
+}
+
+.runway:not([data-pin]) .track {
+  padding: 6px 0;
+}
+
+.card {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  align-content: start;
+  gap: 12px;
+  width: clamp(280px, 30vw, 400px);
+  padding: clamp(18px, 1.8vw, 24px);
+  border-radius: 14px;
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  opacity: 0.42;
+  scroll-snap-align: start;
+  transition:
+    opacity 320ms var(--ease-out),
+    transform 420ms var(--ease-out),
+    box-shadow 320ms var(--ease-out);
+}
+
+.card[data-on] {
+  opacity: 1;
+  box-shadow:
+    inset 0 0 0 1px var(--rule-2),
+    inset 0 1px 0 color-mix(in oklab, var(--ink) 6%, transparent),
+    var(--lift);
+  transform: translateY(-4px);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.letter {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-2);
+  font-family: var(--font-print);
+  font-size: 12px;
+  font-weight: 500;
+  transition:
+    background-color 320ms var(--ease-quad),
+    color 320ms var(--ease-quad);
+}
+
+.card[data-on] .letter {
+  background: var(--ink);
+  box-shadow: none;
+  color: var(--console);
+}
+
+.cardName {
+  font-size: 17px;
+  font-weight: 560;
+  letter-spacing: -0.012em;
+}
+
+.cardText {
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.cardLink {
+  justify-self: start;
+  align-self: end;
+}
+
+/* what Spool reads, and what it makes of it */
+.ev {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+}
+
+.evLabel {
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.qchip {
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-3);
+  font-family: var(--font-print);
+  font-size: 11px;
+  line-height: 22px;
+}
+
+.qchip[data-hit] {
+  background: color-mix(in oklab, var(--accent) 16%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 55%, transparent);
+  color: var(--ink);
+}
+
+.evOut {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.evOut > svg:first-child {
+  color: var(--ink-3);
+}
+
+.repoName {
+  color: var(--ink-3);
+  font-family: var(--font-print);
+  font-size: 13px;
+}
+
+.repoName b {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--accent) 70%, transparent);
+  text-underline-offset: 3px;
+}
+
+.code {
+  display: grid;
+  place-items: center;
+  min-width: 34px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.evTitle {
+  color: var(--ink-2);
+  font-size: 13.5px;
+}
+
+.kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  font-size: 12px;
+}
+
+.kind span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--strip-issue);
+}
+
+.said {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-2);
+  font-size: 13.5px;
+}
+
+.said b {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.saidWhen {
+  margin-left: auto;
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+/* the silence against the limit: grey up to it, red past it */
+.meter {
+  position: relative;
+  height: 6px;
+  margin-top: 18px;
+  border-radius: 3px;
+  background: var(--rule-2);
+}
+
+.meterFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--q) * 100%);
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--ink-3) calc(var(--l) / var(--q) * 100%), var(--pencil) 0);
+}
+
+.meterLimit {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  left: calc(var(--l) * 100%);
+  width: 1px;
+  background: var(--ink-2);
+}
+
+.meterLimit span {
+  position: absolute;
+  bottom: calc(100% + 3px);
+  left: 50%;
+  color: var(--ink-3);
+  font-size: 11px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+/* ---------- the steps under the cards ---------- */
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(8px, 1.4vw, 20px);
+}
+
+.step {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0 0;
+  border: 0;
+  background: none;
+  color: var(--ink-3);
+  font-size: 13px;
+  text-align: left;
+  transition: color var(--dur-quick) var(--ease-quad);
+}
+
+.step::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--rule-2);
+  transition: background-color 320ms var(--ease-out);
+}
+
+.step[data-on]::before {
+  background: color-mix(in oklab, var(--ink) 45%, var(--rule-2));
+}
+
+.step[aria-current]::before {
+  background: var(--ink);
+}
+
+.step:hover,
+.step[aria-current] {
+  color: var(--ink);
+}
+
+.stepLetter {
+  font-family: var(--font-print);
+  font-size: 11.5px;
+}
+
+.runway:not([data-pin]) .steps {
+  display: none;
+}
+
+/* ---------- each repo's record ---------- */
+
+.records {
+  margin-top: clamp(72px, 9vw, 128px);
+}
+
+.subHead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px clamp(32px, 6vw, 96px);
+  margin-bottom: clamp(28px, 3.4vw, 44px);
+}
+
+.subTitle {
+  max-width: 18ch;
+  font-size: clamp(24px, 2.4vw, 32px);
+  font-weight: 510;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+.subLede {
+  max-width: 52ch;
+  padding-top: 0.2em;
+  color: var(--ink-2);
+  font-size: clamp(15px, 1.2vw, 16.5px);
+  line-height: 1.6;
+}
+
+/* ---------- narrower ---------- */
+
+/* on narrow screens the callouts give way; the lit card still dims the rest of the row */
+@media (max-width: 860px) {
+  .head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .stage {
+    padding-top: 0;
+  }
+  .marks {
+    display: none;
+  }
+  .subHead {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .card {
+    width: min(78vw, 360px);
+  }
+  .stepName {
+    display: none;
+  }
+  .step {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 560px) {
+  .runway[data-pin] .pop {
+    gap: 14px;
+    padding-top: calc(64px + 14px);
+  }
+  .h2 {
+    font-size: 26px;
+  }
+  .lede {
+    font-size: 14px;
+  }
+  .caption {
+    display: none;
+  }
+  .cardText {
+    font-size: 13.5px;
+  }
+}

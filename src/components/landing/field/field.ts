@@ -34,7 +34,10 @@ export type FieldOptions = {
 export type Field = {
   /** clear the plane at the bottom of the stack to land; false when none is ready */
   clear: () => boolean;
+  /** run on the clock, for a landing someone asked for */
   setRunning: (on: boolean) => void;
+  /** move the field on by this many seconds, paid out over the next frames; the page's scroll calls it */
+  drive: (seconds: number) => void;
   dispose: () => void;
 };
 
@@ -161,22 +164,24 @@ function tokens(el: Element) {
     light,
     bg: get("--console", "#14181d"),
     rule: get("--rule-2", "#3b4551"),
-    holder: get("--holder", "#0c0f12"),
-    lane: light ? "#3c4550" : "#20262e",
-    paint: light ? "#ffffff" : get("--strip-plain", "#e6eaee"),
-    move: get("--move", "#ffb21e"),
-    pencil: get("--pencil", "#d0352a"),
-    landed: get("--landed", "#6fd59a"),
-    tower: light ? "#c3ccd5" : "#323b46",
-    glass: light ? "#8ea4b8" : get("--strip-pr", "#f1dfa6"),
-    edge: light ? "#f6f1e2" : "#ffe7b0",
-    dim: light ? "#8a96a2" : "#3a434e",
-    paper: {
-      pr: get("--strip-pr", "#f1dfa6"),
-      review: get("--strip-review", "#f3c1cd"),
-      plain: get("--strip-plain", "#e6eaee"),
+    holder: light ? "#3a3f47" : "#16171a",
+    lane: light ? "#d9dce0" : "#1c1d20",
+    paint: light ? "#ffffff" : "#c9ced6",
+    move: get("--move", "#f2c94c"),
+    pencil: get("--pencil", "#eb5757"),
+    landed: get("--landed", "#4cb782"),
+    tower: light ? "#c9cdd3" : "#2a2c31",
+    glass: light ? "#8ea4b8" : "#d0d6e0",
+    edge: light ? "#f6f1e2" : "#e8e4d8",
+    dim: light ? "#a3a9b4" : "#2c2e33",
+    // Planes are neutral; their tails carry the kind's colour, like the label dots.
+    body: light ? "#ffffff" : "#d7dae0",
+    kind: {
+      pr: get("--strip-pr", "#9b8afb"),
+      review: get("--strip-review", "#f087b5"),
+      plain: get("--strip-plain", "#8a8f98"),
     } as Record<FlightRef["kind"], string>,
-    font: get("--font-martian", "monospace"),
+    font: get("--font-geist-mono", "monospace"),
   };
 }
 
@@ -223,7 +228,8 @@ export function createField(host: HTMLElement, labels: HTMLElement, opts: FieldO
   let T = tokens(host);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, host.clientWidth < 700 ? 1.6 : 2));
+  // 1.5x is still crisp with antialiasing and draws half the pixels of 2x, which keeps the GPU free to scroll the page.
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   renderer.setClearColor(0x000000, 0);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -466,8 +472,8 @@ export function createField(host: HTMLElement, labels: HTMLElement, opts: FieldO
 
   const dress = (s: Sim, f: FlightRef) => {
     s.f = f;
-    s.m.body.color.set(T.paper[f.kind]);
-    s.m.fin.color.set(f.livery[0]);
+    s.m.body.color.set(T.body);
+    s.m.fin.color.set(T.kind[f.kind]);
     s.label.code.textContent = `${f.code}${f.num}`;
     s.label.root.dataset.kind = f.kind;
   };
@@ -603,6 +609,8 @@ export function createField(host: HTMLElement, labels: HTMLElement, opts: FieldO
 
   const target = V(0, 0, 0);
   const base = V(0, 0, 0);
+  // How much farther back than the desktop framing the camera sits; fog and tag fading move with it.
+  let fogShift = 0;
   const lookDir = V(0, 0, 0);
   const pointer = { x: 0, y: 0, sx: 0, sy: 0 };
 
@@ -612,17 +620,23 @@ export function createField(host: HTMLElement, labels: HTMLElement, opts: FieldO
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     const wide = camera.aspect >= 1.3;
-    // Portrait screens look down a little steeper and closer, cropping the far ends of the field.
+    // Portrait screens look down a little steeper and keep the whole story in frame: the stalled
+    // ring and the tower on the left, the hold in the middle, the touchdown on the right.
     lookDir.set(wide ? 0.1 : 0.14, wide ? 0.5 : 0.66, 1).normalize();
-    target.set(wide ? 6.5 : 9, wide ? 3 : 4.4, wide ? -2.5 : -5);
-    const halfW = wide ? 32 : 15.5;
-    const halfH = wide ? 12.5 : 12;
+    target.set(wide ? 6.5 : -2.5, wide ? 3 : 4.6, wide ? -2.5 : -5.5);
+    const halfW = wide ? 32 : 23;
+    const halfH = wide ? 12.5 : 13;
     const vf = THREE.MathUtils.degToRad(camera.fov / 2);
     const hf = Math.atan(Math.tan(vf) * camera.aspect);
     const dist = Math.max(halfW / Math.tan(hf), halfH / Math.tan(vf));
     base.copy(target).addScaledVector(lookDir, dist);
     camera.far = dist + 220;
     camera.updateProjectionMatrix();
+    // 58 is the desktop framing's distance; a camera pulled back for a portrait screen keeps the same haze.
+    fogShift = Math.max(0, dist - 58);
+    const fog = scene.fog as THREE.Fog;
+    fog.near = FOG_NEAR + fogShift;
+    fog.far = FOG_FAR + fogShift;
   };
 
   /* ---------- theme ---------- */
@@ -650,7 +664,11 @@ export function createField(host: HTMLElement, labels: HTMLElement, opts: FieldO
     const c = new THREE.Color();
     edgeSpots.forEach(([, , kind], i) => edgeLights.setColorAt(i, c.set(kind === "green" ? T.landed : kind === "red" ? T.pencil : T.edge)));
     if (edgeLights.instanceColor) edgeLights.instanceColor.needsUpdate = true;
-    for (const s of sims) if (s.mode !== "idle") s.m.body.color.set(T.paper[s.f.kind]);
+    for (const s of sims)
+      if (s.mode !== "idle") {
+        s.m.body.color.set(T.body);
+        s.m.fin.color.set(T.kind[s.f.kind]);
+      }
     paintWord();
   };
 
@@ -833,7 +851,10 @@ export function createField(host: HTMLElement, labels: HTMLElement, opts: FieldO
     pointer.sy += (pointer.y - pointer.sy) * smooth(2.2, dt);
   };
 
+  // Nothing is drawn until the shaders are built (see the end of createField).
+  let compiled = false;
   const render = () => {
+    if (!compiled) return;
     camera.position.copy(base).add(q.set(pointer.sx * 3.2, -pointer.sy * 1.6, 0));
     camera.lookAt(target);
     renderer.render(scene, camera);
@@ -847,11 +868,12 @@ export function createField(host: HTMLElement, labels: HTMLElement, opts: FieldO
       const x = (projected.x + 1) * 0.5 * w;
       const y = (1 - projected.y) * 0.5 * h;
       const dist = camera.position.distanceTo(s.pos);
-      const fade = 1 - THREE.MathUtils.smoothstep(dist, FOG_NEAR + 10, FOG_FAR - 30);
-      // A tag that would hang off the edge is hidden rather than cut.
-      const off = projected.z > 1 || x < 6 || x > w - 96 || y < 48 || y > h || fade < 0.05;
+      const fade = 1 - THREE.MathUtils.smoothstep(dist - fogShift, FOG_NEAR + 10, FOG_FAR - 30);
+      // A tag near the right edge slides left to stay whole; once its plane has left the frame it hides.
+      const off = projected.z > 1 || x < 6 || x > w - 8 || y < 48 || y > h || fade < 0.05;
+      const lx = Math.min(x, w - 96);
       s.label.root.style.opacity = off ? "0" : fade.toFixed(3);
-      s.label.root.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+      s.label.root.style.transform = `translate3d(${lx.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
     }
   };
 
@@ -876,6 +898,24 @@ export function createField(host: HTMLElement, labels: HTMLElement, opts: FieldO
       cancelAnimationFrame(raf);
       raf = 0;
     }
+  };
+
+  // Scrolled, not timed: the scroll owes the field some seconds and they are paid out a little each frame,
+  // so a flick of the wheel glides instead of jumping and the field coasts to a stop when the page does.
+  let owed = 0;
+  let paying = 0;
+  const pay = () => {
+    paying = 0;
+    const take = Math.min(owed, 1 / 20);
+    owed -= take;
+    step(take);
+    render();
+    if (owed > 1e-4) paying = requestAnimationFrame(pay);
+  };
+  const drive = (seconds: number) => {
+    if (still || raf) return;
+    owed = Math.min(owed + seconds, 1.5);
+    if (!paying) paying = requestAnimationFrame(pay);
   };
 
   const advance = (until: () => boolean, max = 40) => {
@@ -937,8 +977,18 @@ export function createField(host: HTMLElement, labels: HTMLElement, opts: FieldO
   } else {
     // A moment's pre-roll so every plane already faces the way it is flying.
     advance(() => clock > 0.6);
-    render();
   }
+
+  // The shaders build in the background (KHR_parallel_shader_compile), so the page never waits on the GPU
+  // for them; the first frame is drawn once they are ready.
+  renderer
+    .compileAsync(scene, camera)
+    .catch(() => scene)
+    .then(() => {
+      if (disposed) return;
+      compiled = true;
+      render();
+    });
 
   return {
     clear: () => {
@@ -949,9 +999,11 @@ export function createField(host: HTMLElement, labels: HTMLElement, opts: FieldO
       return clearPlane();
     },
     setRunning,
+    drive,
     dispose: () => {
       disposed = true;
       setRunning(false);
+      cancelAnimationFrame(paying);
       window.removeEventListener("pointermove", onPointer);
       ro.disconnect();
       mo.disconnect();

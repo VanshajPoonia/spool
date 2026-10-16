@@ -20,19 +20,16 @@
   gap: 10px;
   padding: 6px 10px 5px;
   border-radius: 5px;
-  background: var(--holder);
-  box-shadow: inset 0 1px 0 var(--holder-lip);
-  color: var(--strip-plain);
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  color: var(--ink);
   font-size: 15px;
 }
 
 .phaseLabel {
-  color: var(--holder-ink);
-  font-size: 11px;
-  font-weight: 800;
-  font-variation-settings: "wdth" 78;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  font-weight: 500;
 }
 
 .seg {
@@ -61,8 +58,8 @@
 }
 
 .seg button[aria-pressed="true"] {
-  background: var(--strip-plain);
-  box-shadow: 0 0 0 2px var(--holder);
+  background: var(--surface-sel);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
   color: var(--strip-ink);
 }
 
@@ -148,7 +145,7 @@
   height: 24px;
   border-radius: 3px;
   background: var(--move);
-  box-shadow: 0 0 0 3px var(--holder);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
   opacity: var(--hk);
   transform: translate(-50%, calc(-50% - (1 - var(--hk)) * 18px));
   transition:
@@ -319,8 +316,8 @@
   width: 100%;
   height: 10px;
   border-radius: 3px;
-  background: var(--strip-plain);
-  box-shadow: 0 0 0 2px var(--holder);
+  background: var(--surface-sel);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
   transform-origin: 0 50%;
   transform: scaleX(max(0.005, calc(var(--x2) - var(--x))));
   transition: transform 560ms var(--ease-out);
@@ -375,13 +372,9 @@
 }
 
 .days > span:last-child {
-  margin-top: 5px;
-  color: var(--strip-ink-2);
-  font-size: 10px;
-  font-weight: 700;
-  font-variation-settings: "wdth" 80;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  margin-top: 4px;
+  color: var(--ink-3);
+  font-size: 11.5px;
   white-space: nowrap;
 }
 
@@ -437,33 +430,32 @@
   width: 100%;
   padding: 7px 8px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 8px;
   background: transparent;
   color: var(--ink-2);
   font: inherit;
   text-align: left;
   cursor: pointer;
+  transition:
+    background-color var(--dur-hover) var(--ease-quad),
+    color var(--dur-hover) var(--ease-quad);
 }
 
 .bar:hover {
-  background: var(--bay-3);
+  background: color-mix(in oklab, var(--ink) 5%, transparent);
   color: var(--ink);
 }
 
 .barName {
   overflow: hidden;
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-size: 12.5px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 500;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .barTrack {
-  height: 10px;
+  height: 6px;
   overflow: hidden;
   border-radius: 3px;
   background: var(--bay-3);
@@ -483,30 +475,25 @@
 
 .barNum {
   color: var(--ink-3);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
   font-size: 12px;
+  font-variant-numeric: tabular-nums;
   text-align: right;
   opacity: var(--g);
 }
 
-/* the picked bar is a strip of paper in its holder, like a picked chip */
+/* the picked bar is raised, like a picked chip, and its fill turns to ink */
 .bar[aria-pressed="true"] {
-  background: var(--strip-plain);
-  box-shadow: 0 0 0 2px var(--holder);
-  color: var(--strip-ink);
-}
-
-.bar[aria-pressed="true"] .barTrack {
-  background: var(--strip-rule);
+  background: var(--surface-sel);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
 }
 
 .bar[aria-pressed="true"] .barFill {
-  background: var(--strip-ink);
+  background: var(--ink);
 }
 
 .bar[aria-pressed="true"] .barNum {
-  color: var(--strip-ink-2);
+  color: var(--ink-2);
 }
 
 .hint {
@@ -579,20 +566,16 @@
   gap: 3px;
   height: 28px;
   padding: 0 8px;
-  border-radius: 4px;
-  color: var(--holder-ink);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  border-radius: 999px;
+  color: var(--ink-2);
+  font-size: 12.5px;
+  font-weight: 500;
   text-decoration: none;
-  text-transform: uppercase;
 }
 
 .ideas:hover {
   background: var(--holder-lip);
-  color: var(--strip-plain);
+  color: var(--ink);
 }
 
 .empty {
@@ -609,22 +592,30 @@
   margin-top: 4px;
 }
 
+/* the quiet pill, like the action beside it */
 .more {
-  height: 44px;
-  padding: 0 14px;
+  height: 40px;
+  padding: 0 18px;
   border: 0;
-  border-radius: 4px;
-  background: var(--bay-3);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  border-radius: 999px;
+  background: var(--quiet-bg);
+  box-shadow: var(--quiet-ring);
   color: var(--ink);
   font: inherit;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
+  transition:
+    background-color var(--dur-quick) var(--ease-quad),
+    transform var(--dur-hover) var(--ease-quad);
 }
 
 .more:hover {
-  background: var(--bay-2);
+  background: var(--quiet-bg-hover);
+}
+
+.more:active {
+  transform: scale(0.98);
 }
 
 .fetched {
@@ -743,8 +734,8 @@
     margin-top: -4px;
     left: -25px;
     border-radius: 3px;
-    background: var(--strip-plain);
-    box-shadow: 0 0 0 2px var(--holder);
+    background: var(--surface-sel);
+    box-shadow: inset 0 0 0 1px var(--rule-2);
   }
   .stop[data-minor] .stopName {
     padding-left: 14px;

@@ -8,6 +8,7 @@ import { FACES } from "@/lib/faces";
 import type { Programs as ProgramsData } from "@/lib/programs";
 import { fmtDate, useNow } from "@/lib/time";
 import { daysUntil, gsocNext, gsocPhase, hacktoberfest, parseMonthDay } from "@/lib/program-dates";
+import { LiveTag } from "./LiveTag";
 import { useSectionFace } from "./mood";
 import { SectionHead } from "./SectionHead";
 import sec from "./section.module.css";
@@ -129,7 +130,7 @@ export function Programs({ data }: { data: ProgramsData }) {
           </ul>
         </Bay>
 
-        <article className={`${sec.panel} ${s.ph}`}>
+        <article className={`${sec.panel} ${s.ph}`} data-shine>
           <header className={s.moduleHead}>
             <h3>Just launched on Product Hunt</h3>
             <a href="https://www.producthunt.com" target="_blank" rel="noreferrer" className={s.moduleLink}>
@@ -156,7 +157,7 @@ export function Programs({ data }: { data: ProgramsData }) {
       </div>
 
       <p className={s.fetched}>
-        <span className={`${sec.tag} ${sec.tagLive}`}>Live</span>
+        <LiveTag>Live</LiveTag>
         Fetched {fmtDate(data.fetchedAt)} at {data.fetchedAt.slice(11, 16)} UTC from the sources linked on each strip.
       </p>
     </section>

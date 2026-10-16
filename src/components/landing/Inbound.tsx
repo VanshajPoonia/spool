@@ -9,6 +9,7 @@ import { FACES } from "@/lib/faces";
 import { compactStars } from "@/lib/format";
 import type { Discovery } from "@/lib/programs";
 import { fmtDate } from "@/lib/time";
+import { LiveTag } from "./LiveTag";
 import { useSectionFace } from "./mood";
 import { SectionHead } from "./SectionHead";
 import sec from "./section.module.css";
@@ -91,12 +92,16 @@ export function Inbound({ initial }: { initial: Discovery }) {
         </div>
       </div>
 
-      <div className={`${sec.panel} ${s.results}`} aria-busy={loading}>
+      <div className={`${sec.panel} ${s.results}`} data-shine aria-busy={loading}>
         <div className={s.resultsHead}>
           <p className={s.caption} aria-live="polite">
-            {loading ? "Searching GitHub…" : `${Math.min(SHOWN, data.repos.length)} newest repos with the most stars in ${topics.join(", ")}`}
+            {loading ? (
+              <span className="shimmer">Searching GitHub…</span>
+            ) : (
+              `${Math.min(SHOWN, data.repos.length)} newest repos with the most stars in ${topics.join(", ")}`
+            )}
           </p>
-          <span className={`${sec.tag} ${sec.tagLive}`}>Live from GitHub search</span>
+          <LiveTag>Live from GitHub search</LiveTag>
         </div>
         {error && <p className={s.error}>{error}</p>}
 

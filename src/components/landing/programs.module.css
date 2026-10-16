@@ -30,13 +30,9 @@
 }
 
 .days > span:last-child {
-  margin-top: 5px;
-  color: var(--strip-ink-2);
-  font-size: 10px;
-  font-weight: 700;
-  font-variation-settings: "wdth" 80;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  margin-top: 4px;
+  color: var(--ink-3);
+  font-size: 11.5px;
 }
 
 .ph {
@@ -54,8 +50,8 @@
 }
 
 .moduleHead h3 {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 510;
   letter-spacing: -0.01em;
 }
 
@@ -108,8 +104,8 @@
 }
 
 .lTitle {
-  font-weight: 700;
-  font-size: 15px;
+  font-weight: 500;
+  font-size: 14px;
 }
 
 .lTag {
@@ -122,9 +118,8 @@
 
 .lDate {
   color: var(--ink-3);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-size: 12px;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
 }
 
 .down {

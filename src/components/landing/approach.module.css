@@ -50,21 +50,21 @@
   z-index: 2;
 }
 
-.tool {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 0;
+/* the field holds still until the page moves; this says so */
+.hint {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
   border-radius: 6px;
-  background: var(--bay-2);
+  background: color-mix(in oklab, var(--console) 70%, transparent);
   box-shadow: inset 0 0 0 1px var(--rule-2);
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.tool:hover {
-  background: var(--bay-3);
+  color: var(--ink-3);
+  font-family: var(--font-print);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 /* ---------- data blocks: a radar tag beside each plane ---------- */
@@ -207,18 +207,13 @@
 }
 
 .plateAtc {
-  color: var(--ink-2);
-  font-family: var(--font-print);
-  font-variation-settings: var(--print-wdth);
-  font-size: 12.5px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  color: var(--ink-3);
+  font-size: 13.5px;
+  font-weight: 500;
 }
 
 .plateGit {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
 }
 
 .plate[data-past] .plateAtc {
@@ -229,18 +224,30 @@
   color: var(--ink-2);
 }
 
+/* the current phase: a raised plate with a status dot */
 .plate[data-now] {
-  background: var(--move);
-  box-shadow: none;
-  color: var(--move-ink);
+  background: var(--bay-3);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
 }
 
 .plate[data-now] .plateAtc {
-  color: var(--move-ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink);
 }
 
-.plate[data-now][data-key="landed"] {
-  background: var(--landed);
+.plate[data-now] .plateAtc::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--move);
+}
+
+.plate[data-now][data-key="landed"] .plateAtc::before {
+  background: var(--brand);
 }
 
 .desk {
@@ -259,11 +266,11 @@
 .deskName {
   color: var(--ink-3);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .press {
-  min-height: 0;
+  align-self: end;
 }
 
 .landed {
