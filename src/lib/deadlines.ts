@@ -20,6 +20,9 @@ export const PROGRAMS: [string, string][] = [
   ["gsoc:project_announce_public", "GSoC: projects announced"],
   ["gsoc:project_work_start", "GSoC: coding starts"],
   ["gsoc:program_end", "GSoC: program ends"],
+  ["lfx:proposals", "LFX Mentorship: project proposals open and close"],
+  ["lfx:apply", "LFX Mentorship: mentee applications open and close"],
+  ["lfx:begins", "LFX Mentorship: a term begins"],
 ];
 
 export function programDeadlines(data: Programs, follow: string[], now: number): Deadline[] {
@@ -33,6 +36,15 @@ export function programDeadlines(data: Programs, follow: string[], now: number):
     const h = hacktoberfest(now);
     const date = new Date(h.year, 9, h.live ? 31 : 1, h.live ? 23 : 0, h.live ? 59 : 0).toISOString();
     out.push({ key: `hacktoberfest:${h.live ? "end" : "start"}`, label: `Hacktoberfest ${h.year} ${h.live ? "ends" : "starts"}`, date, detail: "", href: "https://hacktoberfest.com" });
+  }
+  // LFX dates are calendar days; noon UTC lands on the same day in almost every time zone.
+  for (const term of data.lfx ?? []) {
+    for (const m of term.milestones) {
+      if (!want.has(`lfx:${m.name}`)) continue;
+      const short = term.label.replace(/, .*/, "");
+      out.push({ key: `lfx:${term.id}:${m.name}:start`, label: `LFX ${short}: ${m.label.toLowerCase()} ${m.end ? "open" : ""}`.trim(), date: `${m.start}T12:00:00Z`, detail: "", href: term.url });
+      if (m.end) out.push({ key: `lfx:${term.id}:${m.name}:end`, label: `LFX ${short}: ${m.label.toLowerCase()} close`, date: `${m.end}T12:00:00Z`, detail: "", href: term.url });
+    }
   }
   if (data.gsoc) {
     for (const st of gsocStations(data.gsoc)) {
