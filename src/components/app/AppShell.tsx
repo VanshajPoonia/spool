@@ -31,7 +31,7 @@ function NavList({ pathname, badge, className }: { pathname: string | null; badg
   return (
     <nav className={className} aria-label="App">
       {NAV.map((n) => {
-        const active = isActive(n.href, pathname);
+        const active = isActive(n.href, pathname, n.also);
         return (
           <Link key={n.href} href={n.href} className={s.navItem} aria-current={active ? "page" : undefined}>
             <n.icon size={16} strokeWidth={1.8} aria-hidden="true" />

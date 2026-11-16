@@ -84,6 +84,9 @@ export function CommandPalette() {
     const go = (href: string) => () => router.push(href);
     const out: Item[] = [];
     for (const n of NAV) out.push({ id: `page:${n.href}`, group: "Pages", title: n.label, run: go(n.href) });
+    out.push({ id: "page:discover", group: "Pages", title: "Discover", sub: "Find", run: go("/board/discover") });
+    out.push({ id: "page:following", group: "Pages", title: "Following", sub: "Find", run: go("/board/following") });
+    out.push({ id: "page:orgs", group: "Pages", title: "Orgs", sub: "Repos", run: go("/board/orgs") });
     out.push({ id: "page:gsoc", group: "Pages", title: "GSoC organisations", sub: "Programs", run: go("/board/programs/gsoc") });
     out.push({ id: "page:yc", group: "Pages", title: "YC open source companies", sub: "Programs", run: go("/board/programs/yc") });
 
