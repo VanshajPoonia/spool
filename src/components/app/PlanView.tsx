@@ -19,7 +19,7 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ArrowDownWideNarrow, ArrowUpRight, CircleDot, Eye, GitPullRequest, GripVertical, MoreHorizontal, NotebookPen, Plus, X } from "lucide-react";
+import { ArrowDownWideNarrow, ArrowUpRight, CircleDot, Eye, GitPullRequest, GripVertical, MessagesSquare, MoreHorizontal, NotebookPen, Plus, X } from "lucide-react";
 import { PrintText } from "@/components/print/PrintText";
 import { Callsign, StateMark } from "@/components/kit/Kit";
 import { StatusIcon, type StripState } from "@/components/kit/Strip";
@@ -497,6 +497,7 @@ function SortableCard({
 const KIND: Record<Card["kind"], { icon: typeof GitPullRequest; word: string }> = {
   pr: { icon: GitPullRequest, word: "PR" },
   issue: { icon: CircleDot, word: "Issue" },
+  discussion: { icon: MessagesSquare, word: "Discussion" },
   watch: { icon: Eye, word: "Watched" },
   task: { icon: NotebookPen, word: "Task" },
 };

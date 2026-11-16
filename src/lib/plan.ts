@@ -49,7 +49,7 @@ export const taskKey = (id: string) => `n:${id}`;
 
 export type Card = {
   key: string;
-  kind: "pr" | "issue" | "watch" | "task";
+  kind: "pr" | "issue" | "discussion" | "watch" | "task";
   title: string;
   repo: string | null;
   num: number | null;

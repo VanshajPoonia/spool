@@ -160,6 +160,10 @@ button.paper {
   background: var(--strip-talk);
 }
 
+.kind[data-kind="discussion"] .kindDot {
+  background: var(--strip-discussion);
+}
+
 .last {
   display: grid;
   justify-items: end;

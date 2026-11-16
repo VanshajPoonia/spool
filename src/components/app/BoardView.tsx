@@ -14,7 +14,14 @@ import { ThreadDetail } from "./ThreadDetail";
 import { ThreadRow } from "./ThreadRow";
 import s from "./board.module.css";
 
-type Kind = "all" | "pr" | "issue";
+type Kind = "all" | "pr" | "issue" | "discussion";
+// Discussions get a button only when the board has some; most people have none.
+const KINDS: [Kind, string][] = [
+  ["all", "All"],
+  ["pr", "PRs"],
+  ["issue", "Issues"],
+  ["discussion", "Discussions"],
+];
 type Only = "delayed" | "new" | null;
 
 function Loader() {
@@ -153,6 +160,7 @@ export function BoardView() {
     for (const t of threads) if (t.next !== "done") m.set(t.repo, (m.get(t.repo) ?? 0) + 1);
     return [...m.entries()].sort((a, b) => b[1] - a[1]);
   }, [threads]);
+  const hasDiscussions = useMemo(() => threads.some((t) => t.kind === "discussion"), [threads]);
 
   const select = useCallback(
     (t: Thread) => {
@@ -261,9 +269,9 @@ export function BoardView() {
             <kbd>/</kbd>
           </label>
           <div className={s.seg} role="group" aria-label="Type">
-            {(["all", "pr", "issue"] as Kind[]).map((k) => (
+            {KINDS.filter(([k]) => k !== "discussion" || hasDiscussions || kind === k).map(([k, label]) => (
               <button key={k} type="button" aria-pressed={kind === k} onClick={() => setKind(k)}>
-                {k === "all" ? "All" : k === "pr" ? "PRs" : "Issues"}
+                {label}
               </button>
             ))}
           </div>

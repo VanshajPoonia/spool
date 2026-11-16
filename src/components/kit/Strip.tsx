@@ -1,12 +1,13 @@
 import type { CSSProperties, ReactNode, Ref } from "react";
 import s from "./strip.module.css";
 
-export type StripKind = "pr" | "issue" | "review" | "talk" | "plain";
+export type StripKind = "pr" | "issue" | "discussion" | "review" | "talk" | "plain";
 export type StripState = "you" | "them" | "stalled" | "done" | "idle";
 
 const KIND_LABEL: Record<StripKind, string> = {
   pr: "PR",
   issue: "Issue",
+  discussion: "Discussion",
   review: "Review",
   talk: "Talk",
   plain: "",

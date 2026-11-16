@@ -26,7 +26,7 @@ export type PrSignals = {
 
 export type Thread = {
   id: string;
-  kind: "pr" | "issue";
+  kind: "pr" | "issue" | "discussion";
   repo: string;
   num: number;
   title: string;
@@ -123,6 +123,7 @@ export function classify(n: RawNode & { sources: Source[] }, me: string, staleDa
   const quietDays = Math.max(0, Math.floor((now - Date.parse(last.at)) / DAY));
   const ci = n.commits?.nodes[0]?.commit.statusCheckRollup?.state ?? null;
   const pr = n.__typename === "PullRequest";
+  const disc = n.__typename === "Discussion";
   const mine = isMe(n.author?.login);
   const lastIsMe = isMe(last.actor);
   const has = (s: Source) => n.sources.includes(s);
@@ -146,7 +147,12 @@ export function classify(n: RawNode & { sources: Source[] }, me: string, staleDa
     next = "done";
     status = "CLOSED";
     tone = "stop";
-    reason = "Closed without merging.";
+    reason = disc ? "Closed." : "Closed without merging.";
+  } else if (disc && n.isAnswered) {
+    next = "done";
+    status = "ANSWERED";
+    tone = "go";
+    reason = "Marked as answered.";
   } else if (pr && mine && sig) {
     if (n.isDraft) {
       next = "you";
@@ -215,7 +221,7 @@ export function classify(n: RawNode & { sources: Source[] }, me: string, staleDa
     } else {
       next = "them";
       status = "AWAITING";
-      reason = "Waiting on a maintainer.";
+      reason = disc ? "Waiting for an answer." : "Waiting on a maintainer.";
     }
   } else if (pr && (reviewAsked || has("review"))) {
     next = "you";
@@ -247,7 +253,7 @@ export function classify(n: RawNode & { sources: Source[] }, me: string, staleDa
 
   return {
     id: n.id,
-    kind: pr ? "pr" : "issue",
+    kind: pr ? "pr" : disc ? "discussion" : "issue",
     repo: n.repository.nameWithOwner,
     num: n.number,
     title: n.title,

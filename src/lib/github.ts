@@ -104,13 +104,15 @@ export type PrDetail = {
 };
 
 export type RawNode = {
-  __typename: "PullRequest" | "Issue";
+  __typename: "PullRequest" | "Issue" | "Discussion";
   id: string;
   number: number;
   title: string;
   url: string;
   state: "OPEN" | "CLOSED" | "MERGED";
   isDraft?: boolean;
+  /** discussions in a Q&A category; null elsewhere */
+  isAnswered?: boolean | null;
   createdAt: string;
   updatedAt: string;
   closedAt: string | null;
@@ -149,7 +151,36 @@ fragment ISF on Issue {
   labels(first: 4) { nodes { name color } }
 }`;
 
-export type Source = "mine" | "myIssues" | "review" | "assigned" | "mentions" | "commented" | "incoming" | "recent";
+// Only the query that searches discussions may carry this: GraphQL rejects a fragment a query doesn't use.
+const DISCUSSION_FRAGMENT = /* GraphQL */ `
+fragment DSF on Discussion {
+  __typename id number title url closed isAnswered createdAt updatedAt closedAt
+  author { __typename login }
+  repository { ...Repo isArchived }
+  comments(last: 3) { totalCount nodes { author { __typename login } createdAt replies(last: 2) { nodes { author { __typename login } createdAt } } } }
+  labels(first: 4) { nodes { name color } }
+}`;
+
+type RawDiscussion = Omit<RawNode, "__typename" | "state" | "comments" | "repository"> & {
+  __typename: "Discussion";
+  closed: boolean;
+  repository: RawRepo & { isArchived: boolean };
+  comments: { totalCount: number; nodes: (RawComment & { replies: { nodes: RawComment[] } })[] };
+};
+
+/* A discussion read like an issue: replies count as comments, so "who spoke last" works the same. */
+function fromDiscussion(d: RawDiscussion): RawNode {
+  const said = d.comments.nodes.flatMap((c) => [{ author: c.author, createdAt: c.createdAt }, ...c.replies.nodes]).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  const { nameWithOwner, isPrivate, stargazerCount, primaryLanguage } = d.repository;
+  return {
+    ...d,
+    state: d.closed ? "CLOSED" : "OPEN",
+    repository: { nameWithOwner, isPrivate, stargazerCount, primaryLanguage },
+    comments: { totalCount: d.comments.totalCount, nodes: said.slice(-3) },
+  };
+}
+
+export type Source = "mine" | "myIssues" | "review" | "assigned" | "mentions" | "commented" | "incoming" | "recent" | "discussions";
 
 /* How many results each search pulls. Kept modest: one heavy query makes GitHub time out (502).
    Searching your own PRs alone takes about 8 of GitHub's 10 seconds, so anything extra goes in addPrDetail. */
@@ -162,24 +193,30 @@ const SIZES: Record<Source, number> = {
   commented: 15,
   incoming: 20,
   recent: 20,
+  discussions: 15,
 };
 
 /* Searches run as three small parallel requests. */
 const GROUPS: Source[][] = [
   ["mine", "recent"],
   ["myIssues", "review", "assigned"],
-  ["mentions", "commented", "incoming"],
+  ["mentions", "commented", "incoming", "discussions"],
 ];
 
 function groupQuery(group: Source[]) {
   const vars = group.map((g) => `$${g}: String!`).join(", ");
   const body = group
-    .map((g) => `${g}: search(query: $${g}, type: ISSUE, first: ${SIZES[g]}) { issueCount nodes { ...PRF ...ISF } }`)
+    .map((g) =>
+      g === "discussions"
+        ? `${g}: search(query: $${g}, type: DISCUSSION, first: ${SIZES[g]}) { discussionCount nodes { ...DSF } }`
+        : `${g}: search(query: $${g}, type: ISSUE, first: ${SIZES[g]}) { issueCount nodes { ...PRF ...ISF } }`,
+    )
     .join("\n  ");
-  return `${FRAGMENTS}\nquery Board(${vars}) {\n  ${body}\n  rateLimit { remaining limit resetAt cost }\n}`;
+  const fragments = group.includes("discussions") ? FRAGMENTS + DISCUSSION_FRAGMENT : FRAGMENTS;
+  return `${fragments}\nquery Board(${vars}) {\n  ${body}\n  rateLimit { remaining limit resetAt cost }\n}`;
 }
 
-type SearchBlock = { issueCount: number; nodes: (RawNode | Record<string, never>)[] };
+type SearchBlock = { nodes: (RawNode | RawDiscussion | Record<string, never>)[] };
 type Rate = { remaining: number; limit: number; resetAt: string; cost: number };
 
 export type RawBoard = {
@@ -216,6 +253,8 @@ export async function fetchBoard(token: string, login: string): Promise<RawBoard
     commented: `is:open commenter:${L} -author:${L} archived:false sort:updated-desc`,
     incoming: `is:pr is:open user:${L} -author:${L} archived:false sort:updated-desc`,
     recent: `is:pr author:${L} is:closed closed:>${since} sort:updated-desc`,
+    // archived:false finds nothing for discussions, so archived repos are dropped below instead.
+    discussions: `involves:${L} is:open sort:updated-desc`,
   };
   const results = await Promise.allSettled(
     GROUPS.map((group) =>
@@ -244,7 +283,8 @@ export async function fetchBoard(token: string, login: string): Promise<RawBoard
     for (const src of GROUPS[i]) {
       for (const n of data[src]?.nodes ?? []) {
         if (!("id" in n) || !n.id) continue;
-        const node = n as RawNode;
+        if (n.__typename === "Discussion" && (n as RawDiscussion).repository.isArchived) continue;
+        const node = n.__typename === "Discussion" ? fromDiscussion(n as RawDiscussion) : (n as RawNode);
         const existing = byId.get(node.id);
         if (existing) existing.sources.push(src);
         else byId.set(node.id, { ...node, sources: [src] });
@@ -718,11 +758,13 @@ export async function fetchOctoberPublic(login: string, year: number) {
 export type TimelineEvent = { at: string; actor: string | null; text: string; kind: string };
 
 export async function fetchTimeline(token: string, id: string): Promise<TimelineEvent[]> {
+  type Said = { createdAt: string; author: { login: string } | null; bodyText: string };
   const data = await gql<{
     node: {
-      timelineItems: {
+      timelineItems?: {
         nodes: ({ __typename: string } & Record<string, unknown>)[];
       };
+      comments?: { nodes: (Said & { replies: { nodes: Said[] } })[] };
     } | null;
   }>(
     token,
@@ -747,10 +789,12 @@ export async function fetchTimeline(token: string, id: string): Promise<Timeline
         ... on AssignedEvent { createdAt actor { login } assignee { ... on User { login } } }
         ... on CrossReferencedEvent { createdAt actor { login } source { ... on PullRequest { number repository { nameWithOwner } } } }
       } } }
+      ... on Discussion { comments(last: 15) { nodes { createdAt author { login } bodyText
+        replies(last: 5) { nodes { createdAt author { login } bodyText } } } } }
     } }`,
     { id },
   );
-  const items = data.node?.timelineItems.nodes ?? [];
+  const items = data.node?.timelineItems?.nodes ?? [];
   const out: TimelineEvent[] = [];
   const login = (o: unknown) => (o as { login?: string } | null)?.login ?? null;
   const clip = (s: unknown) => {
@@ -778,6 +822,11 @@ export async function fetchTimeline(token: string, id: string): Promise<Timeline
       const src = it.source as { number?: number; repository?: { nameWithOwner: string } } | null;
       if (src?.number) out.push({ at: it.createdAt as string, actor: login(it.actor), text: `referenced it from ${src.repository?.nameWithOwner}#${src.number}`, kind: "event" });
     }
+  }
+  // Discussions have no timeline, only comments and their replies.
+  for (const c of data.node?.comments?.nodes ?? []) {
+    out.push({ at: c.createdAt, actor: login(c.author), text: clip(c.bodyText) || "commented", kind: "comment" });
+    for (const r of c.replies.nodes) out.push({ at: r.createdAt, actor: login(r.author), text: `replied: ${clip(r.bodyText)}`, kind: "comment" });
   }
   return out.sort((a, b) => a.at.localeCompare(b.at));
 }

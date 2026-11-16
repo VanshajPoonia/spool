@@ -40,6 +40,7 @@
   --strip-issue: #4ea7fc;
   --strip-review: #f087b5;
   --strip-talk: #4cb782;
+  --strip-discussion: #2bb6c9;
   --strip-plain: #8a8f98;
 
   /* older names, kept as aliases for the surfaces that used them */
@@ -117,6 +118,7 @@
   --strip-issue: #2f8de4;
   --strip-review: #dc5b94;
   --strip-talk: #2f9a63;
+  --strip-discussion: #0e8a9c;
   --strip-plain: #8a8f98;
 
   --holder: #f6f7f8;

@@ -97,6 +97,7 @@ type Props = {
 
 /* What the strip's paper says about the thread: a review asked of you is pink, threads you only talk on are green. */
 export function stripKind(t: Thread): StripKind {
+  if (t.kind === "discussion") return "discussion";
   if (t.next === "watch") return "talk";
   if (t.kind === "pr" && t.sources.includes("review") && t.next === "you") return "review";
   return t.kind;

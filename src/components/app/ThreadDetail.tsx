@@ -85,7 +85,7 @@ export function ThreadDetail({ t, code, mode, now, onClose }: { t: Thread; code?
         <div className={s.ref}>
           <span>{t.repo}</span>
           <span className={s.num}>
-            #{t.num} · {t.kind === "pr" ? "Pull request" : "Issue"}
+            #{t.num} · {t.kind === "pr" ? "Pull request" : t.kind === "discussion" ? "Discussion" : "Issue"}
           </span>
         </div>
         <button ref={closeRef} type="button" className={s.close} onClick={onClose} aria-label="Close details (Esc)">
