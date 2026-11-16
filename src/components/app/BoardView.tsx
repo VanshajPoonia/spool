@@ -10,6 +10,7 @@ import { FACES } from "@/lib/faces";
 import { prioRank, threadKey, type Prio } from "@/lib/plan";
 import { planStoreFor, setPrio, snooze, togglePin, updateSettings, useMeta, useSettings } from "@/lib/store";
 import { useBoard } from "./BoardProvider";
+import { ChangesPanel } from "./Changes";
 import { ThreadDetail } from "./ThreadDetail";
 import { ThreadRow } from "./ThreadRow";
 import s from "./board.module.css";
@@ -169,6 +170,10 @@ export function BoardView() {
     },
     [see],
   );
+  const openThread = (t: Thread) => {
+    setSel(t.id);
+    see(t);
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -339,6 +344,7 @@ export function BoardView() {
         <Loader />
       ) : (
         <>
+          <ChangesPanel onOpen={openThread} />
           <div className={s.columns}>
             <Group
               title="Your move"

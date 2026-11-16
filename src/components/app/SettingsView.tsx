@@ -7,6 +7,7 @@ import { verifyToken } from "@/lib/github";
 import { setPrefs, usePrefs } from "@/lib/prefs";
 import {
   cacheStore,
+  changesStore,
   clearAuth,
   exportAll,
   importAll,
@@ -192,6 +193,7 @@ function UsagePanel({ guest }: { guest: boolean }) {
 function Memory({ guest }: { guest: boolean }) {
   const meta = useMeta();
   const plan = planStoreFor(false).use();
+  const changes = changesStore.use();
   const { interests } = useSettings();
   const now = useNow();
   const snoozed = now ? Object.values(meta.snoozed).filter((t) => Date.parse(t) > now).length : Object.keys(meta.snoozed).length;
@@ -206,6 +208,7 @@ function Memory({ guest }: { guest: boolean }) {
     ["Cards placed on your plan", Object.keys(plan.place).length],
     ["Priorities set", Object.keys(plan.prio).length],
     ["Your own tasks", Object.keys(plan.tasks).length],
+    ["Changes not yet handled", Object.keys(changes.items).length],
   ];
   return (
     <>
