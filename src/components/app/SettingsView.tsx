@@ -345,6 +345,16 @@ export function SettingsView() {
             </div>
           </div>
           <div className={s.field}>
+            <label htmlFor="orglimit" className={s.label}>
+              Warn when your open PRs in one org reach
+            </label>
+            <div className={s.slider}>
+              <input id="orglimit" type="range" min={1} max={10} value={settings.orgPrLimit} onChange={(e) => updateSettings({ orgPrLimit: Number(e.target.value) })} />
+              <PrintText value={String(settings.orgPrLimit)} length={2} align="right" style={{ fontSize: "20px" }} label={`${settings.orgPrLimit} PRs`} />
+              <span className={p.muted}>Land some before opening more.</span>
+            </div>
+          </div>
+          <div className={s.field}>
             <span className={s.label}>Order threads on you by</span>
             <div className={s.seg}>
               <button type="button" aria-pressed={settings.youOrder === "oldest"} onClick={() => updateSettings({ youOrder: "oldest" })}>

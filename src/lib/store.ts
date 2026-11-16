@@ -4,6 +4,7 @@ import { useSyncExternalStore } from "react";
 import { diffBoards, snapOf, type Change, type Snap } from "./changes";
 import type { Thread } from "./classify";
 import type { Follow, FollowIssue } from "./follow";
+import type { RepoCheck } from "./outsider";
 import { EMPTY_PLAN, SAMPLE_PLAN, taskKey, type Col, type Plan, type Prio } from "./plan";
 import { watchKey, type WatchedIssue, type WatchItem } from "./watch";
 
@@ -110,6 +111,8 @@ export type Settings = {
   notify: boolean;
   /** whose October a guest last counted; a token's own login replaces it */
   guestLogin: string;
+  /** open PRs you allow yourself per org before Spool warns: depth beats breadth */
+  orgPrLimit: number;
 };
 
 const settingsStore = createStore<Settings>("spool:settings", {
@@ -119,6 +122,7 @@ const settingsStore = createStore<Settings>("spool:settings", {
   demo: false,
   notify: false,
   guestLogin: "",
+  orgPrLimit: 3,
 });
 
 export const useSettings = settingsStore.use;
@@ -279,6 +283,20 @@ export const followCacheStore = createStore<{ login: string | null; feed: Follow
   scan: null,
 });
 
+/* ---------- repo checks ("can an outsider land work here?"), kept a day per repo ---------- */
+
+export const repoCheckStore = createStore<Record<string, RepoCheck>>("spool:repocheck", {});
+
+export function saveRepoCheck(c: RepoCheck) {
+  repoCheckStore.update((all) => {
+    // Keep the 30 most recent, so the store stays small.
+    const kept = Object.entries({ ...all, [c.repo.toLowerCase()]: c })
+      .sort((a, b) => b[1].at.localeCompare(a[1].at))
+      .slice(0, 30);
+    return Object.fromEntries(kept);
+  });
+}
+
 /* ---------- since you last looked: what changed between board loads, until you handle it ---------- */
 
 type ChangesBox = {
@@ -437,6 +455,7 @@ export function wipeAll() {
   watchCacheStore.clear();
   changesStore.clear();
   followCacheStore.clear();
+  repoCheckStore.clear();
   usageStore.clear();
   planStore.clear();
   samplePlanStore.clear();
