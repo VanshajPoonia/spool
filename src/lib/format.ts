@@ -13,6 +13,11 @@ const SAY: Record<string, string> = {
   "THEY REPLIED": "They replied",
   "WITH AUTHOR": "With the author",
   "IN REVIEW": "In review",
+  "SIGN CLA": "Sign the CLA",
+  "SIGN OFF": "Sign off commits",
+  "THREADS OPEN": "Threads open",
+  "BOT REVIEW": "Bot review",
+  "CI ON HOLD": "CI needs approval",
 };
 
 /* A thread's status as a sentence: statuses are kept in capitals, and read in sentence case with

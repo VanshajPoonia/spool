@@ -89,6 +89,20 @@ type RawRepo = {
 
 type RawComment = { author: Actor; createdAt: string };
 
+/** A check on the latest commit that hasn't passed: failed, or still waiting. */
+export type CheckNote = { name: string; state: "fail" | "wait"; url: string | null };
+
+/** What the board reads about your own open PRs beyond the search: branch, review threads, bot reviews and checks. */
+export type PrDetail = {
+  /** GitHub works this out lazily, so UNKNOWN is common and means "not checked yet" */
+  mergeable: "MERGEABLE" | "CONFLICTING" | "UNKNOWN";
+  reviews: { author: Actor; state: string; submittedAt: string | null; comments: { totalCount: number } }[];
+  threads: { isResolved: boolean; isOutdated: boolean; lastAuthor: Actor }[];
+  /** GitHub Actions runs a maintainer has to approve before CI starts */
+  ciApproval: boolean;
+  checks: CheckNote[];
+};
+
 export type RawNode = {
   __typename: "PullRequest" | "Issue";
   id: string;
@@ -107,6 +121,7 @@ export type RawNode = {
   comments: { totalCount: number; nodes: RawComment[] };
   reviews?: { nodes: { author: Actor; state: string; submittedAt: string | null }[] };
   commits?: { nodes: { commit: { committedDate: string; statusCheckRollup: { state: string } | null } }[] };
+  detail?: PrDetail;
   reviewRequests?: { nodes: { requestedReviewer: { login?: string; name?: string } | null }[] };
   assignees?: { nodes: { login: string }[] };
   labels: { nodes: { name: string; color: string }[] };
@@ -136,7 +151,8 @@ fragment ISF on Issue {
 
 export type Source = "mine" | "myIssues" | "review" | "assigned" | "mentions" | "commented" | "incoming" | "recent";
 
-/* How many results each search pulls. Kept modest: one heavy query makes GitHub time out (502). */
+/* How many results each search pulls. Kept modest: one heavy query makes GitHub time out (502).
+   Searching your own PRs alone takes about 8 of GitHub's 10 seconds, so anything extra goes in addPrDetail. */
 const SIZES: Record<Source, number> = {
   mine: 40,
   myIssues: 30,
@@ -235,6 +251,7 @@ export async function fetchBoard(token: string, login: string): Promise<RawBoard
       }
     }
   });
+  await addPrDetail(token, login, byId);
   const rl = rate as Rate | null;
   return {
     login,
@@ -243,6 +260,72 @@ export async function fetchBoard(token: string, login: string): Promise<RawBoard
     rate: rl ? { remaining: rl.remaining, limit: rl.limit, resetAt: rl.resetAt } : { remaining: 0, limit: 0, resetAt: new Date().toISOString() },
     missing: missing.length ? missing : undefined,
   };
+}
+
+const NOT_PASSED = new Set(["FAILURE", "ERROR", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED", "STARTUP_FAILURE"]);
+const RUNNING = new Set(["PENDING", "EXPECTED", "QUEUED", "IN_PROGRESS", "WAITING", "REQUESTED"]);
+
+// GitHub Actions' app id, so only its suites are read: the ones a maintainer may have to approve.
+const ACTIONS_APP_ID = 15368;
+
+type RawContext =
+  | { __typename: "CheckRun"; name: string; conclusion: string | null; status: string; detailsUrl: string | null }
+  | { __typename: "StatusContext"; context: string; state: string; targetUrl: string | null };
+
+type RawDetail = {
+  id: string;
+  mergeable: PrDetail["mergeable"];
+  reviews: { nodes: PrDetail["reviews"] };
+  reviewThreads: { nodes: { isResolved: boolean; isOutdated: boolean; comments: { nodes: { author: Actor }[] } }[] };
+  commits: { nodes: { commit: { checkSuites: { nodes: { conclusion: string | null }[] }; statusCheckRollup: { contexts: { nodes: RawContext[] } } | null } }[] };
+};
+
+const DETAIL_QUERY = /* GraphQL */ `query Detail($ids: [ID!]!) { nodes(ids: $ids) { ... on PullRequest { id mergeable
+  reviews(last: 3) { nodes { author { __typename login } state submittedAt comments { totalCount } } }
+  reviewThreads(last: 20) { nodes { isResolved isOutdated comments(last: 1) { nodes { author { __typename login } } } } }
+  commits(last: 1) { nodes { commit {
+    checkSuites(first: 5, filterBy: { appId: ${ACTIONS_APP_ID} }) { nodes { conclusion } }
+    statusCheckRollup { contexts(first: 40) { nodes { __typename
+      ... on CheckRun { name conclusion status detailsUrl }
+      ... on StatusContext { context state targetUrl } } } } } } }
+} } }`;
+
+function checkNotes(contexts: RawContext[]): CheckNote[] {
+  return contexts.flatMap((c): CheckNote[] => {
+    const name = c.__typename === "CheckRun" ? c.name : c.context;
+    const st = c.__typename === "CheckRun" ? (c.conclusion ?? c.status) : c.state;
+    const url = c.__typename === "CheckRun" ? c.detailsUrl : c.targetUrl;
+    if (NOT_PASSED.has(st)) return [{ name, state: "fail", url }];
+    if (RUNNING.has(st)) return [{ name, state: "wait", url }];
+    return [];
+  });
+}
+
+/*
+ * Branch, review threads, bot reviews and check names for your own open PRs, looked up by id after the searches.
+ * Batches of 20 run side by side; a batch that fails leaves its PRs on the plain reasons.
+ */
+async function addPrDetail(token: string, login: string, byId: Map<string, RawNode>) {
+  const ids = [...byId.values()]
+    .filter((n) => n.__typename === "PullRequest" && n.state === "OPEN" && n.author?.login?.toLowerCase() === login.toLowerCase())
+    .map((n) => n.id);
+  const batches = Array.from({ length: Math.ceil(ids.length / 20) }, (_, i) => ids.slice(i * 20, i * 20 + 20));
+  const results = await Promise.allSettled(batches.map((b) => withRetry(() => gql<{ nodes: (RawDetail | null)[] }>(token, DETAIL_QUERY, { ids: b }))));
+  for (const r of results) {
+    if (r.status === "rejected") continue;
+    for (const d of r.value.nodes) {
+      const node = d && byId.get(d.id);
+      if (!node) continue;
+      const commit = d.commits.nodes[0]?.commit;
+      node.detail = {
+        mergeable: d.mergeable,
+        reviews: d.reviews.nodes,
+        threads: d.reviewThreads.nodes.map((t) => ({ isResolved: t.isResolved, isOutdated: t.isOutdated, lastAuthor: t.comments.nodes[0]?.author ?? null })),
+        ciApproval: (commit?.checkSuites.nodes ?? []).some((c) => c.conclusion === "ACTION_REQUIRED"),
+        checks: checkNotes(commit?.statusCheckRollup?.contexts.nodes ?? []),
+      };
+    }
+  }
 }
 
 /* ---------- history for repo progress ---------- */
