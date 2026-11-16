@@ -105,6 +105,8 @@ export type Settings = {
   demo: boolean;
   /** browser notification when a thread becomes your move, while Spool is open */
   notify: boolean;
+  /** whose October a guest last counted; a token's own login replaces it */
+  guestLogin: string;
 };
 
 const settingsStore = createStore<Settings>("spool:settings", {
@@ -113,6 +115,7 @@ const settingsStore = createStore<Settings>("spool:settings", {
   youOrder: "oldest",
   demo: false,
   notify: false,
+  guestLogin: "",
 });
 
 export const useSettings = settingsStore.use;

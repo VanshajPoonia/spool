@@ -585,6 +585,51 @@ export async function fetchOctober(token: string, login: string, year: number) {
   return data.s;
 }
 
+export type OctoberPr = { id: string; title: string; url: string; repo: string; state: string };
+
+const LOGIN = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
+
+/** A GitHub username from a name, @name or profile link. */
+export function parseLogin(input: string): { login: string } | { error: string } {
+  const v = input
+    .trim()
+    .replace(/^@/, "")
+    .replace(/^(?:https?:\/\/)?(?:www\.)?github\.com\//i, "")
+    .replace(/\/+$/, "");
+  if (!v) return { error: "Type a GitHub username." };
+  if (!LOGIN.test(v)) return { error: "That isn't a GitHub username. They use letters, numbers and single hyphens." };
+  return { login: v };
+}
+
+type RestSearchPr = { node_id: string; title: string; html_url: string; state: "open" | "closed"; repository_url: string; pull_request?: { merged_at: string | null } };
+
+/** The same count for guests: public PRs only, read with one search. */
+export async function fetchOctoberPublic(login: string, year: number) {
+  const q = `is:pr author:${login} created:${year}-10-01..${year}-10-31`;
+  let res: Response;
+  try {
+    res = await guestGet(`/search/issues?q=${encodeURIComponent(q)}&per_page=50`);
+  } catch (e) {
+    // Searches have their own allowance, so guestGet's hourly message would be wrong here.
+    if (e instanceof GitHubError && (e.status === 403 || e.status === 429)) {
+      const limit = readUsage()["guest:search"]?.limit ?? 10;
+      throw new GitHubError(`GitHub allows ${limit} searches a minute without a token. Try again in a minute.`, e.status);
+    }
+    throw e;
+  }
+  if (res.status === 422) throw new GitHubError(`GitHub has no user called ${login}.`, 422);
+  if (!res.ok) throw new GitHubError(explain(res.status, `GitHub answered ${res.status}.`), res.status);
+  const json = (await res.json()) as { total_count: number; items: RestSearchPr[] };
+  const items: OctoberPr[] = json.items.map((i) => ({
+    id: i.node_id,
+    title: i.title,
+    url: i.html_url,
+    repo: i.repository_url.replace(`${API}/repos/`, ""),
+    state: i.pull_request?.merged_at ? "MERGED" : i.state.toUpperCase(),
+  }));
+  return { total: json.total_count, items };
+}
+
 /* ---------- timeline for one thread (detail panel) ---------- */
 
 export type TimelineEvent = { at: string; actor: string | null; text: string; kind: string };

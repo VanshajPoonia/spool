@@ -1,20 +1,28 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { PrintText } from "@/components/print/PrintText";
-import { fetchOctober } from "@/lib/github";
+import { fetchOctober, fetchOctoberPublic, parseLogin, type OctoberPr } from "@/lib/github";
 import { daysUntil, gsocNext, gsocPhase, gsocStations, hacktoberfest, parseMonthDay } from "@/lib/program-dates";
 import { matchOrg, tagMatches, words } from "@/lib/interests";
 import type { Programs } from "@/lib/programs";
-import { useAuth, useSettings } from "@/lib/store";
+import { updateSettings, useAuth, useSettings } from "@/lib/store";
 import { fmtDate } from "@/lib/time";
 import { useBoard } from "./BoardProvider";
 import p from "./page.module.css";
 import s from "./programs.module.css";
 
-type Oct = { total: number; merged: number; open: number; closed: number; items: { id: string; title: string; url: string; repo: string; state: string }[] };
+type Oct = { total: number; merged: number; open: number; closed: number; items: OctoberPr[] };
+
+const toOct = (total: number, items: OctoberPr[]): Oct => ({
+  total,
+  merged: items.filter((i) => i.state === "MERGED").length,
+  open: items.filter((i) => i.state === "OPEN").length,
+  closed: items.filter((i) => i.state === "CLOSED").length,
+  items,
+});
 
 /* SYNTHETIC: shown only on the sample board. */
 const SAMPLE_OCT: Oct = {
@@ -55,11 +63,17 @@ function Countdown({ label, days, sub, href }: { label: string; days: number | n
 export function ProgramsView({ data }: { data: Programs }) {
   const { mode, now, login } = useBoard();
   const auth = useAuth();
-  const { interests } = useSettings();
+  const { interests, guestLogin } = useSettings();
   const [onlyRelevant, setOnlyRelevant] = useState(true);
   const [liveOct, setLiveOct] = useState<Oct | null>(null);
   const octYear = now ? (new Date(now).getMonth() >= 9 ? new Date(now).getFullYear() : new Date(now).getFullYear() - 1) : null;
   const [octErr, setOctErr] = useState<string | null>(null);
+  const [guestOct, setGuestOct] = useState<{ login: string; oct: Oct } | null>(null);
+  const [draft, setDraft] = useState<string | null>(null);
+  const [guestBusy, setGuestBusy] = useState(false);
+  const [guestErr, setGuestErr] = useState<string | null>(null);
+  // The username already counted this visit, so saving it doesn't trigger a second search.
+  const asked = useRef<string | null>(null);
 
   const g = data.gsoc;
   const yc = data.yc;
@@ -74,19 +88,45 @@ export function ProgramsView({ data }: { data: Programs }) {
     fetchOctober(auth.token, login, year)
       .then((r) => {
         const items = r.nodes.filter((n) => n?.id).map((n) => ({ id: n.id, title: n.title, url: n.url, repo: n.repository.nameWithOwner, state: n.state }));
-        setLiveOct({
-          total: r.issueCount,
-          merged: items.filter((i) => i.state === "MERGED").length,
-          open: items.filter((i) => i.state === "OPEN").length,
-          closed: items.filter((i) => i.state === "CLOSED").length,
-          items,
-        });
+        setLiveOct(toOct(r.issueCount, items));
       })
       .catch((e) => setOctErr(e instanceof Error ? e.message : "Couldn't load your October PRs."));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, auth?.token, login, !!now]);
 
-  const oct = mode === "sample" ? SAMPLE_OCT : liveOct;
+  const countGuest = useCallback((name: string, year: number) => {
+    asked.current = name;
+    setGuestBusy(true);
+    setGuestErr(null);
+    fetchOctoberPublic(name, year)
+      .then((r) => {
+        setGuestOct({ login: name, oct: toOct(r.total, r.items) });
+        updateSettings({ guestLogin: name });
+      })
+      .catch((e) => {
+        setGuestOct((g) => (g?.login === name ? g : null));
+        setGuestErr(e instanceof Error ? e.message : "Couldn't reach GitHub.");
+      })
+      .finally(() => setGuestBusy(false));
+  }, []);
+
+  // A guest who counted before gets the same username counted again on arrival.
+  useEffect(() => {
+    if (mode !== "guest" || !octYear || !guestLogin || asked.current === guestLogin) return;
+    const t = window.setTimeout(() => countGuest(guestLogin, octYear), 0);
+    return () => window.clearTimeout(t);
+  }, [mode, octYear, guestLogin, countGuest]);
+
+  const submitGuest = (e: FormEvent) => {
+    e.preventDefault();
+    const parsed = parseLogin(draft ?? guestLogin);
+    if ("error" in parsed) return setGuestErr(parsed.error);
+    if (!octYear) return;
+    setDraft(parsed.login);
+    countGuest(parsed.login, octYear);
+  };
+
+  const oct = mode === "sample" ? SAMPLE_OCT : mode === "guest" ? (guestOct?.oct ?? null) : liveOct;
 
   const orgs = useMemo(() => {
     if (!g) return [];
@@ -212,14 +252,52 @@ export function ProgramsView({ data }: { data: Programs }) {
             <div className={p.panelHead}>
               <div>
                 <h2>Your October{octYear ? ` ${octYear}` : ""}</h2>
-                <p>PRs you opened that month{mode === "sample" ? " (sample data)" : ""}. Spool counts them; what qualifies is up to Hacktoberfest&rsquo;s rules.</p>
+                <p>
+                  {mode === "guest" ? "Public PRs you opened that month" : "PRs you opened that month"}
+                  {mode === "sample" ? " (sample data)" : ""}. Spool counts them; what qualifies is up to Hacktoberfest&rsquo;s rules.
+                </p>
               </div>
             </div>
             {octErr && <p className={p.error}>{octErr}</p>}
             {mode === "guest" ? (
-              <p className={p.empty}>
-                Counting your own PRs needs GitHub. <Link href="/board/settings">Connect a read-only token</Link> and they show up here.
-              </p>
+              <>
+                <form className={p.form} onSubmit={submitGuest} noValidate>
+                  <label className={p.field}>
+                    <span className="sr-only">GitHub username</span>
+                    <input
+                      value={draft ?? guestLogin}
+                      onChange={(e) => {
+                        setDraft(e.target.value);
+                        setGuestErr(null);
+                      }}
+                      placeholder="Your GitHub username"
+                      autoComplete="off"
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      aria-invalid={!!guestErr || undefined}
+                      aria-describedby={guestErr ? "oct-error" : undefined}
+                    />
+                  </label>
+                  <button type="submit" className={`${p.btn} ${p.btnSign}`} disabled={guestBusy || !(draft ?? guestLogin).trim()}>
+                    {guestBusy ? "Counting" : "Count"}
+                  </button>
+                  {guestErr && (
+                    <p id="oct-error" className={p.formError} role="alert">
+                      {guestErr}
+                    </p>
+                  )}
+                </form>
+                {!oct && !guestBusy && (
+                  <p className={p.muted}>
+                    One public search, no token. <Link href="/board/settings">Connect GitHub</Link> to count from your own account.
+                  </p>
+                )}
+                {!oct && guestBusy && (
+                  <div className={p.loading}>
+                    <span className="shimmer">Counting October PRs…</span>
+                  </div>
+                )}
+              </>
             ) : (
               !oct && !octErr && (
                 <div className={p.loading}>
@@ -253,7 +331,9 @@ export function ProgramsView({ data }: { data: Programs }) {
                       <span className={s.octState}>{i.state.toLowerCase()}</span>
                     </li>
                   ))}
-                  {oct.items.length === 0 && <li className={p.empty}>No PRs opened this October yet.</li>}
+                  {oct.items.length === 0 && (
+                    <li className={p.empty}>{mode === "guest" ? `No public PRs from ${guestOct?.login} that October.` : "No PRs opened this October yet."}</li>
+                  )}
                 </ul>
               </>
             )}
