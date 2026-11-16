@@ -2,6 +2,7 @@
 
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Download, Eye, EyeOff, LogOut, Trash2, Upload } from "lucide-react";
+import { PROGRAMS } from "@/lib/deadlines";
 import { PrintText } from "@/components/print/PrintText";
 import { verifyToken } from "@/lib/github";
 import { setPrefs, usePrefs } from "@/lib/prefs";
@@ -327,6 +328,28 @@ export function SettingsView() {
               </button>
             </div>
           )}
+        </section>
+
+        <section className={p.panel}>
+          <div className={p.panelHead}>
+            <h2>Deadlines you follow</h2>
+            <p>Within 14 days they show on the board, next to your orgs&rsquo; dates. With notifications on, you get one at 7 days and at 1 day.</p>
+          </div>
+          <div className={s.toggles}>
+            {PROGRAMS.map(([key, label]) => {
+              const on = settings.followPrograms.includes(key);
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => updateSettings({ followPrograms: on ? settings.followPrograms.filter((k) => k !== key) : [...settings.followPrograms, key] })}
+                >
+                  <span className={s.switch} aria-hidden="true" /> {label}
+                </button>
+              );
+            })}
+          </div>
         </section>
 
         <section className={p.panel}>
