@@ -6,6 +6,7 @@ import type { Thread } from "./classify";
 import type { Follow, FollowIssue } from "./follow";
 import type { OrgPlan } from "./orgs";
 import type { RepoCheck } from "./outsider";
+import type { LogPr } from "./logbook";
 import { EMPTY_PLAN, SAMPLE_PLAN, taskKey, type Col, type Plan, type Prio } from "./plan";
 import { watchKey, type WatchedIssue, type WatchItem } from "./watch";
 
@@ -305,6 +306,10 @@ export const followCacheStore = createStore<{ login: string | null; feed: Follow
   scan: null,
 });
 
+/* ---------- logbook: your PRs, kept six hours so the Repos tab doesn't page through GitHub each visit ---------- */
+
+export const logbookStore = createStore<{ login: string | null; at: string | null; total: number; prs: LogPr[] }>("spool:logbook", { login: null, at: null, total: 0, prs: [] });
+
 /* ---------- deadline notifications already sent, so each goes out once ---------- */
 
 export const deadlineAlertStore = createStore<Record<string, string>>("spool:deadline-alerts", {});
@@ -483,6 +488,7 @@ export function wipeAll() {
   followCacheStore.clear();
   repoCheckStore.clear();
   deadlineAlertStore.clear();
+  logbookStore.clear();
   usageStore.clear();
   planStore.clear();
   samplePlanStore.clear();

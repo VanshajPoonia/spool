@@ -8,6 +8,7 @@ import { noteUsage, readUsage, windowLeft, type Who } from "./store";
 import { pickFirstIssues } from "./first-issues";
 import { freeScanQuery, newIssuesQuery, toFollowIssue, type Follow, type FollowIssue, type RawFollowIssue } from "./follow";
 import { summarize, type RawRepoCheck, type RepoCheck } from "./outsider";
+import type { LogPr } from "./logbook";
 import { ASKS, type WatchedIssue } from "./watch";
 
 const API = "https://api.github.com";
@@ -849,6 +850,33 @@ export async function fetchRepoCheck(token: string, repo: string): Promise<RepoC
     gfi: `repo:${repo} is:issue is:open no:assignee label:"good first issue"`,
   });
   return summarize(raw, new Date().toISOString());
+}
+
+/* ---------- logbook: your PRs, newest first, 100 a page, five pages at most ---------- */
+
+export async function fetchLogPrs(token: string, login: string): Promise<{ prs: LogPr[]; total: number }> {
+  const prs: LogPr[] = [];
+  let after: string | null = null;
+  let total = 0;
+  for (let page = 0; page < 5; page++) {
+    const d: {
+      s: {
+        issueCount: number;
+        pageInfo: { hasNextPage: boolean; endCursor: string | null };
+        nodes: ({ number: number; title: string; url: string; createdAt: string; mergedAt: string | null; repository: { nameWithOwner: string } } | Record<string, never>)[];
+      };
+    } = await gql(
+      token,
+      `query Log($q: String!, $after: String) { s: search(query: $q, type: ISSUE, first: 100, after: $after) { issueCount pageInfo { hasNextPage endCursor }
+        nodes { ... on PullRequest { number title url createdAt mergedAt repository { nameWithOwner } } } } }`,
+      { q: `is:pr author:${login} sort:created-desc`, after },
+    );
+    total = d.s.issueCount;
+    for (const n of d.s.nodes) if ("number" in n) prs.push({ repo: n.repository.nameWithOwner, number: n.number, title: n.title, url: n.url, createdAt: n.createdAt, mergedAt: n.mergedAt });
+    if (!d.s.pageInfo.hasNextPage) break;
+    after = d.s.pageInfo.endCursor;
+  }
+  return { prs, total };
 }
 
 /* ---------- October PRs ---------- */
