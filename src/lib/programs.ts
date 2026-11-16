@@ -1,6 +1,7 @@
 import "server-only";
 import { cacheLife } from "next/cache";
 import type { FirstIssue } from "./github";
+import { pickFirstIssues } from "./first-issues";
 
 /*
  * Public program feeds, read on the server and cached.
@@ -406,22 +407,5 @@ export type FirstIssues = { issues: FirstIssue[]; live: boolean; fetchedAt: stri
 export async function firstIssues(langs: string[]): Promise<FirstIssues> {
   const since = new Date(Date.now() - 45 * 86400000).toISOString().slice(0, 10);
   const results = await Promise.all(langs.slice(0, 3).map((l) => firstIssuesFor(l, since).catch(() => null)));
-  const seen = new Set<string>();
-  const issues: FirstIssue[] = [];
-  for (const list of results) {
-    for (const i of list ?? []) {
-      if (seen.has(i.id)) continue;
-      seen.add(i.id);
-      issues.push(i);
-    }
-  }
-  issues.sort((a, b) => b.repository.stargazerCount - a.repository.stargazerCount);
-  // A busy repo can label a dozen issues in a day; two each keeps the list worth scanning.
-  const perRepo = new Map<string, number>();
-  const varied = issues.filter((i) => {
-    const n = (perRepo.get(i.repository.nameWithOwner) ?? 0) + 1;
-    perRepo.set(i.repository.nameWithOwner, n);
-    return n <= 2;
-  });
-  return { issues: varied.slice(0, 24), live: results.some((r) => r !== null), fetchedAt: new Date().toISOString() };
+  return { issues: pickFirstIssues(results.map((r) => r ?? [])), live: results.some((r) => r !== null), fetchedAt: new Date().toISOString() };
 }

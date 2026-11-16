@@ -5,6 +5,7 @@
  */
 
 import { noteUsage, readUsage, windowLeft, type Who } from "./store";
+import { pickFirstIssues } from "./first-issues";
 import type { WatchedIssue } from "./watch";
 
 const API = "https://api.github.com";
@@ -356,8 +357,9 @@ export async function fetchDiscovery(token: string, interests: string[]) {
   });
   const issueLangs = langs.length ? langs : ["typescript", "python"];
   issueLangs.slice(0, 3).forEach((l, i) => {
-    vars[`g${i}`] = `is:issue is:open label:"good first issue" no:assignee language:${l} created:>${issueSince} sort:created-desc`;
-    parts.push(`g${i}: search(query: $g${i}, type: ISSUE, first: 10) { nodes { ... on Issue { id number title url createdAt comments { totalCount } repository { nameWithOwner stargazerCount primaryLanguage { name } } } } }`);
+    // By activity, not age: by age, one repo bulk-filing issues can fill the whole page.
+    vars[`g${i}`] = `is:issue is:open label:"good first issue" no:assignee language:${l} created:>${issueSince} sort:interactions-desc`;
+    parts.push(`g${i}: search(query: $g${i}, type: ISSUE, first: 30) { nodes { ... on Issue { id number title url createdAt comments { totalCount } repository { nameWithOwner stargazerCount primaryLanguage { name } } } } }`);
   });
   const decl = Object.keys(vars)
     .map((k) => `$${k}: String!`)
@@ -374,16 +376,9 @@ export async function fetchDiscovery(token: string, interests: string[]) {
       else repos.set(r.nameWithOwner, { ...r, matched: [t] });
     }
   });
-  const issues: FirstIssue[] = [];
-  issueLangs.slice(0, 3).forEach((_, i) => {
-    for (const n of (data[`g${i}`]?.nodes ?? []) as FirstIssue[]) if (n?.id && !issues.some((x) => x.id === n.id)) issues.push(n);
-  });
   return {
     repos: [...repos.values()].sort((a, b) => b.matched.length - a.matched.length || b.stargazerCount - a.stargazerCount),
-    issues: issues
-      .filter((i) => i.repository.stargazerCount >= 30)
-      .sort((a, b) => b.repository.stargazerCount - a.repository.stargazerCount)
-      .slice(0, 24),
+    issues: pickFirstIssues(issueLangs.slice(0, 3).map((_, i) => (data[`g${i}`]?.nodes ?? []) as FirstIssue[])),
     fetchedAt: new Date().toISOString(),
   };
 }
