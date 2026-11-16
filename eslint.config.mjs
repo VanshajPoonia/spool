@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Tests compiled by `pnpm test`.
+    ".test-build/**",
   ]),
 ]);
 

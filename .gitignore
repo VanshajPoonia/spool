@@ -46,3 +46,6 @@ next-env.d.ts
 # impeccable design-review captures and logs
 /.impeccable/review/
 /.impeccable/questions/
+
+# compiled tests
+/.test-build/
