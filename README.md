@@ -21,7 +21,19 @@ Open `/board?demo=1` to explore with sample data, or paste a GitHub token on the
 
 | Variable | Used for |
 | --- | --- |
-| `GITHUB_TOKEN` | Raises the rate limit for the landing page's live repo search (`/api/discover`). Without it the server searches unauthenticated (10 requests/min, cached for hours). |
+| `GITHUB_TOKEN` | Raises the rate limit for the server's GitHub searches: the landing page's live repo search (`/api/discover`) and guests' good first issues (`/api/first-issues`). Without it the server searches unauthenticated, 10 a minute for the whole site, and a busy minute shows "rate-limiting, try again in a minute". |
+
+## Deploy
+
+Live at https://spool.vanshajpoonia.com. Vercel project `spool` under vanshaj-poonias-projects, connected to this repo: every push to `main` deploys production, and other branches get preview URLs. The domain is a DNS-only CNAME `spool` to `cdb23d5017e94c42.vercel-dns-017.com` in the Cloudflare zone for vanshajpoonia.com.
+
+Production responses carry a content security policy (`next.config.ts`) whose `connect-src` allows only Spool and api.github.com, so the browser itself stops a token going anywhere else.
+
+**Still to do: the server token.** Production runs without `GITHUB_TOKEN` for now. To add it:
+
+1. Create a classic token with no scopes: https://github.com/settings/tokens/new?description=Spool%20server%20(no%20scopes). No scopes is enough to search public data.
+2. In this folder, run `vercel env add GITHUB_TOKEN production` and paste it when asked.
+3. Push to `main`, or run `vercel redeploy <production deployment URL> --target production`, so the new value is picked up.
 
 ## What's where
 

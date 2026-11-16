@@ -160,12 +160,14 @@ Lives in `fetchOctoberPublic()` and `parseLogin()` in `lib/github.ts`, the guest
 Drawn up on 2026-11-16, partly from the owner's own open source setup: the `oss` CLI, its tracker app, its watcher and its playbook. Those run on a server with a token; Spool keeps every idea that works without one. Suggested order: 0, 1, 2, then 3 and 4.
 
 ### Phase 0: Ship it
-Spool has never been deployed, and nothing can link to it yet.
+Started 2026-11-16. Details in the README under Deploy.
 
-- [ ] Deploy on Vercel, with `GITHUB_TOKEN` (no scopes) on the server so guest searches don't share 10 a minute
-- [ ] A domain, the repo's homepage URL, and Open Graph metadata and image so links to Spool show a card
-- [ ] A content security policy whose `connect-src` allows only Spool itself and api.github.com, so the browser enforces "your token goes only to GitHub"
-- [ ] robots.txt and a sitemap for the landing page
+- [x] Deploy on Vercel: project `spool`, connected to the repo, so `main` deploys production
+- [ ] `GITHUB_TOKEN` (no scopes) on the server, so guest searches don't share 10 a minute. Left for later on 2026-11-16; the steps are in the README under Deploy
+- [ ] spool.vanshajpoonia.com: added to the Vercel project, waiting on the CNAME in Cloudflare. Then the repo's homepage URL
+- [x] Open Graph and Twitter metadata, with a generated share card (`app/opengraph-image.tsx`)
+- [x] A content security policy whose `connect-src` allows only Spool itself and api.github.com, so the browser enforces "your token goes only to GitHub"
+- [x] robots.txt and a sitemap for the landing page
 
 ### Phase 1: Sharper reasons on the board
 From the tracker's board sweep. Everything here fits in the existing board query.
