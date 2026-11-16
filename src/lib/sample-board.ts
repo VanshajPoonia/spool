@@ -15,7 +15,7 @@ const D = 24 * H;
 type Spec = {
   repo: string;
   num: number;
-  kind: "pr" | "issue";
+  kind: "pr" | "issue" | "discussion";
   title: string;
   author: string;
   created: number;
@@ -68,6 +68,7 @@ const SPECS: Spec[] = [
   { repo: "mossjs/moss", num: 1175, kind: "pr", title: "Watch mode for the resolver", author: ME, created: 8 * D, sources: ["mine"], comments: [["ana-r", 4 * D], [ME, 3 * D]], commit: 3 * D, ci: "SUCCESS", merge: "CONFLICTING", lang: "JavaScript" },
   { repo: "ripple-rs/ripple", num: 97, kind: "pr", title: "Frame pacing with a fixed timestep", author: ME, created: 1 * D, sources: ["mine"], commit: 9 * H, ci: "SUCCESS", botReviews: [["review-bot", "COMMENTED", 7 * H, 3]], lang: "Rust" },
   { repo: "vela-dev/vela", num: 668, kind: "pr", title: "Stream large uploads to disk", author: ME, created: 5 * D, sources: ["mine"], comments: [[ME, 1 * D]], reviews: [["lena", "COMMENTED", 2 * D]], commit: 2 * D + 6 * H, ci: "SUCCESS", threads: [["lena", false], ["lena", false], ["lena", true]], lang: "TypeScript" },
+  { repo: "fernlang/fern", num: 330, kind: "discussion", title: "Syntax for effect handlers", author: "kit-o", created: 11 * D, sources: ["discussions"], comments: [[ME, 3 * D], ["kit-o", 8 * H]], lang: "Rust" },
 ];
 
 const human = (login: string) => ({ __typename: "User", login });
@@ -75,11 +76,11 @@ const human = (login: string) => ({ __typename: "User", login });
 export function sampleBoard(now = Date.now()): RawBoard {
   const iso = (ago: number) => new Date(now - ago).toISOString();
   const nodes = SPECS.map((sp, i): RawNode & { sources: Source[] } => ({
-    __typename: sp.kind === "pr" ? "PullRequest" : "Issue",
+    __typename: sp.kind === "pr" ? "PullRequest" : sp.kind === "discussion" ? "Discussion" : "Issue",
     id: `sample-${i}`,
     number: sp.num,
     title: sp.title,
-    url: `https://github.com/${sp.repo}/${sp.kind === "pr" ? "pull" : "issues"}/${sp.num}`,
+    url: `https://github.com/${sp.repo}/${sp.kind === "pr" ? "pull" : sp.kind === "discussion" ? "discussions" : "issues"}/${sp.num}`,
     state: sp.state ?? "OPEN",
     isDraft: sp.draft ?? false,
     createdAt: iso(sp.created),
@@ -118,7 +119,8 @@ export function sampleTimeline(id: string, now = Date.now()): TimelineEvent[] {
   const sp = SPECS[i];
   if (!sp) return [];
   const iso = (ago: number) => new Date(now - ago).toISOString();
-  const ev: TimelineEvent[] = [{ at: iso(sp.created), actor: sp.author, text: sp.kind === "pr" ? `opened #${sp.num}` : `opened the issue`, kind: "event" }];
+  const opened = sp.kind === "pr" ? `opened #${sp.num}` : sp.kind === "discussion" ? "started the discussion" : "opened the issue";
+  const ev: TimelineEvent[] = [{ at: iso(sp.created), actor: sp.author, text: opened, kind: "event" }];
   if (sp.commit !== undefined && sp.commit !== sp.created) ev.push({ at: iso(sp.commit), actor: sp.author, text: "pushed: address review feedback", kind: "commit" });
   for (const [a, t] of sp.comments ?? []) ev.push({ at: iso(t), actor: a, text: a === ME ? "Pushed a fix and replied with the numbers." : "Could you add a test that covers the nested case?", kind: "comment" });
   for (const [a, st, t] of sp.reviews ?? []) ev.push({ at: iso(t), actor: a, text: st === "APPROVED" ? "approved" : "requested changes: needs a test for nested views", kind: "review" });
