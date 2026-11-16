@@ -15,6 +15,11 @@
   border-bottom: 0;
 }
 
+.repoActions {
+  display: flex;
+  gap: 2px;
+}
+
 .matched {
   display: flex;
   flex-wrap: wrap;

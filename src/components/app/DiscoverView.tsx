@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, Eye, MessageSquare, Star } from "lucide-react";
+import { ArrowUpRight, Eye, MessageSquare, ShieldCheck, Star } from "lucide-react";
 import { PrintText } from "@/components/print/PrintText";
 import { Callsign } from "@/components/kit/Kit";
 import { compactStars } from "@/lib/format";
@@ -163,10 +164,18 @@ export function DiscoverView() {
                     <span className={s.stars}>
                       <PrintText value={compactStars(r.stars)} length={5} align="right" style={{ fontSize: "14px" }} label={`${r.stars} stars`} />
                     </span>
-                    <button type="button" className={p.iconBtn} aria-pressed={saved} onClick={() => toggleShortlist(r.full, r.url)} title={saved ? "Remove from shortlist" : "Add to shortlist"}>
-                      <Star size={16} fill={saved ? "currentColor" : "none"} aria-hidden="true" />
-                      <span className="sr-only">{saved ? "Remove from shortlist" : "Add to shortlist"}</span>
-                    </button>
+                    <span className={s.repoActions}>
+                      {mode !== "guest" && (
+                        <Link href={`/board/repos/${r.full}`} className={p.iconBtn} title="Can an outsider land work here?">
+                          <ShieldCheck size={16} aria-hidden="true" />
+                          <span className="sr-only">Check {r.full}</span>
+                        </Link>
+                      )}
+                      <button type="button" className={p.iconBtn} aria-pressed={saved} onClick={() => toggleShortlist(r.full, r.url)} title={saved ? "Remove from shortlist" : "Add to shortlist"}>
+                        <Star size={16} fill={saved ? "currentColor" : "none"} aria-hidden="true" />
+                        <span className="sr-only">{saved ? "Remove from shortlist" : "Add to shortlist"}</span>
+                      </button>
+                    </span>
                   </li>
                 );
               })}
@@ -245,6 +254,12 @@ export function DiscoverView() {
                   {r.full}
                   <ArrowUpRight size={14} aria-hidden="true" />
                 </a>
+                {mode !== "guest" && (
+                  <Link href={`/board/repos/${r.full}`} className={p.iconBtn} title="Can an outsider land work here?">
+                    <ShieldCheck size={14} aria-hidden="true" />
+                    <span className="sr-only">Check {r.full}</span>
+                  </Link>
+                )}
                 <button type="button" className={p.iconBtn} onClick={() => toggleShortlist(r.full, r.url)} aria-label={`Remove ${r.full}`}>
                   <Star size={14} fill="currentColor" aria-hidden="true" />
                 </button>

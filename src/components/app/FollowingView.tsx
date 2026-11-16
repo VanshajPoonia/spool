@@ -1,7 +1,8 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, Eye, RefreshCw, Search, X } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, Eye, RefreshCw, Search, ShieldCheck, X } from "lucide-react";
 import { Callsign, StateMark, type MarkState } from "@/components/kit/Kit";
 import { ago } from "@/lib/classify";
 import { fetchFollowing, resolveFollowTarget } from "@/lib/github";
@@ -335,6 +336,14 @@ export function FollowingView() {
                   </a>
                   <span className={s.rule}>{ruleText(f)}</span>
                   <span className={s.newCount}>{n ? `${n} new` : ""}</span>
+                  {f.kind === "repo" ? (
+                    <Link href={`/board/repos/${f.target}`} className={p.iconBtn} title="Can an outsider land work here?">
+                      <ShieldCheck size={16} aria-hidden="true" />
+                      <span className="sr-only">Check {f.target}</span>
+                    </Link>
+                  ) : (
+                    <span />
+                  )}
                   {mode !== "sample" && (
                     <button type="button" className={p.iconBtn} title="Stop following" onClick={() => removeFollow(f.id)}>
                       <X size={16} aria-hidden="true" />

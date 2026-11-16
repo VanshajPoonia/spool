@@ -38,7 +38,7 @@
 
 .follows li {
   display: grid;
-  grid-template-columns: 64px minmax(0, auto) minmax(0, 1fr) auto auto;
+  grid-template-columns: 64px minmax(0, auto) minmax(0, 1fr) auto auto auto;
   align-items: center;
   gap: 12px;
   min-height: 40px;
