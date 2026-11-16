@@ -1,7 +1,15 @@
 import type { NextConfig } from "next";
 
-// The browser may only send data to Spool itself and to GitHub, so a pasted token can't go anywhere else.
-const CSP = ["connect-src 'self' https://api.github.com", "frame-ancestors 'none'", "base-uri 'self'", "form-action 'self'", "object-src 'none'"].join("; ");
+// Scripts may only send data to Spool itself and to GitHub, and images load only from Spool, GitHub avatars and
+// GSoC logos, so a pasted token can't leave by a request or an image URL.
+const CSP = [
+  "connect-src 'self' https://api.github.com",
+  "img-src 'self' data: blob: https://avatars.githubusercontent.com https://summerofcode.withgoogle.com",
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "object-src 'none'",
+].join("; ");
 
 const nextConfig: NextConfig = {
   cacheComponents: true,

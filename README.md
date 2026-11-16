@@ -31,7 +31,7 @@ Open `/board?demo=1` to explore with sample data, or paste a GitHub token on the
 
 Live at https://spool.vanshajpoonia.com. Vercel project `spool` under vanshaj-poonias-projects, connected to this repo: every push to `main` deploys production, and other branches get preview URLs. The domain is a DNS-only CNAME `spool` to `cdb23d5017e94c42.vercel-dns-017.com` in the Cloudflare zone for vanshajpoonia.com.
 
-Production responses carry a content security policy (`next.config.ts`) whose `connect-src` allows only Spool and api.github.com, so the browser itself stops a token going anywhere else.
+Production responses carry a content security policy (`next.config.ts`). Its `connect-src` allows only Spool and api.github.com, and its `img-src` only Spool, GitHub avatars and GSoC logos, so the browser stops a script sending the token anywhere else in a request or an image URL. A policy can't cover everything (a script could still navigate the page away), which is why Spool also loads no third-party scripts.
 
 **Still to do: the server token.** Production runs without `GITHUB_TOKEN` for now. To add it:
 
