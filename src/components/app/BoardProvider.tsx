@@ -21,6 +21,8 @@ type Ctx = {
   error: string | null;
   fetchedAt: string | null;
   rate: RawBoard["rate"] | null;
+  /** on a first load, the parts still on their way */
+  pending: string[];
   now: number;
   refresh: () => void;
   history: History | null;
@@ -92,7 +94,10 @@ export function BoardProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (mode !== "live" || !token || !login) return;
     let alive = true;
-    fetchBoard(token, login)
+    // A returning visit keeps its saved board on screen until the full one lands; a first visit fills in as parts arrive.
+    const saved = cacheStore.read();
+    const previous = saved.board && saved.login === login ? (saved.board as RawBoard) : null;
+    fetchBoard(token, login, { previous, onPartial: previous ? undefined : (b) => alive && setRaw(b) })
       .then((b) => {
         if (!alive) return;
         setRaw(b);
@@ -202,6 +207,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     error,
     fetchedAt: raw?.fetchedAt ?? null,
     rate: raw?.rate ?? null,
+    pending: loading ? (raw?.pending ?? []) : [],
     now,
     refresh: () => (mode === "sample" ? setRaw(sampleBoard()) : bump()),
     history,

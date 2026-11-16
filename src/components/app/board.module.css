@@ -615,6 +615,13 @@
   color: var(--ink);
 }
 
+/* a first load fills in part by part; this says what hasn't arrived yet */
+.pending {
+  margin: 0 0 12px;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
 .note {
   margin-top: 24px;
   color: var(--ink-3);

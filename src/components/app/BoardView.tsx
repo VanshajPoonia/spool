@@ -179,7 +179,7 @@ const SHORTCUTS: [string, string][] = [
 ];
 
 export function BoardView() {
-  const { threads, fresh, loading, error, mode, now, refresh, seeAll, see, fetchedAt, codeFor, login } = useBoard();
+  const { threads, fresh, loading, error, mode, now, refresh, seeAll, see, fetchedAt, codeFor, login, pending } = useBoard();
   const meta = useMeta();
   const settings = useSettings();
   const planSt = planStoreFor(mode === "sample");
@@ -464,6 +464,11 @@ export function BoardView() {
         <Loader />
       ) : (
         <>
+          {pending.length > 0 && (
+            <p className={s.pending} role="status">
+              <span className="shimmer">Still reading {pending.join(", ")}…</span>
+            </p>
+          )}
           <TodayStrip onOpen={openThread} />
           <div className={s.columns}>
             <Group

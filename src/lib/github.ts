@@ -135,6 +135,8 @@ export type RawNode = {
   commits?: { nodes: { commit: { committedDate: string; statusCheckRollup: { state: string } | null } }[] };
   detail?: PrDetail;
   claimDetail?: IssueDetail;
+  /** when detail or claimDetail was read, so a later refresh can reuse it for a while */
+  detailAt?: string;
   reviewRequests?: { nodes: { requestedReviewer: { login?: string; name?: string } | null }[] };
   assignees?: { nodes: { login: string }[] };
   labels: { nodes: { name: string; color: string }[] };
@@ -237,7 +239,19 @@ export type RawBoard = {
   rate: { remaining: number; limit: number; resetAt: string };
   /** searches that failed on this load; the board shows what did arrive */
   missing?: Source[];
+  /** on a first load, what's still on its way, in words */
+  pending?: string[];
 };
+
+export type BoardOptions = {
+  /** called each time part of the board arrives; for a first load, when nothing is on screen yet */
+  onPartial?: (b: RawBoard) => void;
+  /** the last full board: details of threads that haven't changed since are reused for up to 30 minutes */
+  previous?: RawBoard | null;
+};
+
+const GROUP_WORDS = ["your PRs", "your issues, reviews and assignments", "mentions, comments and discussions"];
+const DETAIL_FRESH = 30 * 60000;
 
 async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
   try {
@@ -252,7 +266,7 @@ async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
   }
 }
 
-export async function fetchBoard(token: string, login: string): Promise<RawBoard> {
+export async function fetchBoard(token: string, login: string, opts: BoardOptions = {}): Promise<RawBoard> {
   const since = new Date(Date.now() - 21 * 86400000).toISOString().slice(0, 10);
   const L = login;
   const q: Record<Source, string> = {
@@ -267,50 +281,59 @@ export async function fetchBoard(token: string, login: string): Promise<RawBoard
     // archived:false finds nothing for discussions, so archived repos are dropped below instead.
     discussions: `involves:${L} is:open sort:updated-desc`,
   };
+  const byId = new Map<string, RawNode & { sources: Source[] }>();
+  let rate: Rate | null = null;
+  const missing: Source[] = [];
+  const pending = new Set(GROUP_WORDS);
+  const snapshot = (still: string[]): RawBoard => {
+    const rl = rate as Rate | null;
+    return {
+      login,
+      fetchedAt: new Date().toISOString(),
+      nodes: [...byId.values()],
+      rate: rl ? { remaining: rl.remaining, limit: rl.limit, resetAt: rl.resetAt } : { remaining: 0, limit: 0, resetAt: new Date().toISOString() },
+      missing: missing.length ? [...missing] : undefined,
+      pending: still.length ? still : undefined,
+    };
+  };
+
+  // Each request lands on its own, so a first load can show your PRs before mentions have arrived.
   const results = await Promise.allSettled(
-    GROUPS.map((group) =>
+    GROUPS.map((group, i) =>
       withRetry(() =>
         gql<Partial<Record<Source, SearchBlock>> & { rateLimit: Rate }>(
           token,
           groupQuery(group),
           Object.fromEntries(group.map((g) => [g, q[g]])),
         ),
-      ),
+      )
+        .then((data) => {
+          if (!rate || data.rateLimit.remaining < rate.remaining) rate = data.rateLimit;
+          for (const src of group) {
+            for (const n of data[src]?.nodes ?? []) {
+              if (!("id" in n) || !n.id) continue;
+              if (n.__typename === "Discussion" && (n as RawDiscussion).repository.isArchived) continue;
+              const node = n.__typename === "Discussion" ? fromDiscussion(n as RawDiscussion) : (n as RawNode);
+              const existing = byId.get(node.id);
+              if (existing) existing.sources.push(src);
+              else byId.set(node.id, { ...node, sources: [src] });
+            }
+          }
+        }, (e) => {
+          missing.push(...group);
+          throw e;
+        })
+        .finally(() => {
+          pending.delete(GROUP_WORDS[i]);
+          if (opts.onPartial && byId.size) opts.onPartial(snapshot([...pending, "PR details and claims"]));
+        }),
     ),
   );
   const failed = results.filter((r): r is PromiseRejectedResult => r.status === "rejected");
   if (failed.length === results.length) throw failed[0].reason;
 
-  const byId = new Map<string, RawNode & { sources: Source[] }>();
-  let rate: Rate | null = null;
-  const missing: Source[] = [];
-  results.forEach((r, i) => {
-    if (r.status === "rejected") {
-      missing.push(...GROUPS[i]);
-      return;
-    }
-    const data = r.value;
-    if (!rate || data.rateLimit.remaining < rate.remaining) rate = data.rateLimit;
-    for (const src of GROUPS[i]) {
-      for (const n of data[src]?.nodes ?? []) {
-        if (!("id" in n) || !n.id) continue;
-        if (n.__typename === "Discussion" && (n as RawDiscussion).repository.isArchived) continue;
-        const node = n.__typename === "Discussion" ? fromDiscussion(n as RawDiscussion) : (n as RawNode);
-        const existing = byId.get(node.id);
-        if (existing) existing.sources.push(src);
-        else byId.set(node.id, { ...node, sources: [src] });
-      }
-    }
-  });
   await Promise.all([addPrDetail(token, login, byId), addIssueDetail(token, login, byId)]);
-  const rl = rate as Rate | null;
-  return {
-    login,
-    fetchedAt: new Date().toISOString(),
-    nodes: [...byId.values()],
-    rate: rl ? { remaining: rl.remaining, limit: rl.limit, resetAt: rl.resetAt } : { remaining: 0, limit: 0, resetAt: new Date().toISOString() },
-    missing: missing.length ? missing : undefined,
-  };
+  return snapshot([]);
 }
 
 const NOT_PASSED = new Set(["FAILURE", "ERROR", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED", "STARTUP_FAILURE"]);
@@ -358,7 +381,7 @@ function checkNotes(contexts: RawContext[]): CheckNote[] {
  */
 async function addPrDetail(token: string, login: string, byId: Map<string, RawNode>) {
   const ids = [...byId.values()]
-    .filter((n) => n.__typename === "PullRequest" && n.state === "OPEN" && n.author?.login?.toLowerCase() === login.toLowerCase())
+    .filter((n) => n.__typename === "PullRequest" && n.state === "OPEN" && !n.detail && n.author?.login?.toLowerCase() === login.toLowerCase())
     .map((n) => n.id);
   const batches = Array.from({ length: Math.ceil(ids.length / 20) }, (_, i) => ids.slice(i * 20, i * 20 + 20));
   const results = await Promise.allSettled(batches.map((b) => withRetry(() => gql<{ nodes: (RawDetail | null)[] }>(token, DETAIL_QUERY, { ids: b }))));
@@ -368,6 +391,7 @@ async function addPrDetail(token: string, login: string, byId: Map<string, RawNo
       const node = d && byId.get(d.id);
       if (!node) continue;
       const commit = d.commits.nodes[0]?.commit;
+      node.detailAt = new Date().toISOString();
       node.detail = {
         mergeable: d.mergeable,
         reviews: d.reviews.nodes,
@@ -411,7 +435,7 @@ async function addIssueDetail(token: string, login: string, byId: Map<string, Ra
   const me = login.toLowerCase();
   const isMe = (l: string | null | undefined) => !!l && l.toLowerCase() === me;
   const ids = [...byId.values()]
-    .filter((n) => n.__typename === "Issue" && n.state === "OPEN" && !isMe(n.author?.login))
+    .filter((n) => n.__typename === "Issue" && n.state === "OPEN" && !n.claimDetail && !isMe(n.author?.login))
     .filter((n) => n.sources.some((x) => x === "commented" || x === "assigned" || x === "mentions"))
     .map((n) => n.id)
     .slice(0, 40);
@@ -431,6 +455,7 @@ async function addIssueDetail(token: string, login: string, byId: Map<string, Ra
         if (!pr?.number || pr.state === "CLOSED" || pr.repository.nameWithOwner.toLowerCase() !== repo) continue;
         prs.set(pr.number, { number: pr.number, url: pr.url, state: pr.state, author: pr.author?.login ?? null });
       }
+      node.detailAt = new Date().toISOString();
       node.claimDetail = { askedAt: asks.at(-1)?.createdAt ?? null, assignedAt: assigned.at(-1)?.createdAt ?? null, prs: [...prs.values()] };
     }
   }
