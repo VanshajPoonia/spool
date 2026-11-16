@@ -140,7 +140,7 @@ Asked for "subtle colours, heavily inspired by the Linear website". The strip ba
 - The plan only sees what the board loads: a thread that drops off the board (say, merged more than 21 days ago) leaves the plan too, though its placement and priority stay saved.
 - Watched-issue cards show what Discover last checked; the Plan tab never asks GitHub itself.
 
-## Next
+## Follow-ups
 
 ### Guest follow-ups
 Lives in `fetchOctoberPublic()` and `parseLogin()` in `lib/github.ts`, the guest form in `components/app/ProgramsView.tsx`, `guestLogin` in the settings store, and `pickFirstIssues()` in `lib/first-issues.ts`.
@@ -150,38 +150,91 @@ Lives in `fetchOctoberPublic()` and `parseLogin()` in `lib/github.ts`, the guest
 
 ### Plan follow-ups
 - [ ] Add a shortlisted repo or saved GSoC organisation to the plan as a card
-- [ ] Due dates on your own tasks, feeding the deadline strip (item 8)
-- [ ] Plan cards in Cmd+K (item 12)
+- [ ] Due dates on your own tasks, feeding the deadline strip (phase 6)
+- [ ] Plan cards in Cmd+K
 
-### 11. Deadline reminders
+---
+
+## Next, in phases
+
+Drawn up on 2026-11-16, partly from the owner's own open source setup: the `oss` CLI, its tracker app, its watcher and its playbook. Those run on a server with a token; Spool keeps every idea that works without one. Suggested order: 0, 1, 2, then 3 and 4.
+
+### Phase 0: Ship it
+Spool has never been deployed, and nothing can link to it yet.
+
+- [ ] Deploy on Vercel, with `GITHUB_TOKEN` (no scopes) on the server so guest searches don't share 10 a minute
+- [ ] A domain, the repo's homepage URL, and Open Graph metadata and image so links to Spool show a card
+- [ ] A content security policy whose `connect-src` allows only Spool itself and api.github.com, so the browser enforces "your token goes only to GitHub"
+- [ ] robots.txt and a sitemap for the landing page
+
+### Phase 1: Sharper reasons on the board
+From the tracker's board sweep. Everything here fits in the existing board query.
+
+- [ ] Merge conflicts: your move, it needs a rebase
+- [ ] Unresolved review threads, counted on the row
+- [ ] A bot review after your last commit (CodeRabbit and the like) is your move; other bot noise stays ignored
+- [ ] A failing CLA or DCO check says so, with a link to sign
+- [ ] Checks waiting for a maintainer to approve the run are their move, not yours
+- [ ] GitHub Discussions you started, commented on or were mentioned in
+
+### Phase 2: Since you last looked
+The watcher's inbox, without a server: compare the saved board with a fresh load.
+
+- [ ] What changed since your last visit: new replies, merges, closes, CI turning red or green, new review requests, threads that arrived or left
+- [ ] Mark items handled, and they fold away
+- [ ] Browser notifications, when on, come from the same list
+
+### Phase 3: Claims
+From the tracker's claimed and in-progress cards and its claim check.
+
+- [ ] Issues you asked to take, found from your own "can I work on this" comments, in a group of their own
+- [ ] Waiting for assignment, with the days counted
+- [ ] Assigned with no PR yet, with a warning before common unassign windows (Layer5 unassigns after two weeks idle)
+- [ ] A loud row when someone else is assigned, or opens a PR that references your issue
+- [ ] Claims feed the plan: Inbox until assigned, then Working on
+
+### Phase 4: Follow repos, orgs and maintainers
+From the watch rules in `repos.tsv`, the free-issue scan and the tracker's Skipped list.
+
+- [ ] Follow a repo or an org with a rule: issues with chosen labels, issues filed by maintainers, or every new issue
+- [ ] Follow a maintainer: new issues they file anywhere
+- [ ] A free-issue scan of anything you follow: any age, any label, no assignee, no linked PR, no claim comment in the last 21 days
+- [ ] Skip an issue with a reason, so it never comes back
+- [ ] One person filing the same issue in many repos shows once, as "(+N repos)"
+- [ ] Checks run only while Spool is open and stay inside GitHub's search allowance
+
+### Phase 5: Can an outsider land work here?
+From the playbook's per-org table. Replaces "Is this repo worth contributing to?". Read from public data, for any repo you discover, shortlist or follow.
+
+- [ ] Outside PRs merged in the last 90 days, and the median time for maintainers to answer an outside PR (last 20 merged or closed). Members who hide their membership look like outsiders, so this says so
+- [ ] How to take an issue: assign bots and workflows in the repo, and what CONTRIBUTING says about assignment
+- [ ] CLA or DCO required, read from the checks on recent PRs
+- [ ] An AI policy, if the repo has one (AI_POLICY.md, or a section in CONTRIBUTING)
+- [ ] Last push, CONTRIBUTING and code of conduct present, licence, unassigned good first issues
+- [ ] Your open PRs per org against a limit you set (3 by default), because depth beats breadth
+
+### Phase 6: Goals and orgs
+From the tracker's orgs and its separate Jobs and Open Source boards. Takes in "Deadline reminders".
+
+- [ ] An Orgs page for the places you're investing in: goal (job, GSoC, a program, or for fun), status (active, waiting, watching, later, on hold), next step, next date, notes and links
+- [ ] Filter the board and the plan by goal
 - [ ] Follow programs (YC, each GSoC milestone, Hacktoberfest) in Settings
-- [ ] A strip on the board when a followed deadline is within 14 days
+- [ ] A strip on the board when a followed deadline or an org's next date is within 14 days
 - [ ] Browser notification at 7 days and 1 day, if notifications are on
 
-### 12. Is this repo worth contributing to?
-Signals on each discovered or shortlisted repo, read from public data:
+### Phase 7: More programs, with their news
+Takes in "More programs". Each one links to its own site, and shows dates only where that site publishes them in a form we can read reliably.
 
-- [ ] Median time for maintainers to answer an outside PR (last 20 merged or closed PRs from non-members)
-- [ ] Last push
-- [ ] Has a CONTRIBUTING file and a code of conduct
-- [ ] Count of good first issues that are still unassigned
-- [ ] Licence
+- [ ] Outreachy, LFX Mentorship (terms and proposals from `cncf/mentoring`), MLH Fellowship, Google Season of Docs, Summer of Bitcoin, C4GT, GSSoC, KWoC and SWoC
+- [ ] New posts from program blogs as news: the Google Open Source blog's GSoC and Season of Docs posts, Outreachy, CNCF mentorship, Summer of Bitcoin
+- [ ] Download an `.ics` calendar of the deadlines you follow, built in the browser
 
-### 13. More programs
-Each one links to its own site, and shows dates only where that site publishes them in a form we can read reliably.
-
-- [ ] Outreachy
-- [ ] LFX Mentorship
-- [ ] MLH Fellowship
-- [ ] Google Season of Docs
-- [ ] Summer of Bitcoin and other GSoC-style programs, if they publish dates
-
-### 14. Your logbook
+### Between phases: your logbook
 - [ ] Merged PRs over time, repos contributed to, first and latest contribution
 - [ ] A streak measured in weeks, not days, so a quiet weekend doesn't break it
 - [ ] A downloadable image card of your year
 
-### 15. Jump anywhere (Cmd+K)
+### Between phases: jump anywhere (Cmd+K)
 - [ ] Search threads, repos, saved orgs and pages from anywhere in the app
 - [ ] Shortcut-key hints for the actions that already have keys
 
@@ -193,6 +246,9 @@ Each one links to its own site, and shows dates only where that site publishes t
 - **Open source YC companies:** only with a reliable public source; nothing hand-maintained.
 - **Bounties:** first check whether Algora or another platform has a stable public API.
 - **GSoC past projects per organisation:** the program API's projects list is about 14 MB, so this needs a slimmer source or a server-side digest first.
+- **GitLab.com:** its public GraphQL API reads merge requests, approvals and pipelines without a login, which is how the owner's tracker follows GitLab work.
+- **A terminal companion:** something like `spool today` in a shell, reading the token `gh` already has.
+- **A morning email, or push to a closed browser:** both need a server holding a token, which means accounts. A decision first, then a phase.
 
 ## Not planned
 
