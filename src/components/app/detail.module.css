@@ -201,6 +201,44 @@
   color: var(--landed);
 }
 
+.facts dd[data-merge="conflicts"] {
+  color: var(--alert);
+}
+
+/* checks that haven't passed, by name, each linking to its run */
+.checks {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  font-size: 13.5px;
+}
+
+.checks li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--bay-2);
+}
+
+.checks a {
+  color: var(--ink);
+  text-underline-offset: 3px;
+  text-decoration-color: var(--rule-2);
+}
+
+.checks span {
+  flex: none;
+  color: var(--ink-3);
+}
+
+.checks li[data-state="fail"] span {
+  color: var(--alert);
+}
+
 .labels {
   display: flex;
   flex-wrap: wrap;

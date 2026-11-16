@@ -30,6 +30,8 @@ const REVIEW: Record<string, string> = {
   REVIEW_REQUIRED: "Review required",
 };
 
+const MERGE = { clean: "No conflicts", conflicts: "Conflicts with the base branch", unknown: "Not checked by GitHub yet" };
+
 export function ThreadDetail({ t, code, mode, now, onClose }: { t: Thread; code?: string; mode: Mode; now: number; onClose: () => void }) {
   const auth = useAuth();
   const meta = useMeta();
@@ -39,6 +41,7 @@ export function ThreadDetail({ t, code, mode, now, onClose }: { t: Thread; code?
   const [note, setNoteDraft] = useState(meta.notes[t.id] ?? "");
   const closeRef = useRef<HTMLButtonElement>(null);
   const pinned = !!meta.pins[t.id];
+  const sig = t.signals;
   const planSt = planStoreFor(mode === "sample");
   const plan = planSt.use();
   const key = threadKey(t.id);
@@ -111,6 +114,12 @@ export function ThreadDetail({ t, code, mode, now, onClose }: { t: Thread; code?
         </button>
         {t.next !== "done" && <SnoozeMenu id={t.id} snoozedUntil={snoozedUntil} />}
         {snoozedUntil && <span className={s.snoozed}>Snoozed until {fmtDate(snoozedUntil)}</span>}
+        {sig?.sign?.url && (
+          <a href={sig.sign.url} target="_blank" rel="noreferrer" className={s.btn}>
+            {sig.sign.kind === "CLA" ? "Sign the CLA" : "About the DCO check"}
+            <ArrowUpRight size={16} aria-hidden="true" />
+          </a>
+        )}
       </div>
 
       <div className={s.plan}>
@@ -147,13 +156,30 @@ export function ThreadDetail({ t, code, mode, now, onClose }: { t: Thread; code?
         {t.kind === "pr" && (
           <div>
             <dt>Checks</dt>
-            <dd data-ci={t.ci ?? "NONE"}>{t.ci ? CI[t.ci] ?? t.ci : "No checks reported"}</dd>
+            <dd data-ci={t.ci ?? "NONE"}>
+              {sig?.ciApproval ? "Waiting for a maintainer to approve the workflows" : t.ci ? (CI[t.ci] ?? t.ci) : "No checks reported"}
+            </dd>
           </div>
         )}
         {t.kind === "pr" && (
           <div>
             <dt>Review</dt>
             <dd>{t.review ? REVIEW[t.review] ?? t.review : "No review yet"}</dd>
+          </div>
+        )}
+        {sig && (
+          <div>
+            <dt>Branch</dt>
+            <dd data-merge={sig.merge}>{MERGE[sig.merge]}</dd>
+          </div>
+        )}
+        {sig && (
+          <div>
+            <dt>Review threads</dt>
+            <dd>
+              {sig.threadsOpen === 0 ? "None open" : `${sig.threadsOpen} open`}
+              {sig.threadsOnYou > 0 ? `, ${sig.threadsOnYou} waiting on you` : ""}
+            </dd>
           </div>
         )}
         <div>
@@ -165,6 +191,23 @@ export function ThreadDetail({ t, code, mode, now, onClose }: { t: Thread; code?
           <dd>{t.quietDays === 0 ? "Under a day" : `${t.quietDays} day${t.quietDays === 1 ? "" : "s"}`}</dd>
         </div>
       </dl>
+
+      {sig && sig.checks.length > 0 && (
+        <ul className={s.checks} aria-label="Checks that haven't passed">
+          {sig.checks.map((c) => (
+            <li key={c.name} data-state={c.state}>
+              {c.url ? (
+                <a href={c.url} target="_blank" rel="noreferrer">
+                  {c.name}
+                </a>
+              ) : (
+                c.name
+              )}
+              <span>{c.state === "fail" ? "failed" : "waiting"}</span>
+            </li>
+          ))}
+        </ul>
+      )}
 
       {t.labels.length > 0 && (
         <ul className={s.labels}>
