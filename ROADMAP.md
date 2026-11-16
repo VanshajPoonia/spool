@@ -35,9 +35,11 @@ Lives in `fetchBoard()` in `lib/github.ts` (`onPartial` and `previous`), the "St
 - [x] Tests for the rules (classifier, changes, claims, follows, outsider report, deadlines, logbook, calendar file, feeds, claim phrases), built with the repo's own TypeScript and run with Node's test runner, so no new dependency; CI runs them with lint and typecheck on every push
 
 ### Phase 10: Ready for new users
-- [ ] A first-run tour after connecting: three steps, easy to dismiss
-- [ ] Phone pass: the board toolbar, a Cmd+K button, the forms at 375px
-- [ ] A feedback link that opens a new issue on the repo
+Lives in `components/app/FirstRun.tsx`, the phone styles of `today.module.css` and `following.module.css`, the Search button in the phone bar (`AppShell.tsx`) and `FEEDBACK_URL` in `CommandPalette.tsx`.
+
+- [x] A first-run tour on the board: three steps, closed for good with Got it or the X (remembered with your display settings)
+- [x] Phone pass at 390px: no page scrolls sideways; Today's header fits one line with icon-only tools; follow rows sit in two lines; the phone bar has a Search button for Cmd+K
+- [x] A feedback link that opens a new issue on the repo, in Settings and in Cmd+K
 
 ### Phase 11: The landing page catches up
 - [ ] Find, claims, the outsider report, Today, the logbook and Cmd+K, in the page's own style and with the new tab names
