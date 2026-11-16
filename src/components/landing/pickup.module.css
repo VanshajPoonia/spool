@@ -790,6 +790,9 @@
   .claims {
     padding: 6px;
   }
+  .phrases {
+    display: none;
+  }
   .log {
     padding: 14px;
   }

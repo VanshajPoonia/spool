@@ -148,6 +148,7 @@ function FollowPane() {
               age={i.age}
               state={i.asked ? "them" : "idle"}
               sample
+              data={{ "data-wrap-note": "" }}
             />
           </li>
         ))}
@@ -347,6 +348,7 @@ function ClaimPane() {
                   age={c.age}
                   state={c.state}
                   sample
+                  data={{ "data-wrap-note": "" }}
                 />
               </li>
             ))}

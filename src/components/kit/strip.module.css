@@ -353,6 +353,13 @@ button.paper {
 }
 
 @container (max-width: 480px) {
+  /* rows whose note carries the point (a claim's warning) may wrap when narrow, up to four lines */
+  .holder[data-wrap-note] .note {
+    display: -webkit-box;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+  }
   .holder[data-size] .paper {
     --idw: var(--row-idw-narrow, 0);
     gap: 10px;
