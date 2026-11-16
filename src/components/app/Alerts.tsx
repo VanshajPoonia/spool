@@ -2,8 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { changesStore, useSettings } from "@/lib/store";
+import { inDays } from "@/lib/deadlines";
+import { changesStore, deadlineAlertStore, useSettings } from "@/lib/store";
 import { useBoard } from "./BoardProvider";
+import { useDeadlines } from "./useDeadlines";
 
 /*
  * Alerts that need no server: a count in the tab title, and an optional browser
@@ -86,6 +88,20 @@ export function Alerts() {
       show(`${onYou.length} threads are your move`, onYou.slice(0, 3).map((c) => `${c.repo}#${c.num} ${c.title}`).join("\n"), () => router.push("/board"));
     }
   }, [changes, mode, notify, router]);
+
+  // Deadlines alert once at 7 days and once at 1 day, whether or not the tab is in front.
+  const deadlines = useDeadlines();
+  useEffect(() => {
+    if (mode === "sample" || mode === "none" || !notify || notifyPermission() !== "granted") return;
+    const sent = deadlineAlertStore.read();
+    for (const d of deadlines) {
+      if (d.days !== 7 && d.days !== 1) continue;
+      const key = `${d.key}:${d.date.slice(0, 10)}:${d.days}`;
+      if (sent[key]) continue;
+      deadlineAlertStore.update((s) => ({ ...s, [key]: new Date().toISOString() }));
+      show(`${d.label} ${inDays(d.days)}`, d.detail || "From your followed deadlines in Spool.", () => router.push(d.href?.startsWith("/") ? d.href : "/board"));
+    }
+  }, [deadlines, mode, notify, router]);
 
   return null;
 }
