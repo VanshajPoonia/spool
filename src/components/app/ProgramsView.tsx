@@ -66,6 +66,7 @@ export function ProgramsView({ data }: { data: Programs }) {
   const auth = useAuth();
   const { interests, guestLogin } = useSettings();
   const [onlyRelevant, setOnlyRelevant] = useState(true);
+  const [feed, setFeed] = useState<"programs" | "launches">("programs");
   const [liveOct, setLiveOct] = useState<Oct | null>(null);
   const octYear = now ? (new Date(now).getMonth() >= 9 ? new Date(now).getFullYear() : new Date(now).getFullYear() - 1) : null;
   const [octErr, setOctErr] = useState<string | null>(null);
@@ -371,35 +372,6 @@ export function ProgramsView({ data }: { data: Programs }) {
               </ul>
             )}
           </section>
-
-          <section className={p.panel}>
-            <div className={p.panelHead}>
-              <div>
-                <h2>Recent on Product Hunt</h2>
-                <p>{onlyRelevant ? "Developer launches and your interests" : "Everything in the feed"}</p>
-              </div>
-              <button type="button" className={p.btn} aria-pressed={onlyRelevant} onClick={() => setOnlyRelevant((v) => !v)}>
-                {onlyRelevant ? "Show all" : "Only relevant"}
-              </button>
-            </div>
-            {launches.length === 0 ? (
-              <p className={p.empty}>{data.launches.length ? "Nothing in the feed matches right now." : "The feed didn't answer."}</p>
-            ) : (
-              <ul className={p.list}>
-                {launches.slice(0, 12).map((l) => (
-                  <li key={l.url} className={s.launch}>
-                    <div className={p.itemMain}>
-                      <a href={l.url} target="_blank" rel="noreferrer" className={p.itemTitle}>
-                        {l.title}
-                      </a>
-                      <span className={p.itemSub}>{l.tagline}</span>
-                    </div>
-                    <span className={p.mono}>{fmtDate(l.published)}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
         </div>
       </div>
 
@@ -408,74 +380,118 @@ export function ProgramsView({ data }: { data: Programs }) {
           <div className={p.panelHead}>
             <div>
               <h2>More programs</h2>
-              <p>Each on its own site. Dates show only where the program publishes them in a form Spool can read; otherwise check the site.</p>
+              <p>Open one for what it is and its dates. Dates show only where the program publishes them in a form Spool can read.</p>
             </div>
           </div>
-          <ul className={p.list}>
-            {CATALOG.map((c) => (
-              <li key={c.id} className={s.program}>
-                <div className={p.itemMain}>
-                  <span className={s.programHead}>
-                    <a href={c.url} target="_blank" rel="noreferrer" className={p.itemTitle}>
-                      {c.name}
-                    </a>
-                    <span className={s.pay} data-pay={c.pay === "Unpaid" ? "no" : "yes"}>
-                      {c.pay}
-                    </span>
-                  </span>
-                  <span className={s.what}>{c.what}</span>
-                  {c.id === "lfx" && data.lfx.length > 0 ? (
-                    <ul className={s.terms}>
-                      {data.lfx
-                        .filter((t) => !now || t.milestones.some((m) => Date.parse(`${m.end ?? m.start}T23:59:00Z`) >= now))
-                        .map((t) => (
-                          <li key={t.id}>
-                            <a href={t.url} target="_blank" rel="noreferrer">
-                              {t.label}
-                            </a>
-                            <span>{t.milestones.map((m) => `${m.label} ${fmtDate(m.start)}${m.end ? ` to ${fmtDate(m.end)}` : ""}`).join(" · ")}</span>
-                          </li>
-                        ))}
-                    </ul>
-                  ) : (
-                    <span className={s.check}>
-                      Dates: check the site
-                      {c.extra && (
-                        <>
-                          {" · "}
-                          <a href={c.extra.url} target="_blank" rel="noreferrer">
-                            {c.extra.label}
-                          </a>
-                        </>
+          <ul className={s.catalog}>
+            {CATALOG.map((c) => {
+              const terms = c.id === "lfx" ? data.lfx.filter((t) => !now || t.milestones.some((m) => Date.parse(`${m.end ?? m.start}T23:59:00Z`) >= now)) : [];
+              return (
+                <li key={c.id}>
+                  <details className={s.program}>
+                    <summary>
+                      <span className={s.programName}>{c.name}</span>
+                      <span className={s.pay} data-pay={c.pay === "Unpaid" ? "no" : "yes"}>
+                        {c.pay}
+                      </span>
+                      {terms[0] && <span className={s.next}>{terms[0].label.replace(/, .*/, "")}</span>}
+                    </summary>
+                    <div className={s.programBody}>
+                      <span className={s.what}>{c.what}</span>
+                      {terms.length > 0 ? (
+                        <ul className={s.terms}>
+                          {terms.map((t) => (
+                            <li key={t.id}>
+                              <a href={t.url} target="_blank" rel="noreferrer">
+                                {t.label}
+                              </a>
+                              <span>{t.milestones.map((m) => `${m.label} ${fmtDate(m.start)}${m.end ? ` to ${fmtDate(m.end)}` : ""}`).join(" · ")}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <span className={s.check}>Dates: check the site</span>
                       )}
-                    </span>
-                  )}
-                </div>
-              </li>
-            ))}
+                      <span className={s.check}>
+                        <a href={c.url} target="_blank" rel="noreferrer">
+                          Official site
+                        </a>
+                        {c.extra && (
+                          <>
+                            {" · "}
+                            <a href={c.extra.url} target="_blank" rel="noreferrer">
+                              {c.extra.label}
+                            </a>
+                          </>
+                        )}
+                      </span>
+                    </div>
+                  </details>
+                </li>
+              );
+            })}
           </ul>
         </section>
 
         <section className={p.panel}>
           <div className={p.panelHead}>
             <div>
-              <h2>Program news</h2>
-              <p>GSoC and Season of Docs posts from Google&rsquo;s Open Source blog, plus Outreachy, CNCF mentorship and Summer of Bitcoin, from the last six months.</p>
+              <h2>News</h2>
+              <p>
+                {feed === "programs"
+                  ? "GSoC and Season of Docs posts from Google's Open Source blog, plus Outreachy, CNCF mentorship and Summer of Bitcoin, from the last six months."
+                  : onlyRelevant
+                    ? "Product Hunt launches for developers and your interests."
+                    : "Everything in Product Hunt's feed."}
+              </p>
+            </div>
+            <div className={s.newsTools}>
+              {feed === "launches" && (
+                <button type="button" className={p.btn} aria-pressed={onlyRelevant} onClick={() => setOnlyRelevant((v) => !v)}>
+                  {onlyRelevant ? "Show all" : "Only relevant"}
+                </button>
+              )}
+              <div className={s.seg} role="group" aria-label="Which news">
+                <button type="button" aria-pressed={feed === "programs"} onClick={() => setFeed("programs")}>
+                  Programs
+                </button>
+                <button type="button" aria-pressed={feed === "launches"} onClick={() => setFeed("launches")}>
+                  Product Hunt
+                </button>
+              </div>
             </div>
           </div>
-          {data.news.length === 0 ? (
-            <p className={p.empty}>None of the feeds answered, or nothing new in six months.</p>
+          {feed === "programs" ? (
+            data.news.length === 0 ? (
+              <p className={p.empty}>None of the feeds answered, or nothing new in six months.</p>
+            ) : (
+              <ul className={p.list}>
+                {data.news.map((n) => (
+                  <li key={n.url} className={s.launch}>
+                    <div className={p.itemMain}>
+                      <a href={n.url} target="_blank" rel="noreferrer" className={p.itemTitle}>
+                        {n.title}
+                      </a>
+                      <span className={p.itemSub}>{n.source}</span>
+                    </div>
+                    <span className={p.mono}>{fmtDate(n.published)}</span>
+                  </li>
+                ))}
+              </ul>
+            )
+          ) : launches.length === 0 ? (
+            <p className={p.empty}>{data.launches.length ? "Nothing in the feed matches right now." : "The feed didn't answer."}</p>
           ) : (
             <ul className={p.list}>
-              {data.news.map((n) => (
-                <li key={n.url} className={s.launch}>
+              {launches.slice(0, 12).map((l) => (
+                <li key={l.url} className={s.launch}>
                   <div className={p.itemMain}>
-                    <a href={n.url} target="_blank" rel="noreferrer" className={p.itemTitle}>
-                      {n.title}
+                    <a href={l.url} target="_blank" rel="noreferrer" className={p.itemTitle}>
+                      {l.title}
                     </a>
-                    <span className={p.itemSub}>{n.source}</span>
+                    <span className={p.itemSub}>{l.tagline}</span>
                   </div>
-                  <span className={p.mono}>{fmtDate(n.published)}</span>
+                  <span className={p.mono}>{fmtDate(l.published)}</span>
                 </li>
               ))}
             </ul>

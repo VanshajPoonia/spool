@@ -301,20 +301,49 @@
   margin-top: 28px;
 }
 
+.catalog {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .program {
-  padding: 12px 4px;
   border-bottom: 1px solid var(--rule);
 }
 
-.program:last-child {
+.catalog li:last-child .program {
   border-bottom: 0;
 }
 
-.programHead {
+.program summary {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 0;
+  padding: 10px 4px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.program summary::-webkit-details-marker {
+  display: none;
+}
+
+.programName {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.next {
+  margin-left: auto;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+.programBody {
+  display: grid;
+  gap: 4px;
+  padding: 0 4px 12px;
 }
 
 .pay {
@@ -329,6 +358,47 @@
 
 .pay[data-pay="yes"] {
   color: var(--landed);
+}
+
+/* program news or Product Hunt, the same switch the GSoC browser uses */
+.seg {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+}
+
+.seg button {
+  height: 28px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-hover) var(--ease-quad),
+    color var(--dur-hover) var(--ease-quad);
+}
+
+.seg button:hover {
+  color: var(--ink);
+}
+
+.seg button[aria-pressed="true"] {
+  background: var(--surface-sel);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+}
+
+.newsTools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
 }
 
 .what {
