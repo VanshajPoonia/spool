@@ -194,6 +194,22 @@ export function BoardView() {
     see(t);
   };
 
+  // Cmd+K opens a thread with /board#thread=<id>; pick it up on arrival or when the hash changes here.
+  useEffect(() => {
+    const take = () => {
+      const m = window.location.hash.match(/^#thread=(.+)$/);
+      if (!m) return;
+      setSel(decodeURIComponent(m[1]));
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    };
+    const t = window.setTimeout(take, 0);
+    window.addEventListener("hashchange", take);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener("hashchange", take);
+    };
+  }, []);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement;
