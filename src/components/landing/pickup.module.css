@@ -1,0 +1,796 @@
+/* From a free issue to a merged PR: four steps beside a window that draws the app's page for each. */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: start;
+}
+
+/* ---------- the steps ---------- */
+
+.steps {
+  display: grid;
+  gap: 4px;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 16px 0 18px 20px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-3);
+  text-align: left;
+  transition: color var(--dur-quick) var(--ease-quad);
+}
+
+.step:hover,
+.step[aria-selected="true"] {
+  color: var(--ink);
+}
+
+/* a rule down the left that lights for the picked step */
+.stepBar {
+  position: absolute;
+  top: 16px;
+  bottom: 18px;
+  left: 0;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--rule-2);
+  overflow: hidden;
+}
+
+.stepBar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 420ms var(--ease-out);
+}
+
+.step[aria-selected="true"] .stepBar::after {
+  transform: scaleY(1);
+}
+
+.stepTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.stepNum {
+  color: var(--ink-3);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stepBody {
+  color: var(--ink-3);
+  font-size: 14px;
+  line-height: 1.55;
+  transition: color var(--dur-quick) var(--ease-quad);
+}
+
+.step[aria-selected="true"] .stepBody {
+  color: var(--ink-2);
+}
+
+/* on narrow screens the picked step's words sit under the row of steps */
+.stepNow {
+  display: none;
+}
+
+/* ---------- the window ---------- */
+
+.stage {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.window {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: clamp(500px, 40vw, 560px);
+  padding: 0 7px 7px;
+  border-radius: 16px;
+  background: color-mix(in oklab, var(--console) 55%, var(--bay));
+  box-shadow:
+    inset 0 0 0 1px var(--rule),
+    inset 0 1px 0 color-mix(in oklab, var(--ink) 7%, transparent),
+    0 30px 60px -30px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+}
+
+.chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 44px;
+  padding: 0 10px 0 14px;
+}
+
+.crumbs {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  color: var(--ink-3);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.crumbs > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 6px;
+}
+
+.crumbs > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink);
+  text-overflow: ellipsis;
+}
+
+.pane {
+  min-height: 0;
+  border-radius: 10px;
+  background: var(--bay);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  overflow: hidden;
+  animation: pane-in 420ms var(--ease-out) both;
+}
+
+@keyframes pane-in {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+
+.cta {
+  display: flex;
+}
+
+/* ---------- a page inside the window ---------- */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.pageHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 52px;
+  padding: 0 14px 0 20px;
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+
+.pageTitle {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 560;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+}
+
+.headCount,
+.headNote {
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.headCount strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* the switch at the top of Find, drawn as the app draws it */
+.segment {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: auto;
+  padding: 2px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+}
+
+.segment span {
+  display: grid;
+  place-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 6px;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.segment span[data-on] {
+  background: var(--surface-sel);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+}
+
+/* a repo's callsign tile */
+.cs {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  min-width: 26px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 6px;
+  background: var(--bay-3);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-2);
+  font-family: var(--font-print);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+/* the status word at the head of a row's note, as on the board */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 8px;
+  color: var(--ink-2);
+  font-size: 12.5px;
+  font-weight: 500;
+  vertical-align: 1px;
+}
+
+.status svg {
+  width: 13px;
+  height: 13px;
+}
+
+.rack {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* rows come in one after another when a page opens or a rule lets them in */
+.rowIn {
+  list-style: none;
+  animation: row-in 460ms var(--ease-out) both;
+  animation-delay: calc(80ms + var(--i) * 70ms);
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* ---------- Follow ---------- */
+
+.follow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 12px 4px;
+  padding: 10px 10px 10px 12px;
+  border-radius: 10px;
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+
+.followName {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.followRule {
+  overflow: hidden;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  font-weight: 400;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ruleSwitch,
+.repoSwitch {
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+  margin-left: auto;
+  padding: 2px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+}
+
+.ruleSwitch button,
+.repoSwitch button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 26px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    color var(--dur-quick) var(--ease-quad),
+    background-color var(--dur-quick) var(--ease-quad);
+}
+
+.ruleSwitch button:hover,
+.repoSwitch button:hover {
+  color: var(--ink);
+}
+
+.ruleSwitch button[aria-checked="true"],
+.repoSwitch button[aria-checked="true"] {
+  background: var(--surface-sel);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+}
+
+.repoSwitch button {
+  padding-left: 4px;
+}
+
+.repoSwitch .cs {
+  height: 18px;
+  min-width: 24px;
+  font-size: 10px;
+}
+
+.rows {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  margin: 0;
+  padding: 6px 12px;
+  min-height: 0;
+}
+
+.scan {
+  display: grid;
+  gap: 4px;
+  margin-top: auto;
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--rule);
+}
+
+.scanHead {
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.scanRow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  font-size: 13.5px;
+  white-space: nowrap;
+}
+
+.ref {
+  flex: none;
+  color: var(--ink-3);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.scanTitle {
+  flex: none;
+}
+
+.scanWhy {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Check ---------- */
+
+.check {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding: 18px 20px;
+  overflow: hidden;
+  animation: pane-in 360ms var(--ease-out) both;
+}
+
+.reading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--bay-2);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  font-size: 14.5px;
+  font-weight: 500;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 28px;
+  margin: 0;
+}
+
+.facts div {
+  display: grid;
+  gap: 3px;
+  padding: 11px 0;
+  border-top: 1px solid var(--rule);
+  animation: row-in 420ms var(--ease-out) both;
+}
+
+.facts div:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.facts div:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.facts div:nth-child(4) {
+  animation-delay: 180ms;
+}
+
+.facts div:nth-child(5) {
+  animation-delay: 240ms;
+}
+
+.facts div:nth-child(6) {
+  animation-delay: 300ms;
+}
+
+.facts dt {
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+.facts dd {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.facts q {
+  color: var(--ink);
+}
+
+/* ---------- Claim ---------- */
+
+.claims {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  padding: 12px;
+  min-height: 0;
+}
+
+/* the comments Spool reads as your ask, as label pills, and the question it doesn't */
+.phrases {
+  display: grid;
+  gap: 10px;
+  margin-top: auto;
+  padding: 14px 20px 18px;
+  border-top: 1px solid var(--rule);
+}
+
+.phrasesHead {
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.phrases ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.phrases li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+.phrases li:not([data-hit]) {
+  box-shadow: inset 0 0 0 1px var(--rule);
+  color: var(--ink-3);
+}
+
+.phrases li:not([data-hit]) .phraseText {
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in oklab, var(--ink-3) 60%, transparent);
+}
+
+.phraseNo {
+  color: var(--ink-3);
+}
+
+/* ---------- Count ---------- */
+
+.log {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 12px;
+  height: 100%;
+  min-height: 0;
+  padding: 18px 20px 16px;
+}
+
+.counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+.counts strong {
+  color: var(--ink);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.readout {
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+.readout strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.bars {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: end;
+  gap: clamp(4px, 0.8vw, 10px);
+  min-height: 120px;
+  margin: 0;
+  padding: 0 0 22px;
+  list-style: none;
+  border-bottom: 1px solid var(--rule);
+}
+
+.bars li {
+  position: relative;
+  display: grid;
+  align-items: end;
+  height: 100%;
+}
+
+.bar {
+  display: block;
+  justify-self: center;
+  width: min(100%, 22px);
+  height: calc(var(--h) * 100%);
+  border-radius: 3px 3px 0 0;
+  background: var(--accent);
+  transform-origin: bottom;
+  animation: grow 640ms var(--ease-out) both;
+  animation-delay: calc(120ms + var(--i) * 40ms);
+  transition: background-color var(--dur-quick) var(--ease-quad);
+}
+
+.bars li[data-on] .bar {
+  background: color-mix(in oklab, var(--accent) 80%, var(--ink));
+}
+
+@keyframes grow {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+.barMonth {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -20px;
+  color: var(--ink-3);
+  font-family: var(--font-print);
+  font-size: 10.5px;
+  text-align: center;
+}
+
+.top {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.top li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 30px;
+  font-size: 13.5px;
+}
+
+.topName {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.topCount {
+  margin-left: auto;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- narrower ---------- */
+
+@media (max-width: 1080px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .steps {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(8px, 1.6vw, 20px);
+  }
+  .step {
+    padding: 12px 0 4px;
+  }
+  .stepBar {
+    top: 0;
+    bottom: auto;
+    right: 0;
+    width: auto;
+    height: 2px;
+  }
+  .stepBar::after {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .step[aria-selected="true"] .stepBar::after {
+    transform: scaleX(1);
+  }
+  .stepBody {
+    display: none;
+  }
+  .stepNow {
+    display: block;
+    max-width: 60ch;
+    margin-bottom: 4px;
+    color: var(--ink-2);
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+}
+
+@media (max-width: 860px) {
+  .followRule {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .window {
+    height: 560px;
+    padding: 0 5px 5px;
+    border-radius: 14px;
+  }
+  .stepNum {
+    display: none;
+  }
+  .stepTitle {
+    font-size: 13.5px;
+  }
+  .pageHead {
+    gap: 10px;
+    padding: 0 10px 0 14px;
+  }
+  .headNote {
+    display: none;
+  }
+  .follow {
+    flex-wrap: wrap;
+    margin: 8px 8px 2px;
+  }
+  .ruleSwitch {
+    width: 100%;
+    margin-left: 0;
+  }
+  .ruleSwitch button {
+    flex: 1;
+    justify-content: center;
+    padding: 0 6px;
+  }
+  .rows {
+    padding: 4px 6px;
+  }
+  .scan {
+    padding: 10px 14px 12px;
+  }
+  .scanWhy {
+    display: none;
+  }
+  .scanTitle {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pageHead:has(.repoSwitch) {
+    flex-wrap: wrap;
+    padding: 10px 10px 10px 14px;
+  }
+  .repoSwitch {
+    margin-left: 0;
+  }
+  .check {
+    gap: 12px;
+    padding: 12px 14px;
+  }
+  .reading {
+    align-items: flex-start;
+    font-size: 13.5px;
+  }
+  .facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .facts div:nth-child(n + 5) {
+    display: none;
+  }
+  .claims {
+    padding: 6px;
+  }
+  .log {
+    padding: 14px;
+  }
+}

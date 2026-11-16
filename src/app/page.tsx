@@ -6,6 +6,7 @@ import { Gsoc } from "@/components/landing/Gsoc";
 import { Hero } from "@/components/landing/Hero";
 import { Inbound } from "@/components/landing/Inbound";
 import { MoodProvider } from "@/components/landing/mood";
+import { Pickup } from "@/components/landing/Pickup";
 import { Principles } from "@/components/landing/Principles";
 import { Programs } from "@/components/landing/Programs";
 import { SignOn } from "@/components/landing/SignOn";
@@ -53,6 +54,7 @@ export default async function Home() {
         <Anatomy />
         <Approach />
         <Stalled />
+        <Pickup />
         <Chapter
           id="beyond"
           title="Beyond your threads."
