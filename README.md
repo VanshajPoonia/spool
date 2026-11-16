@@ -37,10 +37,12 @@ Production responses carry a content security policy (`next.config.ts`) whose `c
 
 ## What's where
 
+Six tabs: Bay, Plan, Find, Repos, Programs, Settings. Find holds Discover and Following, and Repos holds your repos and Orgs, switched at the top of the page.
+
 | Route | What it does |
 | --- | --- |
 | `/` | Landing page: a live sample bay in the hero, a 3D airfield where sample PRs hold in review and land on main when they merge, a strip printed field by field as you scroll, a sample day you can scrub and open strip by strip, the stalled limit, callsigns, live repo discovery, the live GSoC/YC/Product Hunt schedule, the GSoC season drawn as you scroll with a filterable list of this year's organisations, the sign-on form |
-| `/board` | Since you last looked (what changed between loads, until you mark it handled), then Your move and Their move bays, Watching, Snoozed and Landed. Pin, snooze, priorities, notes, detail drawer with the GitHub timeline |
+| `/board` | A Today strip (dates coming up in the next 14 days, and what changed since you last looked until you mark it handled; folds to one line), then Your move, Their move, Claims, Watching, Snoozed and Landed. Filter holds type and goal. Pin, snooze, priorities, notes, detail drawer with the GitHub timeline |
 | `/board/repos` | Your logbook (merged PRs per month, repos, first and latest merge, a weekly streak, a downloadable card of your year), then every repo you've contributed to: opened, merged, closed, merge rate, median time to merge, your own repos |
 | `/board/repos/[owner]/[name]` | Can an outsider land work here? (any repo), then your timetable in it |
 | `/board/orgs` | The orgs you're investing in, grouped by goal (job, GSoC, a program, for fun), with status, next step and date, notes and links, and live counts from your board |
@@ -71,10 +73,10 @@ Anywhere in the app, `Cmd K` (`Ctrl K`), or Search in the sidebar, jumps to a pa
 
 ## Orgs, goals and deadlines
 
-- The Orgs tab keeps, per org: a goal, a status (active, waiting, watching, later, on hold), a next step with a date, notes and links. It's all in this browser (`meta.investing`), works without a token, and suggests orgs from your board.
+- Orgs (under Repos) keeps, per org: a goal, a status (active, waiting, watching, later, on hold), a next step with a date, notes and links. It's all in this browser (`meta.investing`), works without a token, and suggests orgs from your board.
 - The board filters by goal. The plan fades cards outside the goal instead of hiding them, so dragging never shuffles a card you can't see.
 - Settings, Deadlines you follow: YC's application deadline, Hacktoberfest's start and end, and each GSoC milestone, read from the same sources as Programs (`src/lib/deadlines.ts`). A program date only shows once its source publishes it.
-- "Coming up" sits on top of the board when a followed deadline or an org's next date (not on hold) is within 14 days. With notifications on, each one alerts once at 7 days and once at 1 day.
+- The board's Today strip lists what's coming up when a followed deadline or an org's next date (not on hold) is within 14 days. With notifications on, each one alerts once at 7 days and once at 1 day.
 - LFX terms can be followed too: proposals, mentee applications (open and close) and the start of a term.
 - "Download calendar file" (Settings, and the Coming up strip) saves every future followed date as all-day events in an `.ics` file, built in the browser (`src/lib/ics.ts`). Each event keeps a stable ID, so importing a newer file updates them.
 

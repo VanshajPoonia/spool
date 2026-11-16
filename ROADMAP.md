@@ -20,10 +20,12 @@ Reference points: Ossium (ossium.in), GitHub's own issue and PR dashboards, OSS 
 Planned 2026-11-16. First take things away, then make it fast and safe, then ready it for people who aren't the owner.
 
 ### Phase 8: Simplify
-- [ ] Eight tabs become six: Bay, Plan, Find (Discover and Following), Repos (with Orgs), Programs, Settings. Old addresses keep working
-- [ ] The board's toolbar keeps search, Stalled and New; type and goal move into one Filter menu
-- [ ] One Today strip above the bays for Coming up and Since you last looked, down to a single line when you fold it
-- [ ] Programs: one News panel for program news and Product Hunt; More programs shows names until you open one
+Lives in `components/app/nav.ts` and `SubNav.tsx` (the switch at the top of Find and Repos), `FilterMenu` in `BoardView.tsx`, `Today.tsx` with the lists from `Changes.tsx` and `ComingUp.tsx`, and the More programs and News panels in `ProgramsView.tsx`.
+
+- [x] Eight tabs become six: Bay, Plan, Find (Discover and Following), Repos (with Orgs), Programs, Settings. Old addresses keep working, and Cmd+K still finds every page by name
+- [x] The board's toolbar keeps search, Stalled and New; type and goal move into one Filter menu, which shows how many filters are on
+- [x] One Today strip above the bays for Coming up and Since you last looked, down to a single line when you fold it (remembered with your display settings)
+- [x] Programs: one News panel for program news and Product Hunt; More programs shows names until you open one
 
 ### Phase 9: Speed and safety
 - [ ] The board paints each search as it lands, then fills in PR details and claims, instead of one 12 to 14 second wait
