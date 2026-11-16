@@ -11,6 +11,7 @@ import { statusLabel } from "@/lib/format";
 import { ago } from "@/lib/classify";
 import { fmtDate } from "@/lib/time";
 import { useBoard } from "./BoardProvider";
+import { RepoCheckPanel } from "./RepoCheck";
 import p from "./page.module.css";
 import s from "./timetable.module.css";
 
@@ -67,6 +68,8 @@ export function RepoTimetable() {
           </p>
         </div>
       </header>
+
+      <RepoCheckPanel repo={full} />
 
       {historyLoading && !history ? (
         <div className={p.loading}>
