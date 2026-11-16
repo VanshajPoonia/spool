@@ -40,10 +40,17 @@ export type YC = {
 
 export type Launch = { title: string; tagline: string; url: string; published: string };
 
+export type NewsPost = { source: string; title: string; url: string; published: string };
+
+export type LfxMilestone = { name: "proposals" | "apply" | "begins"; label: string; start: string; end: string | null };
+export type LfxTerm = { id: string; label: string; url: string; milestones: LfxMilestone[] };
+
 export type Programs = {
   gsoc: Gsoc | null;
   yc: YC | null;
   launches: Launch[];
+  lfx: LfxTerm[];
+  news: NewsPost[];
   fetchedAt: string;
 };
 
@@ -257,8 +264,112 @@ export async function getGsocBrowser(): Promise<GsocBrowser | null> {
 export async function getPrograms(): Promise<Programs> {
   "use cache";
   cacheLife("hours");
-  const [gsoc, yc, launches] = await Promise.all([getGsoc(), getYC(), getLaunches()]);
-  return { gsoc, yc, launches, fetchedAt: new Date().toISOString() };
+  const [gsoc, yc, launches, lfx, news] = await Promise.all([getGsoc(), getYC(), getLaunches(), getLfxTerms(), getProgramNews()]);
+  return { gsoc, yc, launches, lfx, news, fetchedAt: new Date().toISOString() };
+}
+
+/* ---------- LFX Mentorship terms, from the timeline table on each term's page in cncf/mentoring ---------- */
+
+const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const TERMS = ["01-Mar-May", "02-Jun-Aug", "03-Sep-Nov"];
+const LFX_ROWS: [LfxMilestone["name"], RegExp, string][] = [
+  ["proposals", /project proposals open/i, "Project proposals"],
+  ["apply", /mentee applications open/i, "Mentee applications"],
+  ["begins", /mentorship program begins/i, "Mentorship begins"],
+];
+
+/* "| Mentee Applications Open | Wed, Feb 3, 00:00 UTC - Tue, Feb 16, 23:59 UTC |" under "Dates (2027)": every "Feb 3" in the cell, as dates. */
+export function parseLfxTimeline(md: string): LfxMilestone[] {
+  const year = md.match(/\|\s*Activity\s*\|\s*Dates \((\d{4})\)/i)?.[1];
+  if (!year) return [];
+  const out: LfxMilestone[] = [];
+  for (const line of md.split("\n")) {
+    const cells = line.split("|").map((c) => c.trim());
+    if (cells.length < 3) continue;
+    const row = LFX_ROWS.find(([, re]) => re.test(cells[1]));
+    if (!row) continue;
+    const dates = [...cells[2].matchAll(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w* (\d{1,2})\b/g)].map(
+      (m) => `${year}-${String(MON.indexOf(m[1]) + 1).padStart(2, "0")}-${m[2].padStart(2, "0")}`,
+    );
+    if (dates.length) out.push({ name: row[0], label: row[2], start: dates[0], end: dates[1] ?? null });
+  }
+  return out;
+}
+
+export async function getLfxTerms(): Promise<LfxTerm[]> {
+  "use cache";
+  cacheLife("hours");
+  const y = new Date().getFullYear();
+  const pages = [y, y + 1].flatMap((year) => TERMS.map((term) => ({ year, term })));
+  const terms = await Promise.all(
+    pages.map(async ({ year, term }) => {
+      const path = `programs/lfx-mentorship/${year}/${term}/README.md`;
+      try {
+        const res = await fetch(`https://raw.githubusercontent.com/cncf/mentoring/main/${path}`, { headers: UA });
+        if (!res.ok) return null;
+        const milestones = parseLfxTimeline(await res.text());
+        const [n, from, to] = term.split("-");
+        return milestones.length ? { id: `${year}-${term}`, label: `${year} Term ${Number(n)}, ${from} to ${to}`, url: `https://github.com/cncf/mentoring/blob/main/${path}`, milestones } : null;
+      } catch {
+        return null;
+      }
+    }),
+  );
+  return terms.filter((t): t is LfxTerm => t !== null);
+}
+
+/* ---------- program news: the blogs the owner's tracker follows, read the same way ---------- */
+
+const NEWS_FEEDS: { source: string; url: string; only?: RegExp }[] = [
+  { source: "Google Open Source", url: "https://opensource.googleblog.com/feeds/posts/default", only: /summer of code|gsoc|season of docs/i },
+  { source: "Outreachy", url: "https://www.outreachy.org/blog/feed/" },
+  { source: "CNCF", url: "https://www.cncf.io/feed/", only: /mentorship|lfx|mentee/i },
+  { source: "Summer of Bitcoin", url: "https://blog.summerofbitcoin.org/feed.xml" },
+];
+
+const cdata = (t: string) => t.replace(/^<!\[CDATA\[([\s\S]*?)\]\]>$/, "$1");
+
+/** Posts from an RSS or Atom feed: title, the page link, and when it was published. */
+export function feedPosts(xml: string): Omit<NewsPost, "source">[] {
+  const atom = /<entry[\s>]/.test(xml);
+  return xml
+    .split(atom ? /<entry[\s>]/ : /<item[\s>]/)
+    .slice(1)
+    .flatMap((p) => {
+      const title = unescapeHtml(cdata((p.match(/<title[^>]*>([\s\S]*?)<\/title>/)?.[1] ?? "").trim())).trim();
+      let url = "";
+      if (atom) {
+        const links = [...p.matchAll(/<link\b([^>]*)>/g)].map((m) => m[1]);
+        const alt = links.find((a) => /rel=['"]alternate['"]/.test(a)) ?? links.find((a) => !/rel=/.test(a));
+        url = alt?.match(/href=['"]([^'"]+)['"]/)?.[1] ?? "";
+      } else url = cdata(p.match(/<link>([\s\S]*?)<\/link>/)?.[1]?.trim() ?? "");
+      const when = p.match(/<published>([^<]+)<\/published>/)?.[1] ?? p.match(/<pubDate>([^<]+)<\/pubDate>/)?.[1] ?? p.match(/<updated>([^<]+)<\/updated>/)?.[1];
+      const t = when ? Date.parse(when) : NaN;
+      return title && url && !Number.isNaN(t) ? [{ title, url, published: new Date(t).toISOString() }] : [];
+    });
+}
+
+export async function getProgramNews(): Promise<NewsPost[]> {
+  "use cache";
+  cacheLife("hours");
+  const since = Date.now() - 180 * 86400000;
+  const lists = await Promise.all(
+    NEWS_FEEDS.map(async (f) => {
+      try {
+        const res = await fetch(f.url, { headers: UA });
+        if (!res.ok) return [];
+        return feedPosts(await res.text())
+          .filter((p) => (!f.only || f.only.test(p.title)) && Date.parse(p.published) > since)
+          .map((p) => ({ ...p, source: f.source }));
+      } catch {
+        return [];
+      }
+    }),
+  );
+  return lists
+    .flat()
+    .sort((a, b) => b.published.localeCompare(a.published))
+    .slice(0, 12);
 }
 
 /* ---------- repo discovery (unauthenticated search, cached per topic) ---------- */
