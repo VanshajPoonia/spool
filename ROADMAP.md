@@ -28,9 +28,11 @@ Lives in `components/app/nav.ts` and `SubNav.tsx` (the switch at the top of Find
 - [x] Programs: one News panel for program news and Product Hunt; More programs shows names until you open one
 
 ### Phase 9: Speed and safety
-- [ ] The board paints each search as it lands, then fills in PR details and claims, instead of one 12 to 14 second wait
-- [ ] Refreshes skip the detail lookups for threads that haven't changed
-- [ ] Tests for the rules (classifier, changes, claims, follows, outsider report, deadlines, logbook, calendar file), built with the repo's own TypeScript and run with Node's test runner, so no new dependency; run on every push
+Lives in `fetchBoard()` in `lib/github.ts` (`onPartial` and `previous`), the "Still reading" line on the board, `tests/`, `tsconfig.test.json` and `.github/workflows/ci.yml`. The feed parsers moved to `lib/feeds.ts` so they can be tested.
+
+- [x] The board paints each search as it lands, then fills in PR details and claims. On the owner's account the first threads show after about 4 seconds instead of 13. A returning visit keeps its saved board until the full one lands, and only full loads count for Since you last looked
+- [x] Refreshes skip the detail lookups for threads that haven't changed, for up to 30 minutes: 3 requests instead of 6, and the detail step drops from about 3 seconds to none
+- [x] Tests for the rules (classifier, changes, claims, follows, outsider report, deadlines, logbook, calendar file, feeds, claim phrases), built with the repo's own TypeScript and run with Node's test runner, so no new dependency; CI runs them with lint and typecheck on every push
 
 ### Phase 10: Ready for new users
 - [ ] A first-run tour after connecting: three steps, easy to dismiss

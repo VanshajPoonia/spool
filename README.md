@@ -7,7 +7,11 @@ The open source manager that knows whose move it is. Spool puts every PR, issue,
 ```bash
 pnpm install
 pnpm dev          # http://localhost:3000
+pnpm test         # the rules: classifier, changes, claims, follows, outsider report, dates, logbook, parsers
+pnpm typecheck
 ```
+
+Tests live in `tests/`. `pnpm test` compiles them with the repo's own TypeScript (`tsconfig.test.json`, into `.test-build/`) and runs them with Node's built-in test runner, so there's no test framework to install. CI (`.github/workflows/ci.yml`) runs lint, typecheck and tests on every push to main.
 
 Open `/board?demo=1` to explore with sample data, or paste a GitHub token on the landing page (`#connect`) or at `/board`.
 
