@@ -42,7 +42,11 @@ Lives in `components/app/FirstRun.tsx`, the phone styles of `today.module.css` a
 - [x] A feedback link that opens a new issue on the repo, in Settings and in Cmd+K
 
 ### Phase 11: The landing page catches up
-- [ ] Find, claims, the outsider report, Today, the logbook and Cmd+K, in the page's own style and with the new tab names
+Lives in `components/landing/Pickup.tsx` (the new section after Stalled), the Catch up and Plan chapters of `Tour.tsx`, and the footer links, which now come from `NAV`.
+
+- [x] "From a free issue to a merged PR": Follow, Check, Claim and Count beside a window drawn in the app's tab names. The follow's rule filters its issues, the outsider report switches between a repo outsiders land work in and one they don't, Claims show every state, and the logbook's bars read out on hover
+- [x] The tour's fourth chapter is Catch up: two days later the Today strip lists what changed. The Plan chapter opens through Cmd+K
+- [x] Old tab names gone: the hero's guest line says Find, and the footer lists the six tabs
 
 ## Waiting on you
 
