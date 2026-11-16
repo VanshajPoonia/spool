@@ -248,9 +248,11 @@ Asked for while GSoC 2026 has ended and YC's deadline has passed: who took part 
 - [x] YC's open source companies from past batches, from YC's directory via the yc-oss API (rebuilt daily), at `/board/programs/yc` with hiring, active and tag filters; the newest five on Programs
 
 ### Between phases: your logbook
-- [ ] Merged PRs over time, repos contributed to, first and latest contribution
-- [ ] A streak measured in weeks, not days, so a quiet weekend doesn't break it
-- [ ] A downloadable image card of your year
+Lives in `lib/logbook.ts`, `fetchLogPrs()` in `lib/github.ts` and `components/app/Logbook.tsx`, at the top of the Repos tab. PRs on your own repos are left out; GitHub's search returns your newest 500 at most, kept six hours.
+
+- [x] Merged PRs over time (per month, last two years, with a readout per bar and a table for screen readers), repos contributed to, first and latest contribution
+- [x] A streak measured in weeks, not days, so a quiet weekend doesn't break it: a week counts when you open or land a PR, and this week only breaks the streak once it's over
+- [x] A downloadable image card of your year, drawn on a canvas so the preview is the PNG
 
 ### Between phases: jump anywhere (Cmd+K)
 - [ ] Search threads, repos, saved orgs and pages from anywhere in the app

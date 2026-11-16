@@ -41,7 +41,7 @@ Production responses carry a content security policy (`next.config.ts`) whose `c
 | --- | --- |
 | `/` | Landing page: a live sample bay in the hero, a 3D airfield where sample PRs hold in review and land on main when they merge, a strip printed field by field as you scroll, a sample day you can scrub and open strip by strip, the stalled limit, callsigns, live repo discovery, the live GSoC/YC/Product Hunt schedule, the GSoC season drawn as you scroll with a filterable list of this year's organisations, the sign-on form |
 | `/board` | Since you last looked (what changed between loads, until you mark it handled), then Your move and Their move bays, Watching, Snoozed and Landed. Pin, snooze, priorities, notes, detail drawer with the GitHub timeline |
-| `/board/repos` | Every repo you've contributed to: opened, merged, closed, merge rate, median time to merge, your own repos |
+| `/board/repos` | Your logbook (merged PRs per month, repos, first and latest merge, a weekly streak, a downloadable card of your year), then every repo you've contributed to: opened, merged, closed, merge rate, median time to merge, your own repos |
 | `/board/repos/[owner]/[name]` | Can an outsider land work here? (any repo), then your timetable in it |
 | `/board/orgs` | The orgs you're investing in, grouped by goal (job, GSoC, a program, for fun), with status, next step and date, notes and links, and live counts from your board |
 | `/board/discover` | Young repos and unclaimed good first issues for your interests, plus a shortlist |
