@@ -241,6 +241,12 @@ Takes in "More programs". Each one links to its own site, and shows dates only w
 - [x] New posts from program blogs as news: the Google Open Source blog's GSoC and Season of Docs posts, Outreachy, CNCF mentorship, Summer of Bitcoin
 - [x] Download an `.ics` calendar of the deadlines you follow, built in the browser
 
+### Past participants (2026-11-16)
+Asked for while GSoC 2026 has ended and YC's deadline has passed: who took part before.
+
+- [x] GSoC organisations from earlier years that aren't in the latest program, with the last year each took part and how many years, in the GSoC browser's "Earlier years" view; linked from Programs
+- [x] YC's open source companies from past batches, from YC's directory via the yc-oss API (rebuilt daily), at `/board/programs/yc` with hiring, active and tag filters; the newest five on Programs
+
 ### Between phases: your logbook
 - [ ] Merged PRs over time, repos contributed to, first and latest contribution
 - [ ] A streak measured in weeks, not days, so a quiet weekend doesn't break it
@@ -255,7 +261,6 @@ Takes in "More programs". Each one links to its own site, and shows dates only w
 ## Later, or only if it fits the rules
 
 - **Saved board views:** named filters like "reviews only" or "quarry repos", kept locally.
-- **Open source YC companies:** only with a reliable public source; nothing hand-maintained.
 - **Bounties:** first check whether Algora or another platform has a stable public API.
 - **GSoC past projects per organisation:** the program API's projects list is about 14 MB, so this needs a slimmer source or a server-side digest first.
 - **GitLab.com:** its public GraphQL API reads merge requests, approvals and pipelines without a login, which is how the owner's tracker follows GitLab work.

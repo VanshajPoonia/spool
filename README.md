@@ -46,7 +46,8 @@ Production responses carry a content security policy (`next.config.ts`) whose `c
 | `/board/orgs` | The orgs you're investing in, grouped by goal (job, GSoC, a program, for fun), with status, next step and date, notes and links, and live counts from your board |
 | `/board/discover` | Young repos and unclaimed good first issues for your interests, plus a shortlist |
 | `/board/following` | Repos, orgs and maintainers you follow, each with a rule. New issues that match, a scan for free issues of any age, skipped issues with your reasons |
-| `/board/programs` | GSoC timeline and orgs matching your interests, YC deadline, your October PRs (from a username as a guest), Product Hunt launches, more programs (LFX with its term dates, Outreachy, MLH Fellowship, Summer of Bitcoin, Season of Docs, C4GT, GSSoC, KWoC, SWoC) and program news |
+| `/board/programs` | GSoC timeline and orgs matching your interests, YC deadline, your October PRs (from a username as a guest), Product Hunt launches, more programs (LFX with its term dates, Outreachy, MLH Fellowship, Summer of Bitcoin, Season of Docs, C4GT, GSSoC, KWoC, SWoC), program news, and the newest open source YC startups |
+| `/board/programs/yc` | YC's open source companies from past batches, newest first, with hiring, active and tag filters |
 | `/board/settings` | Token, board rules, interests, light theme, motion and sound, export/import/erase |
 
 Keyboard on the board: `j`/`k` move, `Enter` opens details, `o` opens on GitHub, `p` pins, `s` snoozes a day, `/` filters, `Shift E` marks everything seen, `?` lists shortcuts.
@@ -105,6 +106,8 @@ Every repo page starts with a report read from public data in one request (`fetc
 - YC: the batch and deadline fields on `ycombinator.com/apply`
 - Product Hunt: `producthunt.com/feed` (Atom)
 - LFX Mentorship: the timeline table on each term's page in `cncf/mentoring` (`programs/lfx-mentorship/<year>/<term>/README.md`, read from raw.githubusercontent.com), this year's and next year's terms
+- GSoC organisations from earlier years: the same yearly lists, keeping orgs from 2022 on that aren't in the latest program, each from the last year it took part (the browser's "Earlier years" view)
+- YC open source companies: YC's company directory, tag "Open Source", via the yc-oss API (`yc-oss.github.io/api`, rebuilt daily from YC's directory)
 - Program news: the Google Open Source blog (GSoC and Season of Docs posts only), Outreachy's blog, CNCF (mentorship and LFX posts only) and Summer of Bitcoin's blog, RSS or Atom
 - The other programs link to their own sites with "check the site" for dates: none publishes them in a form Spool can read reliably
 
