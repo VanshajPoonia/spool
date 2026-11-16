@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { diffBoards, snapOf, type Change, type Snap } from "./changes";
 import type { Thread } from "./classify";
+import type { Follow, FollowIssue } from "./follow";
 import { EMPTY_PLAN, SAMPLE_PLAN, taskKey, type Col, type Plan, type Prio } from "./plan";
 import { watchKey, type WatchedIssue, type WatchItem } from "./watch";
 
@@ -136,9 +137,13 @@ export type Meta = {
   orgs: Record<string, { name: string; addedAt: string }>;
   /** issues you might take, keyed by watchKey(repo, number) */
   watch: Record<string, WatchItem>;
+  /** repos, orgs and maintainers on the Following page, by follow id */
+  follows: Record<string, Follow>;
+  /** issues you looked at and left, so Following never shows them again; keyed by watchKey */
+  skipped: Record<string, { repo: string; number: number; title: string; url: string; reason: string; at: string }>;
 };
 
-const metaStore = createStore<Meta>("spool:meta", { pins: {}, snoozed: {}, notes: {}, seen: {}, shortlist: {}, orgs: {}, watch: {} });
+const metaStore = createStore<Meta>("spool:meta", { pins: {}, snoozed: {}, notes: {}, seen: {}, shortlist: {}, orgs: {}, watch: {}, follows: {}, skipped: {} });
 
 export const useMeta = metaStore.use;
 export const readMeta = metaStore.read;
@@ -219,6 +224,36 @@ export function seeWatched(key: string, title?: string) {
   });
 }
 
+export function addFollow(f: Follow) {
+  metaStore.update((m) => ({ ...m, follows: { ...m.follows, [f.id]: f } }));
+}
+
+export function removeFollow(id: string) {
+  metaStore.update((m) => {
+    const follows = { ...m.follows };
+    delete follows[id];
+    return { ...m, follows };
+  });
+}
+
+/* Everything opened so far counts as seen. */
+export function seeFollows() {
+  const at = new Date().toISOString();
+  metaStore.update((m) => ({ ...m, follows: Object.fromEntries(Object.entries(m.follows).map(([k, f]) => [k, { ...f, seenAt: at }])) }));
+}
+
+export function skipIssue(it: { repo: string; number: number; title: string; url: string; reason: string }) {
+  metaStore.update((m) => ({ ...m, skipped: { ...m.skipped, [watchKey(it.repo, it.number)]: { ...it, at: new Date().toISOString() } } }));
+}
+
+export function unskipIssue(key: string) {
+  metaStore.update((m) => {
+    const skipped = { ...m.skipped };
+    delete skipped[key];
+    return { ...m, skipped };
+  });
+}
+
 /* ---------- cached board snapshot, so the board paints instantly ---------- */
 
 export const cacheStore = createStore<{ board: unknown; at: string | null; login: string | null }>("spool:cache", {
@@ -233,6 +268,15 @@ export const watchCacheStore = createStore<{ who: string | null; at: string | nu
   who: null,
   at: null,
   issues: {},
+});
+
+/* ---------- the last Following checks, so a revisit within 15 minutes costs nothing ---------- */
+
+type FollowRun = { at: string; results: Record<string, FollowIssue[]>; failed: string[] };
+export const followCacheStore = createStore<{ login: string | null; feed: FollowRun | null; scan: FollowRun | null }>("spool:followcache", {
+  login: null,
+  feed: null,
+  scan: null,
 });
 
 /* ---------- since you last looked: what changed between board loads, until you handle it ---------- */
@@ -392,6 +436,7 @@ export function wipeAll() {
   cacheStore.clear();
   watchCacheStore.clear();
   changesStore.clear();
+  followCacheStore.clear();
   usageStore.clear();
   planStore.clear();
   samplePlanStore.clear();

@@ -200,6 +200,8 @@ function Memory({ guest }: { guest: boolean }) {
   const items: [string, number][] = [
     ["Interests", interests.length],
     ["Watched issues", Object.keys(meta.watch).length],
+    ["Follows", Object.keys(meta.follows).length],
+    ["Skipped issues", Object.keys(meta.skipped).length],
     ["Shortlisted repos", Object.keys(meta.shortlist).length],
     ["Saved GSoC organisations", Object.keys(meta.orgs).length],
     ["Pinned threads", Object.keys(meta.pins).length],
