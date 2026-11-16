@@ -1,8 +1,9 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
-import { Download, Eye, EyeOff, LogOut, Trash2, Upload } from "lucide-react";
+import { CalendarPlus, Download, Eye, EyeOff, LogOut, Trash2, Upload } from "lucide-react";
 import { PROGRAMS } from "@/lib/deadlines";
+import { downloadIcs } from "@/lib/ics";
 import { PrintText } from "@/components/print/PrintText";
 import { verifyToken } from "@/lib/github";
 import { setPrefs, usePrefs } from "@/lib/prefs";
@@ -27,6 +28,7 @@ import {
 import { fmtDate, useHydrated, useNow } from "@/lib/time";
 import { notifyPermission, sendTestNotification } from "./Alerts";
 import { Interests } from "./Interests";
+import { useAllDeadlines } from "./useDeadlines";
 import p from "./page.module.css";
 import s from "./settings.module.css";
 
@@ -232,6 +234,20 @@ function Memory({ guest }: { guest: boolean }) {
   );
 }
 
+/* Every future followed deadline and org date as a calendar file, made in this browser. */
+function CalendarButton() {
+  const all = useAllDeadlines();
+  return (
+    <div className={s.row}>
+      <button type="button" className={p.btn} onClick={() => downloadIcs(all)} disabled={!all.length}>
+        <CalendarPlus size={16} aria-hidden="true" />
+        Download calendar file
+      </button>
+      <span className={p.muted}>{all.length ? `${all.length} ${all.length === 1 ? "date" : "dates"}, as all-day events. Import it again to update them.` : "Nothing to add yet: follow a program or give an org a date."}</span>
+    </div>
+  );
+}
+
 export function SettingsView() {
   const auth = useAuth();
   const settings = useSettings();
@@ -335,6 +351,7 @@ export function SettingsView() {
             <h2>Deadlines you follow</h2>
             <p>Within 14 days they show on the board, next to your orgs&rsquo; dates. With notifications on, you get one at 7 days and at 1 day.</p>
           </div>
+          <CalendarButton />
           <div className={s.toggles}>
             {PROGRAMS.map(([key, label]) => {
               const on = settings.followPrograms.includes(key);

@@ -15,8 +15,8 @@ function loadPrograms() {
   return programs;
 }
 
-/** Followed program deadlines and your orgs' next dates within 14 days, soonest first. */
-export function useDeadlines() {
+/* Every future followed deadline and org date; the strip, the alerts and the calendar file read from it. */
+function useDeadlineList(within: number) {
   const { mode, now } = useBoard();
   const meta = useMeta();
   const { followPrograms } = useSettings();
@@ -35,6 +35,12 @@ export function useDeadlines() {
   return useMemo(() => {
     if (!now) return [];
     const orgs = Object.values(mode === "sample" ? sampleOrgs(now) : meta.investing);
-    return upcoming([...orgDeadlines(orgs), ...(following && data ? programDeadlines(data, followPrograms, now) : [])], now);
-  }, [now, mode, meta.investing, following, data, followPrograms]);
+    return upcoming([...orgDeadlines(orgs), ...(following && data ? programDeadlines(data, followPrograms, now) : [])], now, within);
+  }, [now, mode, meta.investing, following, data, followPrograms, within]);
 }
+
+/** Followed program deadlines and your orgs' next dates within 14 days, soonest first. */
+export const useDeadlines = () => useDeadlineList(14);
+
+/** All of them, for the calendar file. */
+export const useAllDeadlines = () => useDeadlineList(3650);
