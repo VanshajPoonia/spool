@@ -170,13 +170,14 @@ Started 2026-11-16. Details in the README under Deploy.
 - [x] robots.txt and a sitemap for the landing page
 
 ### Phase 1: Sharper reasons on the board
-From the tracker's board sweep. Everything here fits in the existing board query.
+From the tracker's board sweep. The PR signals live in `addPrDetail()` in `lib/github.ts` (a lookup by id after the searches, since adding them to the search made GitHub time out), `prSignals()` in `lib/classify.ts` and the facts in `ThreadDetail.tsx`.
 
-- [ ] Merge conflicts: your move, it needs a rebase
-- [ ] Unresolved review threads, counted on the row
-- [ ] A bot review after your last commit (CodeRabbit and the like) is your move; other bot noise stays ignored
-- [ ] A failing CLA or DCO check says so, with a link to sign
-- [ ] Checks waiting for a maintainer to approve the run are their move, not yours
+- [x] Merge conflicts: your move, it needs a rebase
+- [x] Unresolved review threads, counted in the detail drawer; threads on current code where someone else spoke last make it your move
+- [x] A bot review with comments after your last push (CodeRabbit and the like) is your move; other bot noise stays ignored
+- [x] A failing CLA or DCO check says so, with a link to sign; other failing checks are named
+- [x] Checks waiting for a maintainer to approve the run are their move, not yours ("CI on hold")
+- [x] CLA Assistant's comments no longer count as a person having the last word
 - [ ] GitHub Discussions you started, commented on or were mentioned in
 
 ### Phase 2: Since you last looked
