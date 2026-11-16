@@ -121,6 +121,7 @@ export const ThreadRow = memo(function ThreadRow({ t, code, now, fresh, pinned, 
         "data-dim": dim ? "" : undefined,
         "data-fresh": fresh ? "" : undefined,
         "data-pinned": pinned ? "" : undefined,
+        "data-wrap-note": t.claim && t.claim !== "covered" ? "" : undefined,
       }}
       kind={stripKind(t)}
       callsign={code ?? carrier(t.repo).code}
