@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import { PrefsBoot } from "@/components/PrefsBoot";
+import { SITE } from "@/lib/site";
 import "./globals.css";
 
 // Inter carries every word; its optical-size axis gives headlines the tighter display cut.
@@ -18,10 +19,16 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
+const TITLE = "Spool: the open source manager that knows whose move it is";
+const DESCRIPTION =
+  "Spool puts every PR, issue, review request and mention you have open on GitHub in one bay, sorted by who owes the next reply. Plus GSoC, YC and Product Hunt dates.";
+
 export const metadata: Metadata = {
-  title: "Spool: the open source manager that knows whose move it is",
-  description:
-    "Spool puts every PR, issue, review request and mention you have open on GitHub in one bay, sorted by who owes the next reply. Plus GSoC, YC and Product Hunt dates.",
+  metadataBase: new URL(SITE),
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: { type: "website", siteName: "Spool", title: TITLE, description: DESCRIPTION, url: "/" },
+  twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION },
 };
 
 export const viewport: Viewport = {
