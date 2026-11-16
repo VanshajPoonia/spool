@@ -4,6 +4,7 @@ import { useSyncExternalStore } from "react";
 import { diffBoards, snapOf, type Change, type Snap } from "./changes";
 import type { Thread } from "./classify";
 import type { Follow, FollowIssue } from "./follow";
+import type { OrgPlan } from "./orgs";
 import type { RepoCheck } from "./outsider";
 import { EMPTY_PLAN, SAMPLE_PLAN, taskKey, type Col, type Plan, type Prio } from "./plan";
 import { watchKey, type WatchedIssue, type WatchItem } from "./watch";
@@ -113,6 +114,8 @@ export type Settings = {
   guestLogin: string;
   /** open PRs you allow yourself per org before Spool warns: depth beats breadth */
   orgPrLimit: number;
+  /** program deadlines you follow, by key from PROGRAMS in deadlines.ts */
+  followPrograms: string[];
 };
 
 const settingsStore = createStore<Settings>("spool:settings", {
@@ -123,6 +126,7 @@ const settingsStore = createStore<Settings>("spool:settings", {
   notify: false,
   guestLogin: "",
   orgPrLimit: 3,
+  followPrograms: [],
 });
 
 export const useSettings = settingsStore.use;
@@ -145,9 +149,11 @@ export type Meta = {
   follows: Record<string, Follow>;
   /** issues you looked at and left, so Following never shows them again; keyed by watchKey */
   skipped: Record<string, { repo: string; number: number; title: string; url: string; reason: string; at: string }>;
+  /** orgs you're investing in, by lowercased owner (meta.orgs is saved GSoC organisations) */
+  investing: Record<string, OrgPlan>;
 };
 
-const metaStore = createStore<Meta>("spool:meta", { pins: {}, snoozed: {}, notes: {}, seen: {}, shortlist: {}, orgs: {}, watch: {}, follows: {}, skipped: {} });
+const metaStore = createStore<Meta>("spool:meta", { pins: {}, snoozed: {}, notes: {}, seen: {}, shortlist: {}, orgs: {}, watch: {}, follows: {}, skipped: {}, investing: {} });
 
 export const useMeta = metaStore.use;
 export const readMeta = metaStore.read;
@@ -258,6 +264,22 @@ export function unskipIssue(key: string) {
   });
 }
 
+export function setOrgPlan(owner: string, patch: Partial<OrgPlan>) {
+  const key = owner.toLowerCase();
+  metaStore.update((m) => {
+    const base: OrgPlan = m.investing[key] ?? { owner, goal: "job", status: "active", next: "", nextDate: null, notes: "", links: "", addedAt: new Date().toISOString() };
+    return { ...m, investing: { ...m.investing, [key]: { ...base, ...patch } } };
+  });
+}
+
+export function removeOrgPlan(owner: string) {
+  metaStore.update((m) => {
+    const investing = { ...m.investing };
+    delete investing[owner.toLowerCase()];
+    return { ...m, investing };
+  });
+}
+
 /* ---------- cached board snapshot, so the board paints instantly ---------- */
 
 export const cacheStore = createStore<{ board: unknown; at: string | null; login: string | null }>("spool:cache", {
@@ -282,6 +304,10 @@ export const followCacheStore = createStore<{ login: string | null; feed: Follow
   feed: null,
   scan: null,
 });
+
+/* ---------- deadline notifications already sent, so each goes out once ---------- */
+
+export const deadlineAlertStore = createStore<Record<string, string>>("spool:deadline-alerts", {});
 
 /* ---------- repo checks ("can an outsider land work here?"), kept a day per repo ---------- */
 
@@ -456,6 +482,7 @@ export function wipeAll() {
   changesStore.clear();
   followCacheStore.clear();
   repoCheckStore.clear();
+  deadlineAlertStore.clear();
   usageStore.clear();
   planStore.clear();
   samplePlanStore.clear();
