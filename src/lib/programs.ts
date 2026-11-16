@@ -51,6 +51,8 @@ export type Programs = {
   launches: Launch[];
   lfx: LfxTerm[];
   news: NewsPost[];
+  /** YC's open source companies in brief: the newest few, and how many there are and are hiring */
+  ycOpen: { total: number; hiring: number; latest: YcCompany[] } | null;
   fetchedAt: string;
 };
 
@@ -174,6 +176,8 @@ export type GsocOrgFull = GsocOrg & {
   mailingList: string | null;
   /** program years this org took part in, from the yearly org lists the API publishes */
   years: string[];
+  /** for an org that isn't in the latest program: the last year it took part */
+  lastYear?: string;
 };
 
 export type GsocBrowser = {
@@ -181,6 +185,8 @@ export type GsocBrowser = {
   /** the years the API has org lists for, oldest first */
   yearsCovered: string[];
   orgs: GsocOrgFull[];
+  /** organisations from earlier years that aren't in the latest program, most recent first */
+  past: GsocOrgFull[];
   fetchedAt: string;
 };
 
@@ -232,14 +238,14 @@ export async function getGsocBrowser(): Promise<GsocBrowser | null> {
       }
     }
     const link = (o: RawOrg, name: string) => httpLink(o.contact_links?.find((c) => c.name === name)?.value);
-    const orgs: GsocOrgFull[] = current.map((o) => ({
+    const full = (o: RawOrg, year: string): GsocOrgFull => ({
       name: o.name,
       slug: o.slug,
       tagline: o.tagline,
       tech: o.tech_tags ?? [],
       topics: o.topic_tags ?? [],
       categories: o.categories ?? [],
-      url: `https://summerofcode.withgoogle.com/programs/${latest}/organizations/${o.slug}`,
+      url: `https://summerofcode.withgoogle.com/programs/${year}/organizations/${o.slug}`,
       ideas: httpLink(o.ideas_link),
       logo: httpLink(o.logo_url),
       website: httpLink(o.website_url),
@@ -249,11 +255,25 @@ export async function getGsocBrowser(): Promise<GsocBrowser | null> {
       chat: link(o, "chat"),
       mailingList: link(o, "mailingList"),
       years: [...new Set([...(seen.get(`s:${o.slug}`) ?? []), ...(seen.get(`n:${orgKey(o.name)}`) ?? [])])].sort(),
-    }));
+    });
+    const orgs = current.map((o) => full(o, latest));
+    // Earlier orgs not in the latest program, each from the last year it took part.
+    const taken = new Set(current.flatMap((o) => [`s:${o.slug}`, `n:${orgKey(o.name)}`]));
+    const past: GsocOrgFull[] = [];
+    for (const l of [...lists].reverse()) {
+      if (l.year === latest || !l.orgs) continue;
+      for (const o of l.orgs) {
+        const keys = [`s:${o.slug}`, `n:${orgKey(o.name)}`];
+        if (keys.some((k) => taken.has(k))) continue;
+        keys.forEach((k) => taken.add(k));
+        past.push({ ...full(o, l.year), lastYear: l.year });
+      }
+    }
     return {
       year: latest,
       yearsCovered: lists.filter((l) => l.orgs).map((l) => l.year),
       orgs,
+      past,
       fetchedAt: new Date().toISOString(),
     };
   } catch {
@@ -264,8 +284,78 @@ export async function getGsocBrowser(): Promise<GsocBrowser | null> {
 export async function getPrograms(): Promise<Programs> {
   "use cache";
   cacheLife("hours");
-  const [gsoc, yc, launches, lfx, news] = await Promise.all([getGsoc(), getYC(), getLaunches(), getLfxTerms(), getProgramNews()]);
-  return { gsoc, yc, launches, lfx, news, fetchedAt: new Date().toISOString() };
+  const [gsoc, yc, launches, lfx, news, ycAll] = await Promise.all([getGsoc(), getYC(), getLaunches(), getLfxTerms(), getProgramNews(), getYcOpenSource()]);
+  const ycOpen = ycAll ? { total: ycAll.companies.length, hiring: ycAll.companies.filter((c) => c.hiring).length, latest: ycAll.companies.slice(0, 5) } : null;
+  return { gsoc, yc, launches, lfx, news, ycOpen, fetchedAt: new Date().toISOString() };
+}
+
+/* ---------- YC's open source companies, from YC's directory via the yc-oss API (rebuilt daily) ---------- */
+
+export type YcCompany = {
+  name: string;
+  slug: string;
+  batch: string;
+  status: string;
+  website: string | null;
+  oneLiner: string;
+  teamSize: number | null;
+  hiring: boolean;
+  /** the company's page in YC's directory */
+  ycUrl: string;
+  tags: string[];
+};
+
+export type YcOpenSource = { companies: YcCompany[]; updated: string | null; fetchedAt: string };
+
+const SEASONS: Record<string, number> = { Winter: 0, Spring: 1, Summer: 2, Fall: 3 };
+/** "Summer 2020" as a number that sorts batches in time order. */
+export const batchRank = (b: string) => {
+  const [season, year] = b.split(" ");
+  return Number(year) * 4 + (SEASONS[season] ?? 0);
+};
+
+type RawYc = {
+  name: string;
+  slug: string;
+  batch: string;
+  status: string;
+  website?: string;
+  one_liner?: string;
+  team_size?: number | null;
+  isHiring?: boolean;
+  url: string;
+  tags?: string[];
+};
+
+export async function getYcOpenSource(): Promise<YcOpenSource | null> {
+  "use cache";
+  cacheLife("hours");
+  try {
+    const [res, meta] = await Promise.all([
+      fetch("https://yc-oss.github.io/api/tags/open-source.json", { headers: UA }),
+      fetch("https://yc-oss.github.io/api/meta.json", { headers: UA }).catch(() => null),
+    ]);
+    if (!res.ok) return null;
+    const raw = (await res.json()) as RawYc[];
+    const updated = meta?.ok ? (((await meta.json()) as { last_updated?: string }).last_updated ?? null) : null;
+    const companies = raw
+      .map((c) => ({
+        name: c.name,
+        slug: c.slug,
+        batch: c.batch,
+        status: c.status,
+        website: httpLink(c.website),
+        oneLiner: c.one_liner ?? "",
+        teamSize: c.team_size ?? null,
+        hiring: !!c.isHiring,
+        ycUrl: c.url,
+        tags: (c.tags ?? []).filter((t) => t !== "Open Source").slice(0, 4),
+      }))
+      .sort((a, b) => batchRank(b.batch) - batchRank(a.batch) || a.name.localeCompare(b.name));
+    return { companies, updated, fetchedAt: new Date().toISOString() };
+  } catch {
+    return null;
+  }
 }
 
 /* ---------- LFX Mentorship terms, from the timeline table on each term's page in cncf/mentoring ---------- */
