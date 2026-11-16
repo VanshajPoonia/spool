@@ -134,24 +134,30 @@ export function BoardView() {
     // Pins first, then the priority you gave it, then the group's own order.
     const pin = (a: Thread, b: Thread) => Number(!!meta.pins[b.id]) - Number(!!meta.pins[a.id]) || prioRank(prioOf(a)) - prioRank(prioOf(b));
     const live = filtered.filter((t) => !isSnoozed(t.id));
+    // Issues you're taking sit in their own bay; one your PR covers is just watched.
+    const claimed = (t: Thread) => !!t.claim && t.claim !== "covered" && t.next !== "done";
+    const CLAIM_RANK = { taken: 0, assigned: 1, asked: 2, covered: 3 };
+    const claims = live
+      .filter(claimed)
+      .sort((a, b) => pin(a, b) || CLAIM_RANK[a.claim!] - CLAIM_RANK[b.claim!] || Number(b.next === "you") - Number(a.next === "you") || a.lastAt.localeCompare(b.lastAt));
     const you = live
-      .filter((t) => t.next === "you")
+      .filter((t) => t.next === "you" && !claimed(t))
       .sort(
         (a, b) =>
           pin(a, b) ||
           (settings.youOrder === "oldest" ? a.lastAt.localeCompare(b.lastAt) : b.lastAt.localeCompare(a.lastAt)),
       );
     const them = live
-      .filter((t) => t.next === "them")
+      .filter((t) => t.next === "them" && !claimed(t))
       .sort((a, b) => pin(a, b) || Number(b.tone === "wait") - Number(a.tone === "wait") || b.quietDays - a.quietDays);
     const watch = live.filter((t) => t.next === "watch").sort((a, b) => pin(a, b) || b.lastAt.localeCompare(a.lastAt));
     const done = filtered.filter((t) => t.next === "done").sort((a, b) => (b.closedAt ?? "").localeCompare(a.closedAt ?? ""));
     const snoozed = filtered.filter((t) => isSnoozed(t.id) && t.next !== "done");
-    return { you, them, watch, done, snoozed };
+    return { you, them, claims, watch, done, snoozed };
   }, [filtered, meta.pins, isSnoozed, settings.youOrder, prioOf]);
 
   const order = useMemo(
-    () => [...groups.you, ...groups.them, ...groups.watch, ...groups.snoozed, ...groups.done],
+    () => [...groups.you, ...groups.them, ...groups.claims, ...groups.watch, ...groups.snoozed, ...groups.done],
     [groups],
   );
   const selected = sel ? threads.find((t) => t.id === sel) ?? null : null;
@@ -262,6 +268,11 @@ export function BoardView() {
                 <strong>{delayed}</strong> stalled
               </span>
             )}
+            {groups.claims.length > 0 && (
+              <span>
+                <strong>{groups.claims.length}</strong> {groups.claims.length === 1 ? "claim" : "claims"}
+              </span>
+            )}
           </p>
         )}
       </div>
@@ -365,6 +376,15 @@ export function BoardView() {
             />
           </div>
           <div className={s.lower}>
+            {groups.claims.length > 0 && (
+              <Group
+                title="Claims"
+                sub="Issues you asked to take or were given."
+                items={groups.claims}
+                empty=""
+                render={row}
+              />
+            )}
             <Group
               title="Watching"
               sub="Threads you commented on. Nothing owed either way."
