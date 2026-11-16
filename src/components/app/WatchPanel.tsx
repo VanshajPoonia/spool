@@ -151,8 +151,8 @@ export function WatchPanel({ codeFor }: { codeFor: (repo: string) => string | un
       </div>
 
       {mode !== "sample" ? (
-        <form className={s.form} onSubmit={add} noValidate>
-          <label className={s.field}>
+        <form className={p.form} onSubmit={add} noValidate>
+          <label className={p.field}>
             <span className="sr-only">Issue link</span>
             <input
               value={ref}
@@ -169,7 +169,7 @@ export function WatchPanel({ codeFor }: { codeFor: (repo: string) => string | un
             {adding ? "Checking" : "Watch"}
           </button>
           {formError && (
-            <p id="watch-error" className={s.formError} role="alert">
+            <p id="watch-error" className={p.formError} role="alert">
               {formError}
             </p>
           )}
