@@ -7,6 +7,7 @@
 import { noteUsage, readUsage, windowLeft, type Who } from "./store";
 import { pickFirstIssues } from "./first-issues";
 import { freeScanQuery, newIssuesQuery, toFollowIssue, type Follow, type FollowIssue, type RawFollowIssue } from "./follow";
+import { summarize, type RawRepoCheck, type RepoCheck } from "./outsider";
 import { ASKS, type WatchedIssue } from "./watch";
 
 const API = "https://api.github.com";
@@ -815,6 +816,39 @@ export async function fetchFollowing(token: string, me: string, follows: Follow[
     });
   });
   return { results, failed, at: new Date().toISOString() };
+}
+
+/* ---------- can an outsider land work here? one request per repo ---------- */
+
+const FILE = (alias: string, path: string) => `${alias}: object(expression: "HEAD:${path}") { ... on Blob { text } }`;
+const REPO_CHECK_QUERY = /* GraphQL */ `query Check($o: String!, $n: String!, $merged: String!, $closed: String!, $gfi: String!) {
+  repository(owner: $o, name: $n) {
+    nameWithOwner url pushedAt isArchived
+    licenseInfo { spdxId name }
+    codeOfConduct { name }
+    ${FILE("c1", "CONTRIBUTING.md")} ${FILE("c2", ".github/CONTRIBUTING.md")} ${FILE("c3", "docs/CONTRIBUTING.md")}
+    ${FILE("ai1", "AI_POLICY.md")} ${FILE("ai2", ".github/AI_POLICY.md")}
+    workflows: object(expression: "HEAD:.github/workflows") { ... on Tree { entries { name } } }
+  }
+  merged: search(query: $merged, type: ISSUE, first: 100) { issueCount nodes { ... on PullRequest { title authorAssociation author { __typename login } } } }
+  closed: search(query: $closed, type: ISSUE, first: 40) { nodes { ... on PullRequest { createdAt mergedAt authorAssociation author { __typename login }
+    comments(first: 5) { nodes { createdAt author { __typename login } } }
+    reviews(first: 5) { nodes { submittedAt author { __typename login } } }
+    commits(last: 1) { nodes { commit { statusCheckRollup { contexts(first: 30) { nodes { ... on CheckRun { name } ... on StatusContext { context } } } } } } } } } }
+  gfi: search(query: $gfi, type: ISSUE, first: 1) { issueCount }
+}`;
+
+export async function fetchRepoCheck(token: string, repo: string): Promise<RepoCheck | null> {
+  const [o, n] = repo.split("/");
+  const since = new Date(Date.now() - 90 * 86400000).toISOString().slice(0, 10);
+  const raw = await gql<RawRepoCheck>(token, REPO_CHECK_QUERY, {
+    o,
+    n,
+    merged: `repo:${repo} is:pr is:merged merged:>${since}`,
+    closed: `repo:${repo} is:pr is:closed sort:updated-desc`,
+    gfi: `repo:${repo} is:issue is:open no:assignee label:"good first issue"`,
+  });
+  return summarize(raw, new Date().toISOString());
 }
 
 /* ---------- October PRs ---------- */
