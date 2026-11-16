@@ -1,0 +1,169 @@
+/* Orgs: where you're investing, grouped by goal */
+
+.add {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+}
+
+.select select {
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+  font-size: 13px;
+  outline: none;
+}
+
+.select select:focus-visible {
+  box-shadow:
+    inset 0 0 0 1px var(--accent),
+    0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
+}
+
+.suggest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.orgs {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.org {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--bay-2);
+}
+
+.org[data-status="hold"],
+.org[data-status="later"] {
+  opacity: 0.7;
+}
+
+.top {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.name {
+  color: var(--ink);
+  font-family: var(--font-print);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.name:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--rule-2);
+  text-underline-offset: 3px;
+}
+
+.counts {
+  overflow: hidden;
+  color: var(--ink-3);
+  font-size: 13px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.next {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 160px 110px;
+  align-items: center;
+  gap: 8px;
+}
+
+.date input {
+  color-scheme: dark;
+}
+
+:global(html[data-theme="light"]) .date input {
+  color-scheme: light;
+}
+
+.when {
+  color: var(--ink-3);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.when[data-soon] {
+  color: var(--move-text);
+}
+
+.notes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.notes textarea {
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 11px;
+  border: 0;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  resize: vertical;
+  outline: none;
+}
+
+.notes textarea:focus-visible {
+  box-shadow:
+    inset 0 0 0 1px var(--accent),
+    0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 6px;
+}
+
+.links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--ink-2);
+  font-size: 12.5px;
+  text-decoration: none;
+}
+
+.links a:hover {
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .top {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .counts {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .next,
+  .notes {
+    grid-template-columns: 1fr;
+  }
+}
