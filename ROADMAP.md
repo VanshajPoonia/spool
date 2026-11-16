@@ -181,11 +181,12 @@ From the tracker's board sweep. The PR signals live in `addPrDetail()` in `lib/g
 - [x] GitHub Discussions you started, commented on or were mentioned in: a third kind of thread with its own label, filter, plan card and timeline. Lives in the `discussions` search and `fromDiscussion()` in `lib/github.ts`
 
 ### Phase 2: Since you last looked
-The watcher's inbox, without a server: compare the saved board with a fresh load.
+The watcher's inbox, without a server: compare the saved board with a fresh load. Lives in `lib/changes.ts`, `recordBoard()` and `changesStore` in `lib/store.ts`, `components/app/Changes.tsx` and `Alerts.tsx`.
 
-- [ ] What changed since your last visit: new replies, merges, closes, CI turning red or green, new review requests, threads that arrived or left
-- [ ] Mark items handled, and they fold away
-- [ ] Browser notifications, when on, come from the same list
+- [x] What changed since your last visit: new replies, merges, closes, CI turning red or green, new statuses (review requests, conflicts, approvals and the rest), threads that arrived or left
+- [x] Mark items handled, one at a time or all at once, and they fold away
+- [x] Browser notifications, when on, come from the same list
+- [x] The sample board has an invented list that lasts only for the page
 
 ### Phase 3: Claims
 From the tracker's claimed and in-progress cards and its claim check.

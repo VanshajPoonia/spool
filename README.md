@@ -40,7 +40,7 @@ Production responses carry a content security policy (`next.config.ts`) whose `c
 | Route | What it does |
 | --- | --- |
 | `/` | Landing page: a live sample bay in the hero, a 3D airfield where sample PRs hold in review and land on main when they merge, a strip printed field by field as you scroll, a sample day you can scrub and open strip by strip, the stalled limit, callsigns, live repo discovery, the live GSoC/YC/Product Hunt schedule, the GSoC season drawn as you scroll with a filterable list of this year's organisations, the sign-on form |
-| `/board` | Your move and Their move bays, then Watching, Snoozed and Landed. Pin, snooze, priorities, notes, detail drawer with the GitHub timeline |
+| `/board` | Since you last looked (what changed between loads, until you mark it handled), then Your move and Their move bays, Watching, Snoozed and Landed. Pin, snooze, priorities, notes, detail drawer with the GitHub timeline |
 | `/board/repos` | Every repo you've contributed to: opened, merged, closed, merge rate, median time to merge, your own repos |
 | `/board/repos/[owner]/[name]` | One repo's timetable |
 | `/board/discover` | Young repos and unclaimed good first issues for your interests, plus a shortlist |
@@ -58,6 +58,10 @@ Keyboard on the board: `j`/`k` move, `Enter` opens details, `o` opens on GitHub,
 - A discussion you started works like your issue, and counts as done once it's answered or closed. Discussions you only joined are watching. Discussions in archived repos are left out.
 - Review requested from you, a PR opened on your repo, an issue assigned to you, or a mention answered by someone else: on you.
 - Threads you only commented on: watching.
+
+## Since you last looked
+
+`src/lib/changes.ts` keeps a small copy of each thread from the last board load (`spool:changes` in this browser). Each fresh load is compared with it: merged, closed, a reply from someone else, CI turning red or green, a new status, a thread arriving, or one dropping off. Each becomes one item per thread, and a later change replaces the earlier one with a "+N more" count. Then the copy is replaced, so nothing is reported twice. The first load only records, and changing the stalled limit records again instead of reporting every thread. Browser notifications, when on, come from the same list: only items that are on you, found after the tab opened.
 
 ## Data sources
 
