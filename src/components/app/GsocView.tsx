@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CSSProperties, useMemo, useState } from "react";
+import { CSSProperties, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpRight, BookOpen, Code2, Lightbulb, MessageCircle, Search, Star } from "lucide-react";
 import { matchOrg, tagMatches } from "@/lib/interests";
 import type { GsocBrowser, GsocOrgFull } from "@/lib/programs";
@@ -16,6 +16,7 @@ type Tenure = "any" | "first" | "returning";
 const PAGE = 24;
 
 function yearsText(o: GsocOrgFull, covered: string[]) {
+  if (o.lastYear) return o.years.length > 1 ? `Last in ${o.lastYear} · ${o.years.length} years in GSoC` : `Only in ${o.lastYear}`;
   if (o.years.length <= 1) return "First year in GSoC";
   // The API only publishes lists back to its oldest year, so a full run reads "every year since".
   if (o.years.length === covered.length) return `Every year since ${covered[0]}`;
@@ -99,8 +100,16 @@ export function GsocView({ data }: { data: GsocBrowser | null }) {
   const [category, setCategory] = useState("");
   const [tenure, setTenure] = useState<Tenure>("any");
   const [limit, setLimit] = useState(PAGE);
+  // Earlier years: orgs from past programs that aren't in the latest one, likely candidates for the next.
+  const [scope, setScope] = useState<"current" | "earlier">("current");
+  // Programs links here with #earlier; read after hydration so the server and first render agree.
+  useEffect(() => {
+    if (window.location.hash !== "#earlier") return;
+    const t = window.setTimeout(() => setScope("earlier"), 0);
+    return () => window.clearTimeout(t);
+  }, []);
 
-  const orgs = useMemo(() => data?.orgs ?? [], [data]);
+  const orgs = useMemo(() => (scope === "earlier" ? (data?.past ?? []) : (data?.orgs ?? [])), [data, scope]);
   const covered = useMemo(() => data?.yearsCovered ?? [], [data]);
   const savedCount = orgs.filter((o) => meta.orgs[o.slug]).length;
 
@@ -165,16 +174,30 @@ export function GsocView({ data }: { data: GsocBrowser | null }) {
           <Link href="/board/programs" className={s.back}>
             <ArrowLeft size={16} aria-hidden="true" /> Programs
           </Link>
-          <h1 className={p.h1}>GSoC {data.year} organisations</h1>
+          <h1 className={p.h1}>{scope === "earlier" ? `Earlier GSoC organisations` : `GSoC ${data.year} organisations`}</h1>
           <p className={p.lede}>
-            All {orgs.length} organisations in Google Summer of Code {data.year}, from the program&rsquo;s own API. Best matches for your
-            interests ({interests.join(", ") || "none set"}) come first; change them on the <Link href="/board/discover">Discover</Link> tab.
-            Years in GSoC are counted from the lists the API publishes, back to {covered[0]}.
+            {scope === "earlier"
+              ? `${orgs.length} organisations that took part between ${covered[0]} and ${Number(data.year) - 1} but not in ${data.year}. Orgs with several years are the likeliest to come back.`
+              : `All ${orgs.length} organisations in Google Summer of Code ${data.year}.`}{" "}
+            From the program&rsquo;s own API. Best matches for your interests ({interests.join(", ") || "none set"}) come first; change them on the{" "}
+            <Link href="/board/discover">Discover</Link> tab. Years in GSoC are counted from the lists the API publishes, back to {covered[0]}.
           </p>
         </div>
       </div>
 
       <div className={s.toolbar}>
+        <div className={s.seg} role="group" aria-label="Which program">
+          {(
+            [
+              ["current", `${data.year}`],
+              ["earlier", `Earlier years ${data.past.length}`],
+            ] as const
+          ).map(([k, label]) => (
+            <button key={k} type="button" aria-pressed={scope === k} onClick={() => change(setScope)(k)}>
+              {label}
+            </button>
+          ))}
+        </div>
         <div className={s.seg} role="group" aria-label="Which organisations">
           {(
             [
