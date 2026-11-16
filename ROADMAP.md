@@ -152,7 +152,7 @@ Lives in `fetchOctoberPublic()` and `parseLogin()` in `lib/github.ts`, the guest
 
 ### Plan follow-ups
 - [ ] Add a shortlisted repo or saved GSoC organisation to the plan as a card
-- [ ] Due dates on your own tasks, feeding the deadline strip (phase 6)
+- [ ] Due dates on your own tasks, feeding the Coming up strip
 - [ ] Plan cards in Cmd+K
 
 ---
@@ -225,13 +225,13 @@ Lives in `lib/outsider.ts`, `fetchRepoCheck()` in `lib/github.ts`, `components/a
 - [x] Linked from Discover's repos and shortlist and from repo follows
 
 ### Phase 6: Goals and orgs
-From the tracker's orgs and its separate Jobs and Open Source boards. Takes in "Deadline reminders".
+From the tracker's orgs and its separate Jobs and Open Source boards. Takes in "Deadline reminders". Lives in `lib/orgs.ts`, `lib/deadlines.ts`, `components/app/OrgsView.tsx` (the Orgs tab), `ComingUp.tsx`, `useDeadlines.ts` and the deadline part of `Alerts.tsx`.
 
-- [ ] An Orgs page for the places you're investing in: goal (job, GSoC, a program, or for fun), status (active, waiting, watching, later, on hold), next step, next date, notes and links
-- [ ] Filter the board and the plan by goal
-- [ ] Follow programs (YC, each GSoC milestone, Hacktoberfest) in Settings
-- [ ] A strip on the board when a followed deadline or an org's next date is within 14 days
-- [ ] Browser notification at 7 days and 1 day, if notifications are on
+- [x] An Orgs page for the places you're investing in: goal (job, GSoC, a program, or for fun), status (active, waiting, watching, later, on hold), next step, next date, notes and links, with counts from the board and suggestions from it
+- [x] Filter the board and the plan by goal (the plan fades other cards, so dragging keeps their places)
+- [x] Follow programs (YC, each GSoC milestone, Hacktoberfest) in Settings
+- [x] A strip on the board when a followed deadline or an org's next date is within 14 days
+- [x] Browser notification at 7 days and 1 day, if notifications are on, once each
 
 ### Phase 7: More programs, with their news
 Takes in "More programs". Each one links to its own site, and shows dates only where that site publishes them in a form we can read reliably.

@@ -43,6 +43,7 @@ Production responses carry a content security policy (`next.config.ts`) whose `c
 | `/board` | Since you last looked (what changed between loads, until you mark it handled), then Your move and Their move bays, Watching, Snoozed and Landed. Pin, snooze, priorities, notes, detail drawer with the GitHub timeline |
 | `/board/repos` | Every repo you've contributed to: opened, merged, closed, merge rate, median time to merge, your own repos |
 | `/board/repos/[owner]/[name]` | Can an outsider land work here? (any repo), then your timetable in it |
+| `/board/orgs` | The orgs you're investing in, grouped by goal (job, GSoC, a program, for fun), with status, next step and date, notes and links, and live counts from your board |
 | `/board/discover` | Young repos and unclaimed good first issues for your interests, plus a shortlist |
 | `/board/following` | Repos, orgs and maintainers you follow, each with a rule. New issues that match, a scan for free issues of any age, skipped issues with your reasons |
 | `/board/programs` | GSoC timeline and orgs matching your interests, YC deadline, your October PRs (from a username as a guest), Product Hunt launches |
@@ -64,6 +65,13 @@ Keyboard on the board: `j`/`k` move, `Enter` opens details, `o` opens on GitHub,
 ## Since you last looked
 
 `src/lib/changes.ts` keeps a small copy of each thread from the last board load (`spool:changes` in this browser). Each fresh load is compared with it: merged, closed, a reply from someone else, CI turning red or green, a new status, a thread arriving, or one dropping off. Each becomes one item per thread, and a later change replaces the earlier one with a "+N more" count. Then the copy is replaced, so nothing is reported twice. The first load only records, and changing the stalled limit records again instead of reporting every thread. Browser notifications, when on, come from the same list: only items that are on you, found after the tab opened.
+
+## Orgs, goals and deadlines
+
+- The Orgs tab keeps, per org: a goal, a status (active, waiting, watching, later, on hold), a next step with a date, notes and links. It's all in this browser (`meta.investing`), works without a token, and suggests orgs from your board.
+- The board filters by goal. The plan fades cards outside the goal instead of hiding them, so dragging never shuffles a card you can't see.
+- Settings, Deadlines you follow: YC's application deadline, Hacktoberfest's start and end, and each GSoC milestone, read from the same sources as Programs (`src/lib/deadlines.ts`). A program date only shows once its source publishes it.
+- "Coming up" sits on top of the board when a followed deadline or an org's next date (not on hold) is within 14 days. With notifications on, each one alerts once at 7 days and once at 1 day.
 
 ## Can an outsider land work here?
 
