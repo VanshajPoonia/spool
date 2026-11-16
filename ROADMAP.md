@@ -51,7 +51,7 @@ Lives in `components/landing/Pickup.tsx` (the new section after Stalled), the Ca
 ## Waiting on you
 
 - **Server `GITHUB_TOKEN`:** steps in the README under Deploy. Without it, guest searches share 10 a minute for the whole site.
-- **Launch:** Postroom drafts for the Spool brand, a DEV post on keeping the token in the browser, and a Product Hunt listing. Nothing gets posted without your go-ahead.
+- **Launch:** the drafts are ready. Six posts sit in Postroom under the Spool brand, which has no X or Instagram account yet. The DEV post on keeping the token in the browser is in `docs/launch/dev-post.md` and the Product Hunt listing in `docs/launch/product-hunt.md`. Still yours: the accounts, the byline and the day. Nothing gets posted without your go-ahead.
 - **Page-view counts:** Vercel's analytics is cookieless and reports to Spool's own address, but it's a new dependency.
 
 ## After launch, only if users ask
