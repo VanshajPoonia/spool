@@ -52,6 +52,8 @@ Production responses carry a content security policy (`next.config.ts`) whose `c
 
 Keyboard on the board: `j`/`k` move, `Enter` opens details, `o` opens on GitHub, `p` pins, `s` snoozes a day, `/` filters, `Shift E` marks everything seen, `?` lists shortcuts.
 
+Anywhere in the app, `Cmd K` (`Ctrl K`), or Search in the sidebar, jumps to a page, a thread (it opens in the board's drawer), a repo's page, one of your orgs or follows, a saved GSoC organisation or one of your own plan tasks, and runs a few actions (refresh, mark everything seen, theme, sample data) with their keys shown.
+
 ## How "who moves next" is decided
 
 `src/lib/classify.ts` reads the latest human event on each thread (comments, reviews, the last commit). Bots are ignored, including user accounts like CLA Assistant, except for the bot review rule below.

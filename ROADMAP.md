@@ -153,7 +153,7 @@ Lives in `fetchOctoberPublic()` and `parseLogin()` in `lib/github.ts`, the guest
 ### Plan follow-ups
 - [ ] Add a shortlisted repo or saved GSoC organisation to the plan as a card
 - [ ] Due dates on your own tasks, feeding the Coming up strip
-- [ ] Plan cards in Cmd+K
+- [x] Plan cards in Cmd+K: your own tasks are searchable, and threads and watched issues come up as threads
 
 ---
 
@@ -255,8 +255,11 @@ Lives in `lib/logbook.ts`, `fetchLogPrs()` in `lib/github.ts` and `components/ap
 - [x] A downloadable image card of your year, drawn on a canvas so the preview is the PNG
 
 ### Between phases: jump anywhere (Cmd+K)
-- [ ] Search threads, repos, saved orgs and pages from anywhere in the app
-- [ ] Shortcut-key hints for the actions that already have keys
+Lives in `components/app/CommandPalette.tsx`, mounted in the app shell; threads open through `/board#thread=<id>`.
+
+- [x] Search threads, repos, saved orgs and pages from anywhere in the app, plus your orgs, follows and own plan tasks
+- [x] Shortcut-key hints for the actions that already have keys
+- [ ] On phones the palette has no button yet; the sidebar's Search only shows on wider screens
 
 ---
 
