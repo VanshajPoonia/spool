@@ -32,16 +32,24 @@ type Spec = {
   assignees?: string[];
   labels?: [string, string][];
   lang?: string;
+  merge?: "MERGEABLE" | "CONFLICTING";
+  /** unresolved review threads: who spoke last, and whether the code has moved on since */
+  threads?: [string, boolean][];
+  /** Actions runs waiting for a maintainer's approval */
+  approval?: boolean;
+  checks?: [string, "fail" | "wait"][];
+  /** bot, state, when, inline comments */
+  botReviews?: [string, string, number, number][];
 };
 
 const ME = SAMPLE_LOGIN;
 
 const SPECS: Spec[] = [
   { repo: "quarry-db/quarry", num: 2431, kind: "pr", title: "Push LIMIT down through views", author: ME, created: 3 * D, sources: ["mine"], comments: [["mara-k", 5 * H + 120000]], reviews: [["mara-k", "CHANGES_REQUESTED", 5 * H]], commit: 2 * D, ci: "SUCCESS", decision: "CHANGES_REQUESTED", labels: [["planner", "1d76db"]], lang: "Rust" },
-  { repo: "fernlang/fern", num: 311, kind: "pr", title: "Exhaustiveness check for match guards", author: ME, created: 4 * D, sources: ["mine"], commit: 3 * D, ci: "SUCCESS", decision: "REVIEW_REQUIRED", reviewers: ["kit-o"], lang: "Rust" },
+  { repo: "fernlang/fern", num: 311, kind: "pr", title: "Exhaustiveness check for match guards", author: ME, created: 4 * D, sources: ["mine"], commit: 3 * D, ci: "SUCCESS", decision: "REVIEW_REQUIRED", reviewers: ["kit-o"], approval: true, lang: "Rust" },
   { repo: "vela-dev/vela", num: 640, kind: "pr", title: "Cache layer for asset hashing", author: ME, created: 7 * D, sources: ["mine"], comments: [["tomasz", 2 * D]], reviews: [["tomasz", "APPROVED", 6 * H]], commit: 1 * D, ci: "SUCCESS", decision: "APPROVED", lang: "TypeScript" },
   { repo: "tinyorbit/orbit-cli", num: 81, kind: "pr", title: "Shell completions for fish", author: ME, created: 16 * D, sources: ["mine"], commit: 16 * D, ci: "SUCCESS", lang: "Go" },
-  { repo: "lattice/lattice-ui", num: 860, kind: "pr", title: "Virtualised Combobox list", author: ME, created: 22 * D, sources: ["mine"], comments: [["devon", 9 * D]], commit: 20 * H, ci: "FAILURE", lang: "TypeScript" },
+  { repo: "lattice/lattice-ui", num: 860, kind: "pr", title: "Virtualised Combobox list", author: ME, created: 22 * D, sources: ["mine"], comments: [["devon", 9 * D]], commit: 20 * H, ci: "FAILURE", checks: [["test (ubuntu-latest)", "fail"], ["visual-regression", "fail"]], lang: "TypeScript" },
   { repo: "mossjs/moss", num: 1190, kind: "pr", title: "Faster resolver cache", author: ME, created: 1 * D, sources: ["mine"], commit: 3 * H, ci: "PENDING", draft: true, lang: "JavaScript" },
   { repo: "ripple-rs/ripple", num: 88, kind: "issue", title: "Panic on an empty frame", author: ME, created: 4 * D, sources: ["myIssues"], labels: [["bug", "d73a4a"], ["needs-triage", "ededed"]], lang: "Rust" },
   { repo: "lattice/lattice-ui", num: 902, kind: "issue", title: "Tabs: arrow keys skip disabled items", author: ME, created: 13 * D, sources: ["myIssues"], comments: [["devon", 1 * D]], labels: [["a11y", "0e8a16"]], lang: "TypeScript" },
@@ -55,6 +63,11 @@ const SPECS: Spec[] = [
   { repo: "quarry-db/quarry", num: 2417, kind: "pr", title: "Stream rows from cursor in batches", author: ME, created: 6 * D, sources: ["recent"], state: "MERGED", closed: 1 * D, reviews: [["mara-k", "APPROVED", 1 * D + 2 * H]], lang: "Rust" },
   { repo: "harbor-sh/harbor", num: 5120, kind: "pr", title: "Add retry jitter to webhook sender", author: ME, created: 9 * D, sources: ["recent"], state: "MERGED", closed: 4 * D, lang: "Go" },
   { repo: "lattice/lattice-ui", num: 801, kind: "pr", title: "CSS-only Tooltip", author: ME, created: 15 * D, sources: ["recent"], state: "CLOSED", closed: 9 * D, comments: [["devon", 9 * D]], lang: "TypeScript" },
+  // Added after the sample plan was laid out, which points at the specs above by position.
+  { repo: "harbor-sh/harbor", num: 5140, kind: "pr", title: "Per-host connection pool limits", author: ME, created: 2 * D, sources: ["mine"], commit: 2 * D, ci: "PENDING", checks: [["license/cla", "wait"]], lang: "Go" },
+  { repo: "mossjs/moss", num: 1175, kind: "pr", title: "Watch mode for the resolver", author: ME, created: 8 * D, sources: ["mine"], comments: [["ana-r", 4 * D], [ME, 3 * D]], commit: 3 * D, ci: "SUCCESS", merge: "CONFLICTING", lang: "JavaScript" },
+  { repo: "ripple-rs/ripple", num: 97, kind: "pr", title: "Frame pacing with a fixed timestep", author: ME, created: 1 * D, sources: ["mine"], commit: 9 * H, ci: "SUCCESS", botReviews: [["review-bot", "COMMENTED", 7 * H, 3]], lang: "Rust" },
+  { repo: "vela-dev/vela", num: 668, kind: "pr", title: "Stream large uploads to disk", author: ME, created: 5 * D, sources: ["mine"], comments: [[ME, 1 * D]], reviews: [["lena", "COMMENTED", 2 * D]], commit: 2 * D + 6 * H, ci: "SUCCESS", threads: [["lena", false], ["lena", false], ["lena", true]], lang: "TypeScript" },
 ];
 
 const human = (login: string) => ({ __typename: "User", login });
@@ -79,6 +92,19 @@ export function sampleBoard(now = Date.now()): RawBoard {
     comments: { totalCount: (sp.comments ?? []).length, nodes: (sp.comments ?? []).map(([a, t]) => ({ author: human(a), createdAt: iso(t) })) },
     reviews: { nodes: (sp.reviews ?? []).map(([a, st, t]) => ({ author: human(a), state: st, submittedAt: iso(t) })) },
     commits: sp.commit !== undefined ? { nodes: [{ commit: { committedDate: iso(sp.commit), statusCheckRollup: sp.ci ? { state: sp.ci } : null } }] } : { nodes: [] },
+    detail:
+      sp.kind === "pr" && sp.author === ME && !sp.state
+        ? {
+            mergeable: sp.merge ?? "MERGEABLE",
+            reviews: [
+              ...(sp.reviews ?? []).map(([a, st, t]) => ({ author: human(a), state: st, submittedAt: iso(t), comments: { totalCount: 0 } })),
+              ...(sp.botReviews ?? []).map(([a, st, t, c]) => ({ author: { __typename: "Bot", login: a }, state: st, submittedAt: iso(t), comments: { totalCount: c } })),
+            ],
+            threads: (sp.threads ?? []).map(([a, outdated]) => ({ isResolved: false, isOutdated: outdated, lastAuthor: human(a) })),
+            ciApproval: !!sp.approval,
+            checks: (sp.checks ?? []).map(([name, state]) => ({ name, state, url: null })),
+          }
+        : undefined,
     reviewRequests: { nodes: (sp.reviewers ?? []).map((r) => ({ requestedReviewer: { login: r } })) },
     assignees: { nodes: (sp.assignees ?? []).map((l) => ({ login: l })) },
     labels: { nodes: (sp.labels ?? []).map(([name, color]) => ({ name, color })) },
