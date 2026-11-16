@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDownUp, CheckCheck, ChevronDown, Keyboard, Search } from "lucide-react";
+import { ArrowDownUp, Check, CheckCheck, ChevronDown, Keyboard, Search, SlidersHorizontal } from "lucide-react";
 import { Bay } from "@/components/kit/Strip";
 import { PrintText } from "@/components/print/PrintText";
 import { carrier } from "@/lib/carriers";
@@ -88,6 +88,81 @@ function Group({
     >
       {(!collapsible || open) && (items.length === 0 ? <p className={s.empty}>{empty}</p> : <ul className={s.rows}>{items.map(render)}</ul>)}
     </Bay>
+  );
+}
+
+/* Type and goal in one menu, so the toolbar keeps to search, Stalled and New. */
+function FilterMenu({
+  kinds,
+  kind,
+  setKind,
+  goals,
+  goal,
+  setGoal,
+}: {
+  kinds: [Kind, string][];
+  kind: Kind;
+  setKind: (k: Kind) => void;
+  goals: [Goal, string][];
+  goal: Goal | "all";
+  setGoal: (g: Goal | "all") => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const esc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("pointerdown", close);
+    window.addEventListener("keydown", esc);
+    return () => {
+      window.removeEventListener("pointerdown", close);
+      window.removeEventListener("keydown", esc);
+    };
+  }, [open]);
+  const on = Number(kind !== "all") + Number(goal !== "all");
+  const option = (pressed: boolean, label: string, pick: () => void) => (
+    <button key={label} type="button" role="menuitemradio" aria-checked={pressed} onClick={pick}>
+      <Check size={14} aria-hidden="true" className={s.check} data-on={pressed || undefined} />
+      {label}
+    </button>
+  );
+  return (
+    <div className={s.snooze} ref={ref}>
+      <button type="button" className={s.tool} aria-haspopup="menu" aria-expanded={open} data-on={on || undefined} onClick={() => setOpen((o) => !o)}>
+        <SlidersHorizontal size={15} aria-hidden="true" />
+        Filter{on ? ` · ${on}` : ""}
+      </button>
+      {open && (
+        <div className={`${s.menu} ${s.filterMenu}`} role="menu">
+          <span className={s.menuHead}>Type</span>
+          {kinds.map(([k, label]) => option(kind === k, label, () => setKind(k)))}
+          {goals.length > 0 && (
+            <>
+              <span className={s.menuHead}>Goal</span>
+              {option(goal === "all", "Any goal", () => setGoal("all"))}
+              {goals.map(([g, label]) => option(goal === g, label, () => setGoal(g)))}
+            </>
+          )}
+          {on > 0 && (
+            <button
+              type="button"
+              role="menuitem"
+              className={s.menuClear}
+              onClick={() => {
+                setKind("all");
+                setGoal("all");
+                setOpen(false);
+              }}
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -318,22 +393,14 @@ export function BoardView() {
             <input ref={searchRef} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter by title, repo, person" />
             <kbd>/</kbd>
           </label>
-          <div className={s.seg} role="group" aria-label="Type">
-            {KINDS.filter(([k]) => k !== "discussion" || hasDiscussions || kind === k).map(([k, label]) => (
-              <button key={k} type="button" aria-pressed={kind === k} onClick={() => setKind(k)}>
-                {label}
-              </button>
-            ))}
-          </div>
-          {goals.length > 0 && (
-            <div className={s.seg} role="group" aria-label="Goal">
-              {[["all", "Any goal"] as const, ...goals].map(([g, label]) => (
-                <button key={g} type="button" aria-pressed={goal === g} onClick={() => setGoal(g)}>
-                  {label}
-                </button>
-              ))}
-            </div>
-          )}
+          <FilterMenu
+            kinds={KINDS.filter(([k]) => k !== "discussion" || hasDiscussions || kind === k)}
+            kind={kind}
+            setKind={setKind}
+            goals={goals}
+            goal={goal}
+            setGoal={setGoal}
+          />
           <div className={s.quick} role="group" aria-label="Show only">
             <button type="button" aria-pressed={only === "delayed"} onClick={() => setOnly((o) => (o === "delayed" ? null : "delayed"))} disabled={!delayed && only !== "delayed"}>
               <span className={s.quickLamp} data-k="delayed" aria-hidden="true" />
