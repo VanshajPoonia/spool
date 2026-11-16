@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, FormEvent, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent, TouchEvent as ReactTouchEvent } from "react";
 import {
   closestCorners,
@@ -24,6 +24,7 @@ import { PrintText } from "@/components/print/PrintText";
 import { Callsign, StateMark } from "@/components/kit/Kit";
 import { StatusIcon, type StripState } from "@/components/kit/Strip";
 import { ago } from "@/lib/classify";
+import { GOALS, ownerOf, sampleOrgs, type Goal } from "@/lib/orgs";
 import {
   buildCards,
   byColumn,
@@ -83,6 +84,9 @@ const colOf = (keys: Keys, id: string): Col | null => {
   return (Object.keys(keys) as Col[]).find((c) => keys[c].includes(id)) ?? null;
 };
 
+// Cards outside the chosen goal fade rather than hide, so dragging keeps every card's place.
+const DimCtx = createContext<(card: Card) => boolean>(() => false);
+
 export function PlanView() {
   const { mode, threads, login, now, codeFor } = useBoard();
   const auth = useAuth();
@@ -103,6 +107,10 @@ export function PlanView() {
   }, [mode, now, cache, who, meta.watch]);
 
   const cards = useMemo(() => buildCards({ threads, watch, me: login, plan }), [threads, watch, login, plan]);
+  const [goal, setGoal] = useState<Goal | "all">("all");
+  const investing = useMemo(() => (mode === "sample" ? (now ? sampleOrgs(now) : {}) : meta.investing), [mode, now, meta.investing]);
+  const goals = useMemo(() => GOALS.filter(([g]) => Object.values(investing).some((o) => o.goal === g)), [investing]);
+  const dim = useCallback((c: Card) => goal !== "all" && (!c.repo || investing[ownerOf(c.repo)]?.goal !== goal), [goal, investing]);
   const cols = useMemo(() => byColumn(cards), [cards]);
   const byKey = useMemo(() => new Map(cards.map((c) => [c.key, c])), [cards]);
   const next = useMemo(() => suggest(cols), [cols]);
@@ -227,119 +235,134 @@ export function PlanView() {
   const prioCount = cards.filter((c) => c.prio && c.col !== "done").length;
 
   return (
-    <div className={p.page}>
-      <div className={p.head}>
-        <div>
-          <h1 className={p.h1}>Plan</h1>
-          <p className={p.lede}>
-            Line up your open source work and give each thing a priority. Drag cards between columns, or use the menu on each card. Your
-            plan stays in this browser.
+    <DimCtx.Provider value={dim}>
+      <div className={p.page}>
+        <div className={p.head}>
+          <div>
+            <h1 className={p.h1}>Plan</h1>
+            <p className={p.lede}>
+              Line up your open source work and give each thing a priority. Drag cards between columns, or use the menu on each card. Your
+              plan stays in this browser.
+            </p>
+          </div>
+          <div className={s.headTools}>
+            {mode === "sample" && <span className={p.tag}>Sample plan</span>}
+            {goals.length > 0 && (
+              <label className={s.goal}>
+                <span className="sr-only">Goal</span>
+                <select value={goal} onChange={(e) => setGoal(e.target.value as Goal | "all")}>
+                  <option value="all">Any goal</option>
+                  {goals.map(([g, label]) => (
+                    <option key={g} value={g}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            <button type="button" className={p.btn} onClick={sortByPriority} disabled={!prioCount} title="Put P1 cards at the top of each column, then P2, then P3">
+              <ArrowDownWideNarrow size={15} aria-hidden="true" />
+              Sort by priority
+            </button>
+            <button type="button" className={`${p.btn} ${p.btnSign}`} onClick={() => setAdding((a) => !a)} aria-expanded={adding}>
+              <Plus size={15} aria-hidden="true" />
+              Add a task
+            </button>
+          </div>
+        </div>
+
+        {adding && <AddTask st={st} onClose={() => setAdding(false)} />}
+
+        <NextUp next={next} codeFor={codeFor} onStart={(k) => moveTo(k, "doing")} onDetail={setDetail} />
+
+        {mode === "guest" && (
+          <p className={s.guest}>
+            Your PRs and issues join the plan once you <Link href="/board/settings">connect GitHub</Link>. Watched issues and your own tasks
+            work without a token.
           </p>
-        </div>
-        <div className={s.headTools}>
-          {mode === "sample" && <span className={p.tag}>Sample plan</span>}
-          <button type="button" className={p.btn} onClick={sortByPriority} disabled={!prioCount} title="Put P1 cards at the top of each column, then P2, then P3">
-            <ArrowDownWideNarrow size={15} aria-hidden="true" />
-            Sort by priority
-          </button>
-          <button type="button" className={`${p.btn} ${p.btnSign}`} onClick={() => setAdding((a) => !a)} aria-expanded={adding}>
-            <Plus size={15} aria-hidden="true" />
-            Add a task
-          </button>
-        </div>
-      </div>
+        )}
+        {mode === "sample" && <p className={s.guest}>This plan is invented to go with the sample board. Changes last until you leave the page.</p>}
 
-      {adding && <AddTask st={st} onClose={() => setAdding(false)} />}
-
-      <NextUp next={next} codeFor={codeFor} onStart={(k) => moveTo(k, "doing")} onDetail={setDetail} />
-
-      {mode === "guest" && (
-        <p className={s.guest}>
-          Your PRs and issues join the plan once you <Link href="/board/settings">connect GitHub</Link>. Watched issues and your own tasks
-          work without a token.
-        </p>
-      )}
-      {mode === "sample" && <p className={s.guest}>This plan is invented to go with the sample board. Changes last until you leave the page.</p>}
-
-      <DndContext
-        id="spool-plan"
-        sensors={sensors}
-        collisionDetection={closestCorners}
-        onDragStart={onStart}
-        onDragOver={onOver}
-        onDragEnd={onEnd}
-        onDragCancel={() => {
-          setActive(null);
-          setDrag(null);
-        }}
-        accessibility={{ announcements }}
-      >
-        <p id="plan-keys" className="sr-only">
-          Arrow keys move this card: left and right between columns, up and down within one. The card&rsquo;s menu can move it too.
-        </p>
-        <p className="sr-only" aria-live="polite">
-          {said}
-        </p>
-        <div className={s.board}>
-          {COLS.map((c) => {
-            // While a card is moving, Done shows everything, so a card dropped at its end can't vanish.
-            const keys = c.id === "done" && !doneAll && !drag ? doneKeys.slice(0, DONE_SHOWN) : shown[c.id];
-            return (
-              <Column
-                key={c.id}
-                col={c.id}
-                title={c.title}
-                sub={c.sub}
-                count={shown[c.id].length}
-                keys={keys}
-                empty={emptyFor(c.id, mode)}
-                foot={
-                  c.id === "done" && doneKeys.length > 0 ? (
-                    <div className={s.doneFoot}>
-                      {doneKeys.length > DONE_SHOWN && (
-                        <button type="button" onClick={() => setDoneAll((v) => !v)}>
-                          {doneAll ? "Show fewer" : `Show all ${doneKeys.length}`}
+        <DndContext
+          id="spool-plan"
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragStart={onStart}
+          onDragOver={onOver}
+          onDragEnd={onEnd}
+          onDragCancel={() => {
+            setActive(null);
+            setDrag(null);
+          }}
+          accessibility={{ announcements }}
+        >
+          <p id="plan-keys" className="sr-only">
+            Arrow keys move this card: left and right between columns, up and down within one. The card&rsquo;s menu can move it too.
+          </p>
+          <p className="sr-only" aria-live="polite">
+            {said}
+          </p>
+          <div className={s.board}>
+            {COLS.map((c) => {
+              // While a card is moving, Done shows everything, so a card dropped at its end can't vanish.
+              const keys = c.id === "done" && !doneAll && !drag ? doneKeys.slice(0, DONE_SHOWN) : shown[c.id];
+              return (
+                <Column
+                  key={c.id}
+                  col={c.id}
+                  title={c.title}
+                  sub={c.sub}
+                  count={shown[c.id].length}
+                  keys={keys}
+                  empty={emptyFor(c.id, mode)}
+                  foot={
+                    c.id === "done" && doneKeys.length > 0 ? (
+                      <div className={s.doneFoot}>
+                        {doneKeys.length > DONE_SHOWN && (
+                          <button type="button" onClick={() => setDoneAll((v) => !v)}>
+                            {doneAll ? "Show fewer" : `Show all ${doneKeys.length}`}
+                          </button>
+                        )}
+                        <button type="button" onClick={() => removeCards(st, doneKeys)} title="Delete your done tasks and take finished threads off the plan">
+                          Clear done
                         </button>
-                      )}
-                      <button type="button" onClick={() => removeCards(st, doneKeys)} title="Delete your done tasks and take finished threads off the plan">
-                        Clear done
-                      </button>
-                    </div>
-                  ) : null
-                }
-              >
-                {keys.map((k) => {
-                  const card = byKey.get(k);
-                  return card ? (
-                    <SortableCard key={k} card={card} col={c.id} st={st} now={now} code={card.repo ? codeFor(card.repo) : undefined} onMove={moveTo} onNudge={nudge} onDetail={setDetail} />
-                  ) : null;
-                })}
-              </Column>
-            );
-          })}
-        </div>
-        <DragOverlay dropAnimation={{ duration: 220, easing: "cubic-bezier(0.16, 1, 0.3, 1)" }}>
-          {active && byKey.get(active) ? (
-            <div className={s.lifted}>
-              <CardBody card={byKey.get(active)!} st={st} now={now} code={byKey.get(active)!.repo ? codeFor(byKey.get(active)!.repo!) : undefined} grip={<span className={s.grip} data-grip>
-                <GripVertical size={16} aria-hidden="true" />
-              </span>} menu={null} onDetail={() => {}} />
-            </div>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+                      </div>
+                    ) : null
+                  }
+                >
+                  {keys.map((k) => {
+                    const card = byKey.get(k);
+                    return card ? (
+                      <SortableCard key={k} card={card} col={c.id} st={st} now={now} code={card.repo ? codeFor(card.repo) : undefined} onMove={moveTo} onNudge={nudge} onDetail={setDetail} />
+                    ) : null;
+                  })}
+                </Column>
+              );
+            })}
+          </div>
+          <DragOverlay dropAnimation={{ duration: 220, easing: "cubic-bezier(0.16, 1, 0.3, 1)" }}>
+            {active && byKey.get(active) ? (
+              <div className={s.lifted}>
+                <CardBody card={byKey.get(active)!} st={st} now={now} code={byKey.get(active)!.repo ? codeFor(byKey.get(active)!.repo!) : undefined} grip={<span className={s.grip} data-grip>
+                  <GripVertical size={16} aria-hidden="true" />
+                </span>} menu={null} onDetail={() => {}} />
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
 
-      {hidden > 0 && (
-        <p className={s.hiddenNote}>
-          {hidden === 1 ? "1 card is" : `${hidden} cards are`} off the plan.{" "}
-          <button type="button" onClick={() => showHidden(st)}>
-            Bring {hidden === 1 ? "it" : "them"} back
-          </button>
-        </p>
-      )}
+        {hidden > 0 && (
+          <p className={s.hiddenNote}>
+            {hidden === 1 ? "1 card is" : `${hidden} cards are`} off the plan.{" "}
+            <button type="button" onClick={() => showHidden(st)}>
+              Bring {hidden === 1 ? "it" : "them"} back
+            </button>
+          </p>
+        )}
 
-      {selected && <ThreadDetail key={selected.id} t={selected} code={codeFor(selected.repo)} mode={mode} now={now} onClose={() => setDetail(null)} />}
-    </div>
+        {selected && <ThreadDetail key={selected.id} t={selected} code={codeFor(selected.repo)} mode={mode} now={now} onClose={() => setDetail(null)} />}
+      </div>
+    </DimCtx.Provider>
   );
 }
 
@@ -519,6 +542,7 @@ function CardBody({
   menu: ReactNode;
   onDetail: (id: string) => void;
 }) {
+  const dim = useContext(DimCtx);
   const K = KIND[card.kind];
   const title = card.threadId ? (
     <button type="button" className={s.title} onClick={() => onDetail(card.threadId!)}>
@@ -532,7 +556,7 @@ function CardBody({
     <span className={s.title}>{card.title}</span>
   );
   return (
-    <article className={s.card} data-kind={card.kind} data-finished={card.finished || undefined} data-prio={card.prio ?? undefined}>
+    <article className={s.card} data-kind={card.kind} data-finished={card.finished || undefined} data-prio={card.prio ?? undefined} data-dim={dim(card) || undefined}>
       <div className={s.cardTop}>
         {grip}
         {card.repo ? <Callsign repo={card.repo} size="sm" code={code} /> : <span className={s.taskTag}>Task</span>}

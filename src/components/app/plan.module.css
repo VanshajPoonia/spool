@@ -627,3 +627,20 @@ button.title:hover {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* outside the goal you picked: faded, still in its place */
+.card[data-dim] {
+  opacity: 0.32;
+}
+
+.goal select {
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+  font-size: 13px;
+  outline: none;
+}
