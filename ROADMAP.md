@@ -164,7 +164,7 @@ Started 2026-11-16. Details in the README under Deploy.
 
 - [x] Deploy on Vercel: project `spool`, connected to the repo, so `main` deploys production
 - [ ] `GITHUB_TOKEN` (no scopes) on the server, so guest searches don't share 10 a minute. Left for later on 2026-11-16; the steps are in the README under Deploy
-- [ ] spool.vanshajpoonia.com: added to the Vercel project, waiting on the CNAME in Cloudflare. Then the repo's homepage URL
+- [x] spool.vanshajpoonia.com: a DNS-only CNAME in Cloudflare to the Vercel project, live since 2026-11-16, and set as the repo's homepage
 - [x] Open Graph and Twitter metadata, with a generated share card (`app/opengraph-image.tsx`)
 - [x] A content security policy whose `connect-src` allows only Spool itself and api.github.com, so the browser enforces "your token goes only to GitHub"
 - [x] robots.txt and a sitemap for the landing page
