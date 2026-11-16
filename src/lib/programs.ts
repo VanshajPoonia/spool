@@ -57,11 +57,14 @@ export type Programs = {
 
 const UA = { "User-Agent": "Spool (open source dashboard)" };
 
+// A source that hangs gives up after 15 seconds, so one slow site can't stall a page or fail a build.
+const get = (url: string, headers: HeadersInit = UA) => fetch(url, { headers, signal: AbortSignal.timeout(15_000) });
+
 export async function getGsoc(): Promise<Gsoc | null> {
   "use cache";
   cacheLife("hours");
   try {
-    const res = await fetch("https://summerofcode.withgoogle.com/api/program/", { headers: UA });
+    const res = await get("https://summerofcode.withgoogle.com/api/program/");
     if (!res.ok) return null;
     const programs = (await res.json()) as {
       slug: string;
@@ -72,7 +75,7 @@ export async function getGsoc(): Promise<Gsoc | null> {
     const latest = [...programs].sort((a, b) => Number(b.slug) - Number(a.slug))[0];
     if (!latest) return null;
     let orgs: GsocOrg[] = [];
-    const orgRes = await fetch(`https://summerofcode.withgoogle.com/api/program/${latest.slug}/organizations/`, { headers: UA });
+    const orgRes = await get(`https://summerofcode.withgoogle.com/api/program/${latest.slug}/organizations/`);
     if (orgRes.ok) {
       const raw = (await orgRes.json()) as {
         name: string;
@@ -111,7 +114,7 @@ export async function getYC(): Promise<YC | null> {
   "use cache";
   cacheLife("hours");
   try {
-    const res = await fetch("https://www.ycombinator.com/apply", { headers: UA });
+    const res = await get("https://www.ycombinator.com/apply");
     if (!res.ok) return null;
     const html = unescapeHtml(await res.text());
     const pick = (key: string) => html.match(new RegExp(`"${key}":"([^"]*)"`))?.[1] ?? "";
@@ -134,7 +137,7 @@ export async function getLaunches(): Promise<Launch[]> {
   "use cache";
   cacheLife("hours");
   try {
-    const res = await fetch("https://www.producthunt.com/feed", { headers: UA });
+    const res = await get("https://www.producthunt.com/feed");
     if (!res.ok) return [];
     const xml = await res.text();
     const entries = xml.split("<entry>").slice(1);
@@ -200,14 +203,14 @@ export async function getGsocBrowser(): Promise<GsocBrowser | null> {
   "use cache";
   cacheLife("hours");
   try {
-    const res = await fetch("https://summerofcode.withgoogle.com/api/program/", { headers: UA });
+    const res = await get("https://summerofcode.withgoogle.com/api/program/");
     if (!res.ok) return null;
     const programs = ((await res.json()) as { slug: string }[]).map((p) => p.slug).sort((a, b) => Number(a) - Number(b));
     const latest = programs[programs.length - 1];
     if (!latest) return null;
     const lists = await Promise.all(
       programs.map(async (y) => {
-        const r = await fetch(`https://summerofcode.withgoogle.com/api/program/${y}/organizations/`, { headers: UA });
+        const r = await get(`https://summerofcode.withgoogle.com/api/program/${y}/organizations/`);
         return { year: y, orgs: r.ok ? ((await r.json()) as RawOrg[]) : null };
       }),
     );
@@ -319,8 +322,8 @@ export async function getYcOpenSource(): Promise<YcOpenSource | null> {
   cacheLife("hours");
   try {
     const [res, meta] = await Promise.all([
-      fetch("https://yc-oss.github.io/api/tags/open-source.json", { headers: UA }),
-      fetch("https://yc-oss.github.io/api/meta.json", { headers: UA }).catch(() => null),
+      get("https://yc-oss.github.io/api/tags/open-source.json"),
+      get("https://yc-oss.github.io/api/meta.json").catch(() => null),
     ]);
     if (!res.ok) return null;
     const raw = (await res.json()) as RawYc[];
@@ -358,7 +361,7 @@ export async function getLfxTerms(): Promise<LfxTerm[]> {
     pages.map(async ({ year, term }) => {
       const path = `programs/lfx-mentorship/${year}/${term}/README.md`;
       try {
-        const res = await fetch(`https://raw.githubusercontent.com/cncf/mentoring/main/${path}`, { headers: UA });
+        const res = await get(`https://raw.githubusercontent.com/cncf/mentoring/main/${path}`);
         if (!res.ok) return null;
         const milestones = parseLfxTimeline(await res.text());
         const [n, from, to] = term.split("-");
@@ -387,7 +390,7 @@ export async function getProgramNews(): Promise<NewsPost[]> {
   const lists = await Promise.all(
     NEWS_FEEDS.map(async (f) => {
       try {
-        const res = await fetch(f.url, { headers: UA });
+        const res = await get(f.url);
         if (!res.ok) return [];
         return feedPosts(await res.text())
           .filter((p) => (!f.only || f.only.test(p.title)) && Date.parse(p.published) > since)
@@ -430,7 +433,7 @@ export async function discoverTopic(topic: string, sinceDay: string): Promise<Fo
   const headers: Record<string, string> = { ...UA, Accept: "application/vnd.github+json" };
   if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   try {
-    const res = await fetch(url, { headers });
+    const res = await get(url, headers);
     if (!res.ok) return null;
     const data = (await res.json()) as {
       items: {
@@ -511,7 +514,7 @@ async function firstIssuesFor(lang: string, sinceDay: string): Promise<FirstIssu
   "use cache";
   cacheLife("hours");
   const q = `is:issue is:open label:"good first issue" no:assignee language:${lang} created:>${sinceDay}`;
-  const res = await fetch(`https://api.github.com/search/issues?q=${encodeURIComponent(q)}&sort=interactions&order=desc&per_page=40`, { headers: ghHeaders() });
+  const res = await get(`https://api.github.com/search/issues?q=${encodeURIComponent(q)}&sort=interactions&order=desc&per_page=40`, ghHeaders());
   if (!res.ok) throw new Error(`issue search ${res.status}`);
   const items = ((await res.json()) as { items: SearchIssue[] }).items;
   // Look up the 21 newest repos at most: three searches, inside the 10 a minute GitHub allows without a token.
@@ -523,7 +526,7 @@ async function firstIssuesFor(lang: string, sinceDay: string): Promise<FirstIssu
       .slice(i, i + 7)
       .map((r) => `repo:${r}`)
       .join(" ");
-    const rr = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(rq)}&per_page=10`, { headers: ghHeaders() });
+    const rr = await get(`https://api.github.com/search/repositories?q=${encodeURIComponent(rq)}&per_page=10`, ghHeaders());
     if (!rr.ok) throw new Error(`repo search ${rr.status}`);
     for (const r of ((await rr.json()) as { items: { full_name: string; stargazers_count: number; language: string | null }[] }).items) {
       info.set(r.full_name.toLowerCase(), { stars: r.stargazers_count, language: r.language });
