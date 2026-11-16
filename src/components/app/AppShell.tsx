@@ -11,6 +11,7 @@ import { FACES } from "@/lib/faces";
 import { updateSettings, useAuth, useUsage, windowLeft } from "@/lib/store";
 import { Alerts } from "./Alerts";
 import { BoardProvider, useBoard } from "./BoardProvider";
+import { CommandPalette, PaletteButton } from "./CommandPalette";
 import { isActive, NAV } from "./nav";
 import s from "./shell.module.css";
 
@@ -157,6 +158,7 @@ function Sidebar() {
         <Brand />
         <SyncButton compact />
       </div>
+      <PaletteButton />
       <Suspense fallback={<NavList pathname={null} badge={0} className={s.nav} />}>
         <ActiveNav badge={onYou} className={s.nav} />
       </Suspense>
@@ -220,6 +222,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <BoardProvider>
       <Alerts />
+      <CommandPalette />
       <div className={s.shell}>
         <Sidebar />
         <MobileBar />
