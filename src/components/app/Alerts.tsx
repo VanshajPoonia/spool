@@ -2,12 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { useSettings } from "@/lib/store";
+import { changesStore, useSettings } from "@/lib/store";
 import { useBoard } from "./BoardProvider";
 
 /*
  * Alerts that need no server: a count in the tab title, and an optional browser
  * notification when a thread becomes your move while Spool sits in a background tab.
+ * Notifications read the same list as "Since you last looked", one batch per board load.
  */
 
 const PREFIX = /^\(\d+\)\s+/;
@@ -59,34 +60,32 @@ function useTitleCount(count: number) {
 }
 
 export function Alerts() {
-  const { mode, threads, loading } = useBoard();
+  const { mode, threads } = useBoard();
   const { notify } = useSettings();
   const router = useRouter();
-  const onYou = threads.filter((t) => t.next === "you");
-  useTitleCount(mode === "none" ? 0 : onYou.length);
+  const changes = changesStore.use();
+  useTitleCount(mode === "none" ? 0 : threads.filter((t) => t.next === "you").length);
 
-  // What was on you at the last refresh; null until the first board of this session arrives.
-  const prev = useRef<Map<string, string> | null>(null);
+  // Only batches found after this tab opened alert; an older one was news for an earlier visit.
+  const opened = useRef<string | null>(null);
+  const lastBatch = useRef<string | null>(null);
   useEffect(() => {
-    if (mode !== "live") {
-      prev.current = null;
-      return;
-    }
-    if (loading) return;
-    const cur = new Map(onYou.map((t) => [t.id, t.lastAt]));
-    const before = prev.current;
-    prev.current = cur;
-    if (!before || !notify || notifyPermission() !== "granted" || document.visibilityState === "visible") return;
-    const fresh = onYou.filter((t) => before.get(t.id) !== t.lastAt);
-    if (!fresh.length) return;
-    if (fresh.length === 1) {
-      const t = fresh[0];
-      show(`Your move: ${t.repo}#${t.num}`, `${t.lastActor ? `@${t.lastActor}: ` : ""}${t.title}`, () => router.push("/board"));
+    opened.current = new Date().toISOString();
+  }, []);
+  useEffect(() => {
+    const at = changes.batch?.at ?? null;
+    if (mode !== "live" || !at || !opened.current || at <= opened.current || at === lastBatch.current) return;
+    lastBatch.current = at;
+    if (!notify || notifyPermission() !== "granted" || document.visibilityState === "visible") return;
+    const onYou = (changes.batch?.ids ?? []).map((id) => changes.items[id]).filter((c) => c && c.next === "you");
+    if (!onYou.length) return;
+    if (onYou.length === 1) {
+      const c = onYou[0];
+      show(`${c.label}: ${c.repo}#${c.num}`, c.title, () => router.push("/board"));
     } else {
-      show(`${fresh.length} threads are your move`, fresh.slice(0, 3).map((t) => `${t.repo}#${t.num} ${t.title}`).join("\n"), () => router.push("/board"));
+      show(`${onYou.length} threads are your move`, onYou.slice(0, 3).map((c) => `${c.repo}#${c.num} ${c.title}`).join("\n"), () => router.push("/board"));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [threads, mode, loading, notify]);
+  }, [changes, mode, notify, router]);
 
   return null;
 }
