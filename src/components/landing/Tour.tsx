@@ -16,6 +16,7 @@ import {
   Pin,
   RefreshCw,
   AlarmClock,
+  Search,
 } from "lucide-react";
 import { NAV } from "@/components/app/nav";
 import { PriorityTag } from "@/components/app/Priority";
@@ -41,7 +42,7 @@ import s from "./tour.module.css";
 
 /*
  * The product in use: someone signs on, works down their bay from the keyboard, sets a priority, answers on
- * GitHub, watches a quiet thread turn stalled and drags the week into shape. A pointer and the keys pressed
+ * GitHub, comes back to what changed, jumps with Cmd+K and drags the week into shape. A pointer and the keys pressed
  * are drawn over the window, the way a screen recording shows them. The window pins while the page scrolls
  * and the scroll plays the morning, so scrolling back plays it backwards; five chapters underneath jump to any part.
  *
@@ -150,6 +151,10 @@ type Scene = {
   drag: string | null;
   doing: string[];
   face: string;
+  /** back after two days: the Today strip lists what changed, and the approved PR has merged */
+  back: boolean;
+  /** Cmd+K is open with this query typed */
+  palette: string | null;
 };
 
 const START: Scene = {
@@ -169,6 +174,8 @@ const START: Scene = {
   drag: null,
   doing: [],
   face: FACES.wink,
+  back: false,
+  palette: null,
 };
 
 type Step = {
@@ -198,12 +205,12 @@ const CHAPTERS = [
     body: "Reply on GitHub as usual. On the next sync the thread crosses to their side.",
   },
   {
-    title: "Stalls",
-    body: "Fourteen quiet days and a thread turns red and rises to the top.",
+    title: "Catch up",
+    body: "Today says what changed while you were away. Fourteen quiet days turn a thread red.",
   },
   {
     title: "Plan",
-    body: "Drag what matters into Working on. Spool says what to pick up next.",
+    body: "Cmd+K jumps anywhere. Drag what matters into Working on, and Spool says what's next.",
   },
 ];
 
@@ -261,15 +268,31 @@ const STEPS: Step[] = [
   {
     ch: 3,
     ms: 1000,
-    set: { skip: "Two days later, nobody has answered", face: FACES.watch },
+    set: { skip: "Two days later, you open Spool again", face: FACES.watch },
   },
   { ch: 3, ms: 850, set: { quiet: 13 } },
-  { ch: 3, ms: 1300, set: { quiet: STALL, skip: null, face: FACES.alarm } },
+  {
+    ch: 3,
+    ms: 1300,
+    set: { quiet: STALL, skip: null, back: true, face: FACES.alarm },
+  },
+  { ch: 3, ms: 1300, to: "today" },
   { ch: 3, ms: 800, to: "row-panic" },
   { ch: 3, ms: 1900, set: { hover: "panic", face: FACES.side } },
 
-  { ch: 4, ms: 800, to: "nav-plan", set: { hover: null } },
-  { ch: 4, ms: 320, click: "tap", set: { view: "plan", face: FACES.calm } },
+  {
+    ch: 4,
+    ms: 900,
+    key: ["⌘ K", "Jump anywhere"],
+    set: { hover: null, palette: "" },
+  },
+  { ch: 4, ms: 1100, set: { palette: "plan" } },
+  {
+    ch: 4,
+    ms: 700,
+    key: ["Enter", "Open Plan"],
+    set: { palette: null, view: "plan", face: FACES.calm },
+  },
   { ch: 4, ms: 900 },
   { ch: 4, ms: 750, to: "card-dns" },
   { ch: 4, ms: 380, click: "down", set: { drag: "dns" } },
@@ -324,8 +347,12 @@ type Row = Thread & {
   status: string;
 };
 
+// Once the two days have passed, the approved PR has merged and left the bay.
 function rowsOf(sc: Scene): Row[] {
-  return Object.entries(THREADS).map(([id, t]) => {
+  const open = Object.entries(THREADS).filter(
+    ([id]) => !(sc.back && id === "cache"),
+  );
+  return open.map(([id, t]) => {
     if (id === "limit" && sc.answered)
       return {
         ...t,
@@ -511,6 +538,7 @@ function BayView({ sc, rows }: { sc: Scene; rows: Row[] }) {
         </span>
       </div>
       <div ref={listRef} className={s.list}>
+        {sc.back && <TodayStrip />}
         <Bay
           name="Your move"
           which="you"
@@ -545,6 +573,104 @@ function BayView({ sc, rows }: { sc: Scene; rows: Row[] }) {
         </Bay>
       </div>
     </>
+  );
+}
+
+/* The Today strip as it reads after two days away: what changed since the last visit. */
+function TodayStrip() {
+  const items = [
+    { kind: "merged", label: "Merged", t: THREADS.cache, when: "1d" },
+    { kind: "status", label: "Now: Stalled", t: THREADS.panic, when: "now" },
+  ];
+  return (
+    <div className={s.today} data-tour="today" data-aim="0.22 0.5">
+      <p className={s.todayHead}>
+        <span className={s.todayName}>Today</span>
+        <span className={s.todayCount}>2 changes</span>
+        <span className={s.todayHint}>Since you last looked</span>
+        <ChevronDown size={15} className={s.todayFold} />
+      </p>
+      <ul className={s.todayList}>
+        {items.map((c, i) => (
+          <li
+            key={c.label}
+            data-kind={c.kind}
+            style={{ "--i": i } as CSSProperties}
+          >
+            <span className={s.todayLabel}>
+              <span className={s.todayDot} />
+              {c.label}
+            </span>
+            <span className={s.todayTitle}>
+              <span className={s.todayRef}>
+                {code(c.t.repo)}-{c.t.num}
+              </span>
+              {c.t.title}
+            </span>
+            <span className={s.todayWhen}>{c.when}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/* Cmd+K over the bay: pages, threads and actions, filtered as the query is typed. */
+function Palette({ q }: { q: string }) {
+  const groups: [string, { title: string; sub?: string }[]][] = q
+    ? [
+        ["Pages", [{ title: "Plan" }]],
+        ["Your tasks", [{ title: "Write up the resolver benchmarks", sub: "Plan" }]],
+      ]
+    : [
+        [
+          "Threads",
+          [
+            { title: THREADS.dns.title, sub: `${THREADS.dns.repo}#${THREADS.dns.num}` },
+            { title: THREADS.limit.title, sub: `${THREADS.limit.repo}#${THREADS.limit.num}` },
+          ],
+        ],
+        ["Pages", NAV.slice(0, 4).map((n) => ({ title: n.label }))],
+      ];
+  return (
+    <div className={s.palette}>
+      <div className={s.palDialog}>
+        <p className={s.palField}>
+          <Search size={15} />
+          {q ? (
+            <span className={s.palQuery}>
+              {q.split("").map((c, i) => (
+                <span key={i} style={{ "--i": i } as CSSProperties}>
+                  {c}
+                </span>
+              ))}
+            </span>
+          ) : (
+            <span className={s.palPlaceholder}>
+              Search threads, repos, orgs, pages and actions
+            </span>
+          )}
+          <span className={s.caret} />
+        </p>
+        <div className={s.palList} key={q} style={{ "--n": q.length } as CSSProperties}>
+          {groups.map(([g, list]) => (
+            <div key={g}>
+              <p className={s.palGroup}>{g}</p>
+              {list.map((it, i) => (
+                <p
+                  key={it.title}
+                  className={s.palItem}
+                  data-on={(g === groups[0][0] && i === 0) || undefined}
+                >
+                  <span>{it.title}</span>
+                  {it.sub && <span className={s.palSub}>{it.sub}</span>}
+                </p>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -647,7 +773,7 @@ function PlanView({ sc, rows }: { sc: Scene; rows: Row[] }) {
     inbox: ["dns", "json"].filter((id) => !sc.doing.includes(id)),
     next: ["guards"],
     doing: sc.doing,
-    waiting: ["limit", "cache", "panic"],
+    waiting: ["limit", "cache", "panic"].filter((id) => byId[id]),
   };
   useFlip(boardRef, JSON.stringify(cols));
   const pick = sc.doing.includes("dns")
@@ -866,8 +992,8 @@ export function Tour() {
     >
       <SectionHead id="tour-title" title="A morning in Spool, start to finish.">
         Scroll to watch someone sign on, work down their bay from the keyboard,
-        answer a review, catch a thread that went quiet and line up the week.
-        Every click is something the app does. Pick a chapter to jump to it.
+        answer a review, come back to what changed and line up the week. Every
+        click is something the app does. Pick a chapter to jump to it.
       </SectionHead>
 
       <div ref={runRef} className={s.runway} data-pin={motion || undefined}>
@@ -904,8 +1030,6 @@ export function Tour() {
                         (i === 1 && sc.view === "plan") ||
                         undefined
                       }
-                      data-tour={i === 1 ? "nav-plan" : undefined}
-                      data-aim="0.3 0.5"
                     >
                       <n.icon size={15} strokeWidth={1.8} />
                       <span>{n.label}</span>
@@ -934,13 +1058,7 @@ export function Tour() {
                 {/* on a phone the sidebar folds into two tabs */}
                 <div className={s.tabs}>
                   <span data-on={sc.view !== "plan" || undefined}>Bay</span>
-                  <span
-                    data-on={sc.view === "plan" || undefined}
-                    data-tour="nav-plan"
-                    data-aim="0.5 0.5"
-                  >
-                    Plan
-                  </span>
+                  <span data-on={sc.view === "plan" || undefined}>Plan</span>
                 </div>
                 <div
                   className={s.pane}
@@ -952,6 +1070,7 @@ export function Tour() {
                   {sc.view === "plan" && <PlanView sc={sc} rows={rows} />}
                 </div>
                 {sc.view === "bay" && <Drawer sc={sc} rows={rows} />}
+                {sc.palette !== null && <Palette q={sc.palette} />}
 
                 {sc.skip && (
                   <span className={s.skip} key={sc.skip}>
