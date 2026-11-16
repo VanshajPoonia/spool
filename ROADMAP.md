@@ -189,13 +189,14 @@ The watcher's inbox, without a server: compare the saved board with a fresh load
 - [x] The sample board has an invented list that lasts only for the page
 
 ### Phase 3: Claims
-From the tracker's claimed and in-progress cards and its claim check.
+From the tracker's claimed and in-progress cards and its claim check. Lives in `addIssueDetail()` in `lib/github.ts`, `claimOf()` in `lib/classify.ts`, `ASKS` in `lib/watch.ts` and the Claims bay in `BoardView.tsx`.
 
-- [ ] Issues you asked to take, found from your own "can I work on this" comments, in a group of their own
-- [ ] Waiting for assignment, with the days counted
-- [ ] Assigned with no PR yet, with a warning before common unassign windows (Layer5 unassigns after two weeks idle)
-- [ ] A loud row when someone else is assigned, or opens a PR that references your issue
-- [ ] Claims feed the plan: Inbox until assigned, then Working on
+- [x] Issues you asked to take, found from your own "can I work on this" comments, in a group of their own. The phrases now also catch "claim", "can I please" and bot commands like `@openwisp-companion assign`, and "are you still working on this?" no longer counts as your claim
+- [x] Waiting for assignment, with the days counted; a reply after your ask makes it your move
+- [x] Assigned with no PR yet, with a warning from day 10 (Layer5 unassigns after two weeks idle)
+- [x] A loud row when someone else is assigned, or opens a PR that references your issue
+- [x] Claims feed the plan: Inbox until assigned, then Working on
+- [x] An issue your own PR links to drops out of claims and is just watched
 
 ### Phase 4: Follow repos, orgs and maintainers
 From the watch rules in `repos.tsv`, the free-issue scan and the tracker's Skipped list.
