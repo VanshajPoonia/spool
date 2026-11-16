@@ -46,7 +46,7 @@ Production responses carry a content security policy (`next.config.ts`) whose `c
 | `/board/orgs` | The orgs you're investing in, grouped by goal (job, GSoC, a program, for fun), with status, next step and date, notes and links, and live counts from your board |
 | `/board/discover` | Young repos and unclaimed good first issues for your interests, plus a shortlist |
 | `/board/following` | Repos, orgs and maintainers you follow, each with a rule. New issues that match, a scan for free issues of any age, skipped issues with your reasons |
-| `/board/programs` | GSoC timeline and orgs matching your interests, YC deadline, your October PRs (from a username as a guest), Product Hunt launches |
+| `/board/programs` | GSoC timeline and orgs matching your interests, YC deadline, your October PRs (from a username as a guest), Product Hunt launches, more programs (LFX with its term dates, Outreachy, MLH Fellowship, Summer of Bitcoin, Season of Docs, C4GT, GSSoC, KWoC, SWoC) and program news |
 | `/board/settings` | Token, board rules, interests, light theme, motion and sound, export/import/erase |
 
 Keyboard on the board: `j`/`k` move, `Enter` opens details, `o` opens on GitHub, `p` pins, `s` snoozes a day, `/` filters, `Shift E` marks everything seen, `?` lists shortcuts.
@@ -72,6 +72,8 @@ Keyboard on the board: `j`/`k` move, `Enter` opens details, `o` opens on GitHub,
 - The board filters by goal. The plan fades cards outside the goal instead of hiding them, so dragging never shuffles a card you can't see.
 - Settings, Deadlines you follow: YC's application deadline, Hacktoberfest's start and end, and each GSoC milestone, read from the same sources as Programs (`src/lib/deadlines.ts`). A program date only shows once its source publishes it.
 - "Coming up" sits on top of the board when a followed deadline or an org's next date (not on hold) is within 14 days. With notifications on, each one alerts once at 7 days and once at 1 day.
+- LFX terms can be followed too: proposals, mentee applications (open and close) and the start of a term.
+- "Download calendar file" (Settings, and the Coming up strip) saves every future followed date as all-day events in an `.ics` file, built in the browser (`src/lib/ics.ts`). Each event keeps a stable ID, so importing a newer file updates them.
 
 ## Can an outsider land work here?
 
@@ -102,6 +104,9 @@ Every repo page starts with a report read from public data in one request (`fetc
 - GSoC: `summerofcode.withgoogle.com/api/program/` and `/api/program/<year>/organizations/`
 - YC: the batch and deadline fields on `ycombinator.com/apply`
 - Product Hunt: `producthunt.com/feed` (Atom)
+- LFX Mentorship: the timeline table on each term's page in `cncf/mentoring` (`programs/lfx-mentorship/<year>/<term>/README.md`, read from raw.githubusercontent.com), this year's and next year's terms
+- Program news: the Google Open Source blog (GSoC and Season of Docs posts only), Outreachy's blog, CNCF (mentorship and LFX posts only) and Summer of Bitcoin's blog, RSS or Atom
+- The other programs link to their own sites with "check the site" for dates: none publishes them in a form Spool can read reliably
 
 Public feeds are fetched on the server and cached for hours (`src/lib/programs.ts`, Next.js `use cache`).
 

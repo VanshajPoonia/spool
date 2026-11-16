@@ -234,11 +234,12 @@ From the tracker's orgs and its separate Jobs and Open Source boards. Takes in "
 - [x] Browser notification at 7 days and 1 day, if notifications are on, once each
 
 ### Phase 7: More programs, with their news
-Takes in "More programs". Each one links to its own site, and shows dates only where that site publishes them in a form we can read reliably.
+Takes in "More programs". Each one links to its own site, and shows dates only where that site publishes them in a form we can read reliably. Lives in `lib/catalog.ts`, `getLfxTerms()` and `getProgramNews()` in `lib/programs.ts`, `lib/ics.ts`, and the More programs and Program news panels on the Programs tab.
 
-- [ ] Outreachy, LFX Mentorship (terms and proposals from `cncf/mentoring`), MLH Fellowship, Google Season of Docs, Summer of Bitcoin, C4GT, GSSoC, KWoC and SWoC
-- [ ] New posts from program blogs as news: the Google Open Source blog's GSoC and Season of Docs posts, Outreachy, CNCF mentorship, Summer of Bitcoin
-- [ ] Download an `.ics` calendar of the deadlines you follow, built in the browser
+- [x] Outreachy, LFX Mentorship (terms from the timeline tables in `cncf/mentoring`), MLH Fellowship, Google Season of Docs, Summer of Bitcoin, C4GT, GSSoC, KWoC and SWoC. Only LFX publishes dates Spool can read; the rest say "check the site"
+- [x] LFX proposals, applications and term starts can be followed like the other deadlines
+- [x] New posts from program blogs as news: the Google Open Source blog's GSoC and Season of Docs posts, Outreachy, CNCF mentorship, Summer of Bitcoin
+- [x] Download an `.ics` calendar of the deadlines you follow, built in the browser
 
 ### Between phases: your logbook
 - [ ] Merged PRs over time, repos contributed to, first and latest contribution
