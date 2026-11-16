@@ -6,6 +6,7 @@
 
 import { noteUsage, readUsage, windowLeft, type Who } from "./store";
 import { pickFirstIssues } from "./first-issues";
+import { freeScanQuery, newIssuesQuery, toFollowIssue, type Follow, type FollowIssue, type RawFollowIssue } from "./follow";
 import { ASKS, type WatchedIssue } from "./watch";
 
 const API = "https://api.github.com";
@@ -757,6 +758,63 @@ export async function fetchWatchedPublic(items: { repo: string; number: number }
   // One at a time, so a limit hit midway stops the run instead of firing every call into a wall.
   for (const it of items) out.push(await fetchIssuePublic(it.repo, it.number));
   return out;
+}
+
+/* ---------- following: new issues by each follow's rule, and the free-issue scan ---------- */
+
+const FOLLOW_FIELDS = /* GraphQL */ `fragment FI on Issue { id number title url createdAt authorAssociation author { login }
+  repository { nameWithOwner }
+  labels(first: 6) { nodes { name } }
+  comments(last: 8) { totalCount nodes { author { login } authorAssociation body createdAt } }
+  timelineItems(last: 10, itemTypes: [CROSS_REFERENCED_EVENT, CONNECTED_EVENT]) { nodes {
+    ... on CrossReferencedEvent { source { ... on PullRequest { number url state repository { nameWithOwner } } } }
+    ... on ConnectedEvent { subject { ... on PullRequest { number url state repository { nameWithOwner } } } } } }
+}`;
+
+/** GitHub's own spelling of a follow target, or why it can't be followed. Search would quietly find nothing for a typo. */
+export async function resolveFollowTarget(token: string, kind: Follow["kind"], target: string): Promise<{ target: string } | { error: string }> {
+  if (kind === "repo") {
+    const [owner, name] = target.split("/");
+    const d = await gql<{ repository: { nameWithOwner: string; isArchived: boolean } | null }>(
+      token,
+      `query R($o: String!, $n: String!) { repository(owner: $o, name: $n) { nameWithOwner isArchived } }`,
+      { o: owner, n: name },
+    ).catch((e) => (e instanceof GitHubError && /resolve|could not/i.test(e.message) ? { repository: null } : Promise.reject(e)));
+    if (!d.repository) return { error: `GitHub has no repo called ${target} that this token can see.` };
+    if (d.repository.isArchived) return { error: `${d.repository.nameWithOwner} is archived, so it won't get new issues.` };
+    return { target: d.repository.nameWithOwner };
+  }
+  const d = await gql<{ repositoryOwner: { __typename: string; login: string } | null }>(token, `query O($l: String!) { repositoryOwner(login: $l) { __typename login } }`, { l: target });
+  if (!d.repositoryOwner) return { error: `GitHub has no account called ${target}.` };
+  if (kind === "maintainer" && d.repositoryOwner.__typename === "Organization") return { error: `${d.repositoryOwner.login} is an org. Follow it without the @.` };
+  return { target: d.repositoryOwner.login };
+}
+
+/*
+ * One aliased search per follow, eight to a request, side by side. `scan` runs the free-issue scan instead
+ * (repos and orgs only). Follows whose request failed come back in `failed`, so the page can say so.
+ */
+export async function fetchFollowing(token: string, me: string, follows: Follow[], scan = false) {
+  const list = scan ? follows.filter((f) => f.kind !== "maintainer") : follows;
+  const chunks = Array.from({ length: Math.ceil(list.length / 8) }, (_, i) => list.slice(i * 8, i * 8 + 8));
+  const results: Record<string, FollowIssue[]> = {};
+  const failed: string[] = [];
+  const settled = await Promise.allSettled(
+    chunks.map((chunk) => {
+      const vars = Object.fromEntries(chunk.map((f, i) => [`q${i}`, scan ? freeScanQuery(f) : newIssuesQuery(f)]));
+      const decl = chunk.map((_, i) => `$q${i}: String!`).join(", ");
+      const body = chunk.map((_, i) => `f${i}: search(query: $q${i}, type: ISSUE, first: ${scan ? 30 : 15}) { nodes { ...FI } }`).join("\n");
+      return withRetry(() => gql<Record<string, { nodes: (RawFollowIssue | Record<string, never>)[] }>>(token, `${FOLLOW_FIELDS}\nquery Follow(${decl}) {\n${body}\n}`, vars));
+    }),
+  );
+  const now = Date.now();
+  settled.forEach((r, ci) => {
+    chunks[ci].forEach((f, i) => {
+      if (r.status === "rejected") return void failed.push(f.id);
+      results[f.id] = (r.value[`f${i}`]?.nodes ?? []).filter((n): n is RawFollowIssue => "id" in n && !!n.id).map((n) => toFollowIssue(n, me, now));
+    });
+  });
+  return { results, failed, at: new Date().toISOString() };
 }
 
 /* ---------- October PRs ---------- */

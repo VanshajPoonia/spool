@@ -49,9 +49,9 @@ export const ASKS =
   /\b(can|could|may|shall) i (please )?(work|take|pick|try|handle|grab|tackle|claim)\b|\bassign (it|this|me)\b|\bplease assign\b|\bi(?:'d| would) (like|love) to (work|take|try|tackle|pick|give|claim)\b|\bi(?:'ll| will) (work on|take|pick|handle|tackle)\b|\bi(?:'m| am) interested in working\b|^\s*@[\w-]+ (assign|claim)\b/im;
 
 // From someone else, "I'm working on it" is a claim too. From you it's often a question to them.
-const CLAIM = new RegExp(`${ASKS.source}|\\bi(?:'m| am) (working on|taking)\\b|\\bworking on (it|this)\\b`, "im");
+export const CLAIM = new RegExp(`${ASKS.source}|\\bi(?:'m| am) (working on|taking)\\b|\\bworking on (it|this)\\b`, "im");
 
-const MAINTAINER = new Set(["OWNER", "MEMBER", "COLLABORATOR"]);
+export const MAINTAINER = new Set(["OWNER", "MEMBER", "COLLABORATOR"]);
 
 const short = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
