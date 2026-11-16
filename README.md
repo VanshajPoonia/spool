@@ -42,7 +42,7 @@ Production responses carry a content security policy (`next.config.ts`) whose `c
 | `/` | Landing page: a live sample bay in the hero, a 3D airfield where sample PRs hold in review and land on main when they merge, a strip printed field by field as you scroll, a sample day you can scrub and open strip by strip, the stalled limit, callsigns, live repo discovery, the live GSoC/YC/Product Hunt schedule, the GSoC season drawn as you scroll with a filterable list of this year's organisations, the sign-on form |
 | `/board` | Since you last looked (what changed between loads, until you mark it handled), then Your move and Their move bays, Watching, Snoozed and Landed. Pin, snooze, priorities, notes, detail drawer with the GitHub timeline |
 | `/board/repos` | Every repo you've contributed to: opened, merged, closed, merge rate, median time to merge, your own repos |
-| `/board/repos/[owner]/[name]` | One repo's timetable |
+| `/board/repos/[owner]/[name]` | Can an outsider land work here? (any repo), then your timetable in it |
 | `/board/discover` | Young repos and unclaimed good first issues for your interests, plus a shortlist |
 | `/board/following` | Repos, orgs and maintainers you follow, each with a rule. New issues that match, a scan for free issues of any age, skipped issues with your reasons |
 | `/board/programs` | GSoC timeline and orgs matching your interests, YC deadline, your October PRs (from a username as a guest), Product Hunt launches |
@@ -64,6 +64,17 @@ Keyboard on the board: `j`/`k` move, `Enter` opens details, `o` opens on GitHub,
 ## Since you last looked
 
 `src/lib/changes.ts` keeps a small copy of each thread from the last board load (`spool:changes` in this browser). Each fresh load is compared with it: merged, closed, a reply from someone else, CI turning red or green, a new status, a thread arriving, or one dropping off. Each becomes one item per thread, and a later change replaces the earlier one with a "+N more" count. Then the copy is replaced, so nothing is reported twice. The first load only records, and changing the stalled limit records again instead of reporting every thread. Browser notifications, when on, come from the same list: only items that are on you, found after the tab opened.
+
+## Can an outsider land work here?
+
+Every repo page starts with a report read from public data in one request (`fetchRepoCheck()` in `src/lib/github.ts`, shaped by `src/lib/outsider.ts`), kept for a day per repo. It's linked from Discover's repos and shortlist and from repos you follow.
+
+- Merged PRs in the last 90 days, how many came from outside (GitHub's contributor and newcomer associations) and from how many people. PRs titled with an internal ticket like `[WEB-123]` count as staff. Staff who hide their membership still look like outsiders, which is why the number of people is shown.
+- The median time to a first answer on the last 20 outside PRs, from anyone but the author and not a bot (a merge counts), and how many closed with none.
+- CLA or DCO checks seen on recent PRs.
+- What CONTRIBUTING says about assignment, workflows named for assigning, and any AI policy (an `AI_POLICY.md`, or AI lines in CONTRIBUTING).
+- Last push, licence, code of conduct, free good first issues, and your open PRs in that org against your limit (Settings, 3 by default). The board's summary says when you're at the limit somewhere.
+- A one-line reading on top (outsiders land work, get in slowly, or rarely), worded as a reading of the numbers below it.
 
 ## Following
 

@@ -214,12 +214,15 @@ From the watch rules in `repos.tsv`, the free-issue scan and the tracker's Skipp
 ### Phase 5: Can an outsider land work here?
 From the playbook's per-org table. Replaces "Is this repo worth contributing to?". Read from public data, for any repo you discover, shortlist or follow.
 
-- [ ] Outside PRs merged in the last 90 days, and the median time for maintainers to answer an outside PR (last 20 merged or closed). Members who hide their membership look like outsiders, so this says so
-- [ ] How to take an issue: assign bots and workflows in the repo, and what CONTRIBUTING says about assignment
-- [ ] CLA or DCO required, read from the checks on recent PRs
-- [ ] An AI policy, if the repo has one (AI_POLICY.md, or a section in CONTRIBUTING)
-- [ ] Last push, CONTRIBUTING and code of conduct present, licence, unassigned good first issues
-- [ ] Your open PRs per org against a limit you set (3 by default), because depth beats breadth
+Lives in `lib/outsider.ts`, `fetchRepoCheck()` in `lib/github.ts`, `components/app/RepoCheck.tsx` (top of every repo page) and the `orgPrLimit` setting.
+
+- [x] Outside PRs merged in the last 90 days, from how many people, and the median time to a first answer on outside PRs (last 20 merged or closed). Members who hide their membership look like outsiders, so this says so, and PRs titled with an internal ticket like [WEB-123] count as staff
+- [x] How to take an issue: workflows named for assigning, and what CONTRIBUTING says about assignment
+- [x] CLA or DCO required, read from the checks on recent PRs
+- [x] An AI policy, if the repo has one (AI_POLICY.md, or AI lines in CONTRIBUTING)
+- [x] Last push, CONTRIBUTING and code of conduct present, licence, unassigned good first issues
+- [x] Your open PRs per org against a limit you set (3 by default), on the repo page and in the board's summary
+- [x] Linked from Discover's repos and shortlist and from repo follows
 
 ### Phase 6: Goals and orgs
 From the tracker's orgs and its separate Jobs and Open Source boards. Takes in "Deadline reminders".
