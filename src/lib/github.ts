@@ -332,6 +332,16 @@ export async function fetchBoard(token: string, login: string, opts: BoardOption
   const failed = results.filter((r): r is PromiseRejectedResult => r.status === "rejected");
   if (failed.length === results.length) throw failed[0].reason;
 
+  // A thread that hasn't changed keeps the details read for it within the last half hour.
+  const before = new Map((opts.previous?.nodes ?? []).map((n) => [n.id, n]));
+  const fresh = Date.now() - DETAIL_FRESH;
+  for (const n of byId.values()) {
+    const old = before.get(n.id);
+    if (!old?.detailAt || old.updatedAt !== n.updatedAt || Date.parse(old.detailAt) < fresh) continue;
+    if (old.detail) n.detail = old.detail;
+    if (old.claimDetail) n.claimDetail = old.claimDetail;
+    n.detailAt = old.detailAt;
+  }
   await Promise.all([addPrDetail(token, login, byId), addIssueDetail(token, login, byId)]);
   return snapshot([]);
 }
