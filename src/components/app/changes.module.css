@@ -1,36 +1,4 @@
-/* "Since you last looked": a bay above the others, one line per changed thread */
-
-.panel {
-  margin-bottom: 18px;
-}
-
-.count {
-  color: var(--accent);
-  font-variant-numeric: tabular-nums;
-}
-
-.all {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 26px;
-  padding: 0 9px;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--ink-3);
-  font-size: 12.5px;
-  font-weight: 500;
-  white-space: nowrap;
-  transition:
-    background-color var(--dur-hover) var(--ease-quad),
-    color var(--dur-hover) var(--ease-quad);
-}
-
-.all:hover {
-  background: color-mix(in oklab, var(--ink) 6%, transparent);
-  color: var(--ink);
-}
+/* Since you last looked: one line per changed thread, inside the Today strip */
 
 .list {
   display: grid;

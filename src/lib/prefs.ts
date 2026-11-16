@@ -4,11 +4,12 @@ import { useSyncExternalStore } from "react";
 import { setPrintMotion } from "@/components/print/engine";
 import { setSound } from "@/components/print/sound";
 
-export type Prefs = { sound: boolean; motion: boolean; theme: "dark" | "light" };
+/** todayFolded: the board's Today strip shows as one line */
+export type Prefs = { sound: boolean; motion: boolean; theme: "dark" | "light"; todayFolded: boolean };
 
 const KEY = "spool:prefs";
 const listeners = new Set<() => void>();
-const DEFAULTS: Prefs = { sound: false, motion: true, theme: "dark" };
+const DEFAULTS: Prefs = { sound: false, motion: true, theme: "dark", todayFolded: false };
 let cache: Prefs | null = null;
 
 function read(): Prefs {

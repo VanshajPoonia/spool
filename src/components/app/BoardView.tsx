@@ -12,8 +12,7 @@ import { openPrsByOwner } from "@/lib/outsider";
 import { prioRank, threadKey, type Prio } from "@/lib/plan";
 import { planStoreFor, setPrio, snooze, togglePin, updateSettings, useMeta, useSettings } from "@/lib/store";
 import { useBoard } from "./BoardProvider";
-import { ChangesPanel } from "./Changes";
-import { ComingUp } from "./ComingUp";
+import { TodayStrip } from "./Today";
 import { ThreadDetail } from "./ThreadDetail";
 import { ThreadRow } from "./ThreadRow";
 import s from "./board.module.css";
@@ -465,8 +464,7 @@ export function BoardView() {
         <Loader />
       ) : (
         <>
-          <ComingUp />
-          <ChangesPanel onOpen={openThread} />
+          <TodayStrip onOpen={openThread} />
           <div className={s.columns}>
             <Group
               title="Your move"
