@@ -18,6 +18,7 @@ import s from "./palette.module.css";
 type Item = { id: string; group: string; title: string; sub?: string; keys?: string; onYou?: boolean; run: () => void };
 
 const OPEN = "spool:palette";
+export const FEEDBACK_URL = "https://github.com/VanshajPoonia/spool/issues/new";
 export const openPalette = () => window.dispatchEvent(new Event(OPEN));
 
 const isMac = () => typeof navigator !== "undefined" && /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
@@ -117,6 +118,7 @@ export function CommandPalette() {
       title: prefs.theme === "light" ? "Switch to the dark theme" : "Switch to the light theme",
       run: () => setPrefs({ theme: prefs.theme === "light" ? "dark" : "light" }),
     });
+    out.push({ id: "act:feedback", group: "Actions", title: "Send feedback", sub: "Opens a new issue on Spool's repo", run: () => window.open(FEEDBACK_URL, "_blank", "noopener") });
     out.push({
       id: "act:sample",
       group: "Actions",

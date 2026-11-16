@@ -27,6 +27,7 @@ import {
 } from "@/lib/store";
 import { fmtDate, useHydrated, useNow } from "@/lib/time";
 import { notifyPermission, sendTestNotification } from "./Alerts";
+import { FEEDBACK_URL } from "./CommandPalette";
 import { Interests } from "./Interests";
 import { useAllDeadlines } from "./useDeadlines";
 import p from "./page.module.css";
@@ -288,7 +289,13 @@ export function SettingsView() {
       <div className={p.head}>
         <div>
           <h1 className={p.h1}>Settings</h1>
-          <p className={p.lede}>Everything here is stored in this browser. Spool has no server-side account, and a GitHub token is optional.</p>
+          <p className={p.lede}>
+            Everything here is stored in this browser. Spool has no server-side account, and a GitHub token is optional. Found a bug or missing something?{" "}
+            <a href={FEEDBACK_URL} target="_blank" rel="noreferrer">
+              Open an issue
+            </a>
+            .
+          </p>
         </div>
       </div>
 
