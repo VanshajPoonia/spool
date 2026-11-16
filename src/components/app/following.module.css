@@ -1,0 +1,264 @@
+/* Following: what you follow, new issues by rule, the free scan, and what you skipped */
+
+.addForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.labels {
+  width: 230px;
+}
+
+.select select {
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+  font-size: 13px;
+  outline: none;
+}
+
+.select select:focus-visible {
+  box-shadow:
+    inset 0 0 0 1px var(--accent),
+    0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
+}
+
+.follows {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.follows li {
+  display: grid;
+  grid-template-columns: 64px minmax(0, auto) minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+  padding: 4px 4px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.follows li:last-child {
+  border-bottom: 0;
+}
+
+.kind {
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.target {
+  overflow: hidden;
+  color: var(--ink);
+  font-family: var(--font-print);
+  font-size: 13.5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-decoration: none;
+}
+
+.target:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--rule-2);
+  text-underline-offset: 3px;
+}
+
+.rule {
+  overflow: hidden;
+  color: var(--ink-3);
+  font-size: 13px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.newCount {
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 18px auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+/* new since you last marked them seen: the accent dot the board uses */
+.row[data-new]::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -10px;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.lamp {
+  display: grid;
+  place-items: center;
+}
+
+.state {
+  color: var(--ink-3);
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.state[data-lamp="go"] {
+  color: var(--landed);
+}
+
+.state[data-lamp="stop"] {
+  color: var(--alert);
+}
+
+.batch {
+  color: var(--ink-3);
+  font-weight: 400;
+}
+
+.actions {
+  display: flex;
+  gap: 2px;
+}
+
+.skip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.scanGroup + .scanGroup {
+  margin-top: 14px;
+}
+
+.scanGroup h3 {
+  margin: 4px 0 2px;
+  color: var(--ink-2);
+  font-family: var(--font-print);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.scanGroup h3 span {
+  margin-left: 8px;
+  color: var(--ink-3);
+  font-family: var(--font-ui);
+  font-weight: 400;
+}
+
+.skipped summary {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.skipped summary::-webkit-details-marker {
+  display: none;
+}
+
+.skipped summary h2 {
+  margin: 0;
+}
+
+.skipped summary span {
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.skippedRow {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.skippedRow a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-2);
+  font: inherit;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--rule-2);
+  text-underline-offset: 3px;
+}
+
+.link:hover {
+  color: var(--ink);
+}
+
+.spin {
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 720px) {
+  .addForm {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .labels {
+    width: auto;
+  }
+  .follows li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px 10px;
+  }
+  .kind,
+  .rule {
+    grid-column: 1;
+  }
+  .row {
+    grid-template-columns: 18px minmax(0, 1fr) auto;
+  }
+  .row > :nth-child(2),
+  .state {
+    display: none;
+  }
+}

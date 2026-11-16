@@ -18,6 +18,10 @@ const COPY = {
     title: "Your repos need GitHub.",
     lede: "The carrier record is built from your own PR and issue history, so Spool needs a read-only token to load it.",
   },
+  following: {
+    title: "Following needs GitHub.",
+    lede: "Each repo, org or maintainer you follow is a search, and checking them needs more searches than GitHub allows a guest, so Spool needs a read-only token.",
+  },
 };
 
 export function ConnectPanel({ what = "board" }: { what?: keyof typeof COPY }) {
