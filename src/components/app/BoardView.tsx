@@ -7,11 +7,13 @@ import { PrintText } from "@/components/print/PrintText";
 import { carrier } from "@/lib/carriers";
 import type { Thread } from "@/lib/classify";
 import { FACES } from "@/lib/faces";
+import { GOALS, ownerOf, sampleOrgs, type Goal } from "@/lib/orgs";
 import { openPrsByOwner } from "@/lib/outsider";
 import { prioRank, threadKey, type Prio } from "@/lib/plan";
 import { planStoreFor, setPrio, snooze, togglePin, updateSettings, useMeta, useSettings } from "@/lib/store";
 import { useBoard } from "./BoardProvider";
 import { ChangesPanel } from "./Changes";
+import { ComingUp } from "./ComingUp";
 import { ThreadDetail } from "./ThreadDetail";
 import { ThreadRow } from "./ThreadRow";
 import s from "./board.module.css";
@@ -111,6 +113,10 @@ export function BoardView() {
   const prioOf = useCallback((t: Thread): Prio | null => plan.prio[threadKey(t.id)] ?? null, [plan.prio]);
   const [q, setQ] = useState("");
   const [kind, setKind] = useState<Kind>("all");
+  const [goal, setGoal] = useState<Goal | "all">("all");
+  // Goals you've given orgs on the Orgs page; the filter shows only the ones in use.
+  const investing = useMemo(() => (mode === "sample" ? (now ? sampleOrgs(now) : {}) : meta.investing), [mode, now, meta.investing]);
+  const goals = useMemo(() => GOALS.filter(([g]) => Object.values(investing).some((o) => o.goal === g)), [investing]);
   const [repo, setRepo] = useState<string | null>(null);
   const [only, setOnly] = useState<Only>(null);
   const [sel, setSel] = useState<string | null>(null);
@@ -124,12 +130,13 @@ export function BoardView() {
     return threads.filter(
       (t) =>
         (kind === "all" || t.kind === kind) &&
+        (goal === "all" || investing[ownerOf(t.repo)]?.goal === goal) &&
         (!repo || t.repo === repo) &&
         (only !== "delayed" || (t.next === "them" && t.tone === "wait")) &&
         (only !== "new" || fresh.has(t.id)) &&
         (!needle || `${t.title} ${t.repo} #${t.num} ${t.lastActor ?? ""} ${t.status}`.toLowerCase().includes(needle)),
     );
-  }, [threads, q, kind, repo, only, fresh]);
+  }, [threads, q, kind, repo, only, fresh, goal, investing]);
 
   const groups = useMemo(() => {
     // Pins first, then the priority you gave it, then the group's own order.
@@ -243,7 +250,7 @@ export function BoardView() {
   );
 
   const delayed = threads.filter((t) => t.next === "them" && t.tone === "wait" && !isSnoozed(t.id)).length;
-  const filtering = !!(q || repo || only || kind !== "all");
+  const filtering = !!(q || repo || only || kind !== "all" || goal !== "all");
   const youOrder = (
     <button
       type="button"
@@ -302,6 +309,15 @@ export function BoardView() {
               </button>
             ))}
           </div>
+          {goals.length > 0 && (
+            <div className={s.seg} role="group" aria-label="Goal">
+              {[["all", "Any goal"] as const, ...goals].map(([g, label]) => (
+                <button key={g} type="button" aria-pressed={goal === g} onClick={() => setGoal(g)}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
           <div className={s.quick} role="group" aria-label="Show only">
             <button type="button" aria-pressed={only === "delayed"} onClick={() => setOnly((o) => (o === "delayed" ? null : "delayed"))} disabled={!delayed && only !== "delayed"}>
               <span className={s.quickLamp} data-k="delayed" aria-hidden="true" />
@@ -366,6 +382,7 @@ export function BoardView() {
         <Loader />
       ) : (
         <>
+          <ComingUp />
           <ChangesPanel onOpen={openThread} />
           <div className={s.columns}>
             <Group
