@@ -38,9 +38,10 @@ export type Thread = {
 
 const DAY = 86400000;
 
-// GitHub Apps report as Bot; many older bots are plain user accounts named "*bot".
+// GitHub Apps report as Bot; many older bots are plain user accounts named "*bot", or one of these.
+const BOT_USERS = new Set(["claassistant", "coveralls", "codecov-commenter"]);
 const isHuman = (a: { __typename?: string; login: string } | null | undefined) =>
-  !!a && a.__typename !== "Bot" && !/(\[bot\]|bot)$/i.test(a.login);
+  !!a && a.__typename !== "Bot" && !/(\[bot\]|bot)$/i.test(a.login) && !BOT_USERS.has(a.login.toLowerCase());
 
 type Ev = { actor: string; at: string; kind: "open" | "comment" | "review" | "commit"; state?: string };
 
