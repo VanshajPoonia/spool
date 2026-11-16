@@ -8,6 +8,7 @@ import { Callsign } from "@/components/kit/Kit";
 import { aggregate, fmtDays } from "@/lib/aggregate";
 import { ago } from "@/lib/classify";
 import { useBoard } from "./BoardProvider";
+import { LogbookPanel } from "./Logbook";
 import p from "./page.module.css";
 import s from "./repos.module.css";
 
@@ -59,6 +60,8 @@ export function ReposView() {
           </button>
         </p>
       )}
+
+      <LogbookPanel />
 
       <section className={p.panel}>
         <div className={p.panelHead}>
