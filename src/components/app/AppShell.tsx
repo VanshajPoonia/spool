@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode, Suspense, useEffect, useMemo, useRef } from "react";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Search } from "lucide-react";
 import { PrintText } from "@/components/print/PrintText";
 import { carrier } from "@/lib/carriers";
 import { ago } from "@/lib/classify";
@@ -11,7 +11,7 @@ import { FACES } from "@/lib/faces";
 import { updateSettings, useAuth, useUsage, windowLeft } from "@/lib/store";
 import { Alerts } from "./Alerts";
 import { BoardProvider, useBoard } from "./BoardProvider";
-import { CommandPalette, PaletteButton } from "./CommandPalette";
+import { CommandPalette, openPalette, PaletteButton } from "./CommandPalette";
 import { isActive, NAV } from "./nav";
 import s from "./shell.module.css";
 
@@ -180,6 +180,10 @@ function MobileBar() {
       <div className={s.barTop}>
         <Brand />
         <div className={s.barEnd}>
+          <button type="button" className={s.sync} onClick={openPalette} title="Search">
+            <Search size={15} aria-hidden="true" />
+            <span className="sr-only">Search</span>
+          </button>
           <SyncButton compact />
           <Account />
         </div>

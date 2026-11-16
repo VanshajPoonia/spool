@@ -5,9 +5,12 @@
 }
 
 .count {
+  overflow: hidden;
   color: var(--ink-2);
   font-size: 12.5px;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .head {
@@ -39,4 +42,16 @@
 .tool:hover {
   background: color-mix(in oklab, var(--ink) 6%, transparent);
   color: var(--ink);
+}
+
+/* on a phone the tools keep their icons; the titles say what they do */
+@media (max-width: 600px) {
+  .toolText {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }

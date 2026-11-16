@@ -21,7 +21,7 @@ export function TodayStrip({ onOpen }: { onOpen: (t: Thread) => void }) {
   const { todayFolded } = usePrefs();
   if (!coming.length && !changes.items.length) return null;
 
-  const summary = [coming.length ? plural(coming.length, "date coming up", "dates coming up") : "", changes.items.length ? plural(changes.items.length, "change", "changes") : ""]
+  const summary = [coming.length ? `${coming.length} coming up` : "", changes.items.length ? plural(changes.items.length, "change", "changes") : ""]
     .filter(Boolean)
     .join(" · ");
 
@@ -34,15 +34,15 @@ export function TodayStrip({ onOpen }: { onOpen: (t: Thread) => void }) {
       tools={
         <>
           {!todayFolded && changes.items.length > 0 && (
-            <button type="button" className={s.tool} onClick={() => changes.handle("all")}>
+            <button type="button" className={s.tool} onClick={() => changes.handle("all")} title="Mark all handled">
               <Check size={14} aria-hidden="true" />
-              Mark all handled
+              <span className={s.toolText}>Mark all handled</span>
             </button>
           )}
           {!todayFolded && coming.length > 0 && (
             <button type="button" className={s.tool} onClick={() => downloadIcs(all)} title="Download every followed date as a calendar file">
               <CalendarPlus size={14} aria-hidden="true" />
-              Calendar file
+              <span className={s.toolText}>Calendar file</span>
             </button>
           )}
           <button type="button" className={b.collapse} aria-expanded={!todayFolded} onClick={() => setPrefs({ todayFolded: !todayFolded })}>
