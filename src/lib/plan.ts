@@ -112,7 +112,8 @@ export function buildCards({ threads, watch, me, plan }: { threads: Thread[]; wa
           at: t.lastAt,
           threadId: t.id,
         },
-        t.next === "them" ? "waiting" : "inbox",
+        // A claim waits in Inbox until you're assigned, then it's work: Working on.
+        t.claim === "assigned" ? "doing" : t.claim === "asked" ? "inbox" : t.next === "them" ? "waiting" : "inbox",
       ),
     );
   }

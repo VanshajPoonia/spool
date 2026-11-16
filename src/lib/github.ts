@@ -6,7 +6,7 @@
 
 import { noteUsage, readUsage, windowLeft, type Who } from "./store";
 import { pickFirstIssues } from "./first-issues";
-import type { WatchedIssue } from "./watch";
+import { ASKS, type WatchedIssue } from "./watch";
 
 const API = "https://api.github.com";
 
@@ -103,6 +103,13 @@ export type PrDetail = {
   checks: CheckNote[];
 };
 
+/** What the board reads about an issue you may be taking: your ask, your assignment, and PRs in the repo that reference it. */
+export type IssueDetail = {
+  askedAt: string | null;
+  assignedAt: string | null;
+  prs: { number: number; url: string; state: string; author: string | null }[];
+};
+
 export type RawNode = {
   __typename: "PullRequest" | "Issue" | "Discussion";
   id: string;
@@ -124,6 +131,7 @@ export type RawNode = {
   reviews?: { nodes: { author: Actor; state: string; submittedAt: string | null }[] };
   commits?: { nodes: { commit: { committedDate: string; statusCheckRollup: { state: string } | null } }[] };
   detail?: PrDetail;
+  claimDetail?: IssueDetail;
   reviewRequests?: { nodes: { requestedReviewer: { login?: string; name?: string } | null }[] };
   assignees?: { nodes: { login: string }[] };
   labels: { nodes: { name: string; color: string }[] };
@@ -291,7 +299,7 @@ export async function fetchBoard(token: string, login: string): Promise<RawBoard
       }
     }
   });
-  await addPrDetail(token, login, byId);
+  await Promise.all([addPrDetail(token, login, byId), addIssueDetail(token, login, byId)]);
   const rl = rate as Rate | null;
   return {
     login,
@@ -364,6 +372,63 @@ async function addPrDetail(token: string, login: string, byId: Map<string, RawNo
         ciApproval: (commit?.checkSuites.nodes ?? []).some((c) => c.conclusion === "ACTION_REQUIRED"),
         checks: checkNotes(commit?.statusCheckRollup?.contexts.nodes ?? []),
       };
+    }
+  }
+}
+
+type LinkedPr = { number: number; url: string; state: string; author: { login: string } | null; repository: { nameWithOwner: string } } | null;
+type RawIssueDetail = {
+  id: string;
+  comments: { nodes: { author: { login: string } | null; createdAt: string; body: string }[] };
+  timelineItems: {
+    nodes: (
+      | { __typename: "AssignedEvent"; createdAt: string; assignee: { login?: string } | null }
+      | { __typename: "CrossReferencedEvent"; createdAt: string; source: LinkedPr }
+      | { __typename: "ConnectedEvent"; createdAt: string; subject: LinkedPr }
+    )[];
+  };
+};
+
+const PR_FIELDS = "... on PullRequest { number url state author { login } repository { nameWithOwner } }";
+const ISSUE_DETAIL_QUERY = /* GraphQL */ `query IssueDetail($ids: [ID!]!) { nodes(ids: $ids) { ... on Issue { id
+  comments(last: 20) { nodes { author { login } createdAt body } }
+  timelineItems(last: 25, itemTypes: [ASSIGNED_EVENT, CROSS_REFERENCED_EVENT, CONNECTED_EVENT]) { nodes { __typename
+    ... on AssignedEvent { createdAt assignee { ... on User { login } } }
+    ... on CrossReferencedEvent { createdAt source { ${PR_FIELDS} } }
+    ... on ConnectedEvent { createdAt subject { ${PR_FIELDS} } }
+  } }
+} } }`;
+
+/*
+ * Claims: for open issues you commented on, were assigned or were mentioned in, find your last ask to take it,
+ * when you were assigned, and open or merged PRs in the same repo that point at it. Comment text stays here;
+ * only the dates and PRs are kept.
+ */
+async function addIssueDetail(token: string, login: string, byId: Map<string, RawNode & { sources: Source[] }>) {
+  const me = login.toLowerCase();
+  const isMe = (l: string | null | undefined) => !!l && l.toLowerCase() === me;
+  const ids = [...byId.values()]
+    .filter((n) => n.__typename === "Issue" && n.state === "OPEN" && !isMe(n.author?.login))
+    .filter((n) => n.sources.some((x) => x === "commented" || x === "assigned" || x === "mentions"))
+    .map((n) => n.id)
+    .slice(0, 40);
+  const batches = Array.from({ length: Math.ceil(ids.length / 20) }, (_, i) => ids.slice(i * 20, i * 20 + 20));
+  const results = await Promise.allSettled(batches.map((b) => withRetry(() => gql<{ nodes: (RawIssueDetail | null)[] }>(token, ISSUE_DETAIL_QUERY, { ids: b }))));
+  for (const r of results) {
+    if (r.status === "rejected") continue;
+    for (const d of r.value.nodes) {
+      const node = d && byId.get(d.id);
+      if (!node) continue;
+      const repo = node.repository.nameWithOwner.toLowerCase();
+      const asks = d.comments.nodes.filter((c) => isMe(c.author?.login) && ASKS.test(c.body));
+      const assigned = d.timelineItems.nodes.filter((e) => e.__typename === "AssignedEvent" && isMe(e.assignee?.login));
+      const prs = new Map<number, IssueDetail["prs"][number]>();
+      for (const e of d.timelineItems.nodes) {
+        const pr = e.__typename === "CrossReferencedEvent" ? e.source : e.__typename === "ConnectedEvent" ? e.subject : null;
+        if (!pr?.number || pr.state === "CLOSED" || pr.repository.nameWithOwner.toLowerCase() !== repo) continue;
+        prs.set(pr.number, { number: pr.number, url: pr.url, state: pr.state, author: pr.author?.login ?? null });
+      }
+      node.claimDetail = { askedAt: asks.at(-1)?.createdAt ?? null, assignedAt: assigned.at(-1)?.createdAt ?? null, prs: [...prs.values()] };
     }
   }
 }

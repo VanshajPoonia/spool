@@ -48,6 +48,8 @@ export type Thread = {
   ci: string | null;
   review: string | null;
   signals: PrSignals | null;
+  /** an issue you asked to take or were assigned: still asking, assigned, taken by someone else, or covered by your PR */
+  claim: Claim["state"] | null;
   labels: { name: string; color: string }[];
   comments: number;
   language: string | null;
@@ -96,6 +98,27 @@ function prSignals(n: RawNode, isMe: (l: string | null | undefined) => boolean, 
 
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 
+type Claim =
+  | { state: "covered"; pr: number }
+  | { state: "taken"; by: string; pr: number | null }
+  | { state: "assigned"; since: string | null }
+  | { state: "asked"; since: string };
+
+function claimOf(n: RawNode, isMe: (l: string | null | undefined) => boolean, assigned: boolean): Claim | null {
+  const d = n.claimDetail;
+  if (!assigned && !d?.askedAt) return null;
+  const mine = d?.prs.find((p) => isMe(p.author));
+  if (mine) return { state: "covered", pr: mine.number };
+  const theirs = d?.prs.find((p) => p.author && !isMe(p.author));
+  if (theirs) return { state: "taken", by: theirs.author!, pr: theirs.number };
+  const other = (n.assignees?.nodes ?? []).find((a) => !isMe(a.login));
+  if (!assigned && other) return { state: "taken", by: other.login, pr: null };
+  if (assigned) return { state: "assigned", since: d?.assignedAt ?? null };
+  return { state: "asked", since: d!.askedAt! };
+}
+
+const daysAgo = (days: number) => (days === 0 ? "today" : `${plural(days, "day")} ago`);
+
 function failingText(checks: CheckNote[]) {
   const names = checks.filter((c) => c.state === "fail").map((c) => c.name);
   if (!names.length) return "Checks are failing on the latest commit.";
@@ -130,6 +153,7 @@ export function classify(n: RawNode & { sources: Source[] }, me: string, staleDa
   const reviewAsked = (n.reviewRequests?.nodes ?? []).some((r) => isMe(r.requestedReviewer?.login));
   const assigned = (n.assignees?.nodes ?? []).some((a) => isMe(a.login));
   const sig = pr ? prSignals(n, isMe, last.at) : null;
+  const claim = !pr && !disc && !mine && n.state === "OPEN" ? claimOf(n, isMe, assigned) : null;
 
   let next: Next = "them";
   let status = "AWAITING";
@@ -223,6 +247,36 @@ export function classify(n: RawNode & { sources: Source[] }, me: string, staleDa
       status = "AWAITING";
       reason = disc ? "Waiting for an answer." : "Waiting on a maintainer.";
     }
+  } else if (claim?.state === "covered") {
+    next = "watch";
+    status = "YOUR PR";
+    reason = `Your PR #${claim.pr} is linked to it.`;
+  } else if (claim?.state === "taken") {
+    next = "you";
+    status = "TAKEN";
+    tone = "stop";
+    reason = claim.pr ? `@${claim.by} opened #${claim.pr} for it. Talk to them or let it go.` : `Assigned to @${claim.by}. Talk to them or let it go.`;
+  } else if (claim?.state === "assigned") {
+    const days = claim.since ? Math.floor((now - Date.parse(claim.since)) / DAY) : null;
+    next = "you";
+    status = "ASSIGNED";
+    reason = days === null ? "Assigned to you. No PR yet." : `Assigned to you ${daysAgo(days)}. No PR yet.`;
+    if (days !== null && days >= 10) {
+      tone = "wait";
+      reason += " Some repos unassign after two weeks without one.";
+    }
+  } else if (claim?.state === "asked") {
+    const days = Math.floor((now - Date.parse(claim.since)) / DAY);
+    if (!lastIsMe && last.at > claim.since) {
+      next = "you";
+      status = "THEY REPLIED";
+      reason = `@${last.actor} replied after you asked to take it.`;
+    } else {
+      next = "them";
+      status = "ASKED";
+      tone = days >= staleDays ? "wait" : undefined;
+      reason = `You asked to take it ${daysAgo(days)}. Waiting to be assigned.`;
+    }
   } else if (pr && (reviewAsked || has("review"))) {
     next = "you";
     status = "REVIEW ASKED";
@@ -275,6 +329,7 @@ export function classify(n: RawNode & { sources: Source[] }, me: string, staleDa
     ci,
     review: n.reviewDecision ?? null,
     signals: sig,
+    claim: claim?.state ?? null,
     labels: n.labels.nodes,
     comments: n.comments.totalCount,
     language: n.repository.primaryLanguage?.name ?? null,
