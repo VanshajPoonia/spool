@@ -7,6 +7,7 @@ import { PrintText } from "@/components/print/PrintText";
 import { carrier } from "@/lib/carriers";
 import type { Thread } from "@/lib/classify";
 import { FACES } from "@/lib/faces";
+import { openPrsByOwner } from "@/lib/outsider";
 import { prioRank, threadKey, type Prio } from "@/lib/plan";
 import { planStoreFor, setPrio, snooze, togglePin, updateSettings, useMeta, useSettings } from "@/lib/store";
 import { useBoard } from "./BoardProvider";
@@ -102,7 +103,7 @@ const SHORTCUTS: [string, string][] = [
 ];
 
 export function BoardView() {
-  const { threads, fresh, loading, error, mode, now, refresh, seeAll, see, fetchedAt, codeFor } = useBoard();
+  const { threads, fresh, loading, error, mode, now, refresh, seeAll, see, fetchedAt, codeFor, login } = useBoard();
   const meta = useMeta();
   const settings = useSettings();
   const planSt = planStoreFor(mode === "sample");
@@ -168,6 +169,11 @@ export function BoardView() {
     return [...m.entries()].sort((a, b) => b[1] - a[1]);
   }, [threads]);
   const hasDiscussions = useMemo(() => threads.some((t) => t.kind === "discussion"), [threads]);
+  // Orgs where your open PRs reached the limit you set: land some before opening more.
+  const atLimit = useMemo(
+    () => (login ? [...openPrsByOwner(threads, login)].filter(([, n]) => n >= settings.orgPrLimit).sort((a, b) => b[1] - a[1]) : []),
+    [threads, login, settings.orgPrLimit],
+  );
 
   const select = useCallback(
     (t: Thread) => {
@@ -271,6 +277,11 @@ export function BoardView() {
             {groups.claims.length > 0 && (
               <span>
                 <strong>{groups.claims.length}</strong> {groups.claims.length === 1 ? "claim" : "claims"}
+              </span>
+            )}
+            {atLimit.length > 0 && (
+              <span data-k="limit" title={`${atLimit.map(([o, n]) => `${o}: ${n} open PRs`).join(", ")}. Your limit is ${settings.orgPrLimit} per org.`}>
+                At your PR limit in <strong>{atLimit.length <= 2 ? atLimit.map(([o]) => o).join(" and ") : `${atLimit.length} orgs`}</strong>
               </span>
             )}
           </p>
