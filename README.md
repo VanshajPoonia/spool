@@ -44,6 +44,7 @@ Production responses carry a content security policy (`next.config.ts`) whose `c
 | `/board/repos` | Every repo you've contributed to: opened, merged, closed, merge rate, median time to merge, your own repos |
 | `/board/repos/[owner]/[name]` | One repo's timetable |
 | `/board/discover` | Young repos and unclaimed good first issues for your interests, plus a shortlist |
+| `/board/following` | Repos, orgs and maintainers you follow, each with a rule. New issues that match, a scan for free issues of any age, skipped issues with your reasons |
 | `/board/programs` | GSoC timeline and orgs matching your interests, YC deadline, your October PRs (from a username as a guest), Product Hunt launches |
 | `/board/settings` | Token, board rules, interests, light theme, motion and sound, export/import/erase |
 
@@ -63,6 +64,18 @@ Keyboard on the board: `j`/`k` move, `Enter` opens details, `o` opens on GitHub,
 ## Since you last looked
 
 `src/lib/changes.ts` keeps a small copy of each thread from the last board load (`spool:changes` in this browser). Each fresh load is compared with it: merged, closed, a reply from someone else, CI turning red or green, a new status, a thread arriving, or one dropping off. Each becomes one item per thread, and a later change replaces the earlier one with a "+N more" count. Then the copy is replaced, so nothing is reported twice. The first load only records, and changing the stalled limit records again instead of reporting every thread. Browser notifications, when on, come from the same list: only items that are on you, found after the tab opened.
+
+## Following
+
+`src/lib/follow.ts` turns each follow into one GitHub search, and `fetchFollowing()` in `src/lib/github.ts` sends them eight to a request:
+
+- A repo (`repo:owner/name`) or an org or account (`user:owner`), with a rule. **With labels** keeps issues carrying one of your labels (good first issue and help wanted to start). **Filed by maintainers** keeps issues opened by owners, members and collaborators, as far as GitHub shows membership. **Every new issue** keeps all of them.
+- A maintainer (`@login`): new issues they file anywhere.
+- Every search wants open, unassigned issues with no linked PR (`no:assignee -linked:pr`), newest first. Each issue is then marked free, asked for (someone else's claim comment in the last 21 days), or covered by a PR that only mentions it.
+- The free-issue scan ignores the rule: any label, recently active first, keeping only free ones.
+- One person filing the same issue in three or more repos shows once, with "+N repos".
+- A follow is checked against GitHub when you add it, so a typo or an archived repo says so instead of quietly finding nothing.
+- Checks run when the page opens and reuse anything under 15 minutes old. Skipped issues, with your reason, never come back unless you bring them back. Following needs a token: checking even a few follows takes more searches than GitHub gives a guest.
 
 ## Data sources
 

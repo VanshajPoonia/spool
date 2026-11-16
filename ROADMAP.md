@@ -139,6 +139,8 @@ Asked for "subtle colours, heavily inspired by the Linear website". The strip ba
 - A guest's October count sees public PRs only, and GitHub allows 10 searches a minute without a token, shared by everyone on the same network.
 - The plan only sees what the board loads: a thread that drops off the board (say, merged more than 21 days ago) leaves the plan too, though its placement and priority stay saved.
 - Watched-issue cards show what Discover last checked; the Plan tab never asks GitHub itself.
+- Following needs a token. A guest could check one or two follows within GitHub's 10 searches a minute, which isn't worth the confusion yet.
+- "Filed by maintainers" trusts GitHub's author association, so maintainers who hide their org membership look like outsiders and their issues drop out. Every new issue is the safer rule for such projects (Headlamp, for one).
 
 ## Follow-ups
 
@@ -199,14 +201,15 @@ From the tracker's claimed and in-progress cards and its claim check. Lives in `
 - [x] An issue your own PR links to drops out of claims and is just watched
 
 ### Phase 4: Follow repos, orgs and maintainers
-From the watch rules in `repos.tsv`, the free-issue scan and the tracker's Skipped list.
+From the watch rules in `repos.tsv`, the free-issue scan and the tracker's Skipped list. Lives in `lib/follow.ts`, `fetchFollowing()` and `resolveFollowTarget()` in `lib/github.ts`, `meta.follows` and `meta.skipped` in the store, and `components/app/FollowingView.tsx` (the Following tab).
 
-- [ ] Follow a repo or an org with a rule: issues with chosen labels, issues filed by maintainers, or every new issue
-- [ ] Follow a maintainer: new issues they file anywhere
-- [ ] A free-issue scan of anything you follow: any age, any label, no assignee, no linked PR, no claim comment in the last 21 days
-- [ ] Skip an issue with a reason, so it never comes back
-- [ ] One person filing the same issue in many repos shows once, as "(+N repos)"
-- [ ] Checks run only while Spool is open and stay inside GitHub's search allowance
+- [x] Follow a repo or an org with a rule: issues with chosen labels, issues filed by maintainers, or every new issue
+- [x] Follow a maintainer: new issues they file anywhere
+- [x] A free-issue scan of anything you follow: any age, any label, no assignee, no linked PR, no claim comment in the last 21 days
+- [x] Skip an issue with a reason, so it never comes back (and bring it back from the Skipped list)
+- [x] One person filing the same issue in many repos shows once, as "(+N repos)"
+- [x] Checks run only while Spool is open and stay inside GitHub's search allowance: 20 follows at most, eight searches to a request, results reused for 15 minutes
+- [x] New since you last marked them seen, counted per follow; Watch sends an issue to Discover's watched list
 
 ### Phase 5: Can an outsider land work here?
 From the playbook's per-org table. Replaces "Is this repo worth contributing to?". Read from public data, for any repo you discover, shortlist or follow.
