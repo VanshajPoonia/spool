@@ -244,6 +244,9 @@ export function ProgramsView({ data }: { data: Programs }) {
                   )}
                 </ul>
               )}
+              <p className={s.earlier}>
+                <Link href="/board/programs/gsoc#earlier">Organisations from earlier years</Link>, the likeliest to come back next year.
+              </p>
             </>
           )}
         </section>
@@ -337,6 +340,35 @@ export function ProgramsView({ data }: { data: Programs }) {
                   )}
                 </ul>
               </>
+            )}
+          </section>
+
+          <section className={p.panel}>
+            <div className={p.panelHead}>
+              <div>
+                <h2>Open source YC startups</h2>
+                <p>
+                  {data.ycOpen ? `${data.ycOpen.total} from past batches, ${data.ycOpen.hiring} hiring. Newest first.` : "The company list didn't answer."}
+                </p>
+              </div>
+              <Link className={p.btn} href="/board/programs/yc">
+                Browse all <ArrowRight size={14} aria-hidden="true" />
+              </Link>
+            </div>
+            {data.ycOpen && (
+              <ul className={p.list}>
+                {data.ycOpen.latest.map((c) => (
+                  <li key={c.slug} className={s.launch}>
+                    <div className={p.itemMain}>
+                      <a href={c.website ?? c.ycUrl} target="_blank" rel="noreferrer" className={p.itemTitle}>
+                        {c.name}
+                      </a>
+                      <span className={p.itemSub}>{c.oneLiner}</span>
+                    </div>
+                    <span className={p.mono}>{c.batch}</span>
+                  </li>
+                ))}
+              </ul>
             )}
           </section>
 
