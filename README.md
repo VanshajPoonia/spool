@@ -32,7 +32,7 @@ Open `/board?demo=1` to explore with sample data, or paste a GitHub token on the
 | `/board/repos` | Every repo you've contributed to: opened, merged, closed, merge rate, median time to merge, your own repos |
 | `/board/repos/[owner]/[name]` | One repo's timetable |
 | `/board/discover` | Young repos and unclaimed good first issues for your interests, plus a shortlist |
-| `/board/programs` | GSoC timeline and orgs matching your interests, YC deadline, your October PRs, Product Hunt launches |
+| `/board/programs` | GSoC timeline and orgs matching your interests, YC deadline, your October PRs (from a username as a guest), Product Hunt launches |
 | `/board/settings` | Token, board rules, interests, light theme, motion and sound, export/import/erase |
 
 Keyboard on the board: `j`/`k` move, `Enter` opens details, `o` opens on GitHub, `p` pins, `s` snoozes a day, `/` filters, `Shift E` marks everything seen, `?` lists shortcuts.

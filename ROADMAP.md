@@ -135,16 +135,18 @@ Asked for "subtle colours, heavily inspired by the Linear website". The strip ba
 - Years in GSoC go back only as far as the program API publishes org lists (2022 today).
 - A guest's 60 calls an hour are per network, not per person: people behind one office or campus address share them.
 - Without a `GITHUB_TOKEN` on the server, guest searches share GitHub's 10 searches a minute for the whole site. Results are cached for an hour, and a failed search isn't cached, but a busy cold start can show "rate-limiting, try again in a minute". Set `GITHUB_TOKEN` (no scopes needed) when deploying.
-- Guest good first issues are sorted by activity before the 30-star filter, because sorting by age let one repo filing issues in bulk fill the list. Busy issues may already have someone asking for them; watch one to find out.
-- Hacktoberfest's October count still needs a token for guests.
+- Good first issues, for guests and tokens alike, are sorted by activity before the 30-star filter, because sorting by age let one repo filing issues in bulk fill the list. Busy issues may already have someone asking for them; watch one to find out.
+- A guest's October count sees public PRs only, and GitHub allows 10 searches a minute without a token, shared by everyone on the same network.
 - The plan only sees what the board loads: a thread that drops off the board (say, merged more than 21 days ago) leaves the plan too, though its placement and priority stay saved.
 - Watched-issue cards show what Discover last checked; the Plan tab never asks GitHub itself.
 
 ## Next
 
 ### Guest follow-ups
-- [ ] October count for guests from a GitHub username (one public search, no token)
-- [ ] Same "sort by activity" fix for the signed-in good first issue search
+Lives in `fetchOctoberPublic()` and `parseLogin()` in `lib/github.ts`, the guest form in `components/app/ProgramsView.tsx`, `guestLogin` in the settings store, and `pickFirstIssues()` in `lib/first-issues.ts`.
+
+- [x] October count for guests from a GitHub username (one public search, no token). The name is kept in this browser and counted again on the next visit
+- [x] Same "sort by activity" fix for the signed-in good first issue search. Both searches now share one picker: 30+ stars, two issues per repo at most
 
 ### Plan follow-ups
 - [ ] Add a shortlisted repo or saved GSoC organisation to the plan as a card
