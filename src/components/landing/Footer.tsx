@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { KeyboardEvent, useMemo, useRef, useState } from "react";
+import { NAV } from "@/components/app/nav";
 import { PrintText } from "@/components/print/PrintText";
 import { setPrefs, usePrefs } from "@/lib/prefs";
 import { useSectionFace } from "./mood";
@@ -122,11 +123,11 @@ export function Footer({ lines }: { lines: string[] }) {
           <p>Read-only toward GitHub. Your token stays in this browser.</p>
         </div>
         <nav aria-label="Footer" className={s.links}>
-          <Link href="/board">Your bay</Link>
-          <Link href="/board/repos">Repos</Link>
-          <Link href="/board/discover">Discover</Link>
-          <Link href="/board/programs">Programs</Link>
-          <Link href="/board/settings">Settings</Link>
+          {NAV.map((n) => (
+            <Link key={n.href} href={n.href}>
+              {n.label}
+            </Link>
+          ))}
         </nav>
         <div className={s.toggles}>
           <button type="button" aria-pressed={prefs.theme === "light"} onClick={() => setPrefs({ theme: prefs.theme === "light" ? "dark" : "light" })}>

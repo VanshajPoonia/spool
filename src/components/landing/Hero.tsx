@@ -61,7 +61,7 @@ export function Hero({ yc }: { yc: YC | null }) {
             </StripLink>
           </div>
           <p className={s.guest}>
-            No token? <Link href="/board/discover">Browse as a guest</Link>: Discover, your plan, GSoC and programs work without one.
+            No token? <Link href="/board/discover">Browse as a guest</Link>: Find, your plan, GSoC and programs work without one.
           </p>
         </div>
         <NextDeadline yc={yc} />
