@@ -6,6 +6,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { PrintText } from "@/components/print/PrintText";
 import { fetchOctober, fetchOctoberPublic, parseLogin, type OctoberPr } from "@/lib/github";
 import { daysUntil, gsocNext, gsocPhase, gsocStations, hacktoberfest, parseMonthDay } from "@/lib/program-dates";
+import { CATALOG } from "@/lib/catalog";
 import { matchOrg, tagMatches, words } from "@/lib/interests";
 import type { Programs } from "@/lib/programs";
 import { updateSettings, useAuth, useSettings } from "@/lib/store";
@@ -368,6 +369,86 @@ export function ProgramsView({ data }: { data: Programs }) {
             )}
           </section>
         </div>
+      </div>
+
+      <div className={`${p.grid2} ${s.more}`}>
+        <section className={p.panel}>
+          <div className={p.panelHead}>
+            <div>
+              <h2>More programs</h2>
+              <p>Each on its own site. Dates show only where the program publishes them in a form Spool can read; otherwise check the site.</p>
+            </div>
+          </div>
+          <ul className={p.list}>
+            {CATALOG.map((c) => (
+              <li key={c.id} className={s.program}>
+                <div className={p.itemMain}>
+                  <span className={s.programHead}>
+                    <a href={c.url} target="_blank" rel="noreferrer" className={p.itemTitle}>
+                      {c.name}
+                    </a>
+                    <span className={s.pay} data-pay={c.pay === "Unpaid" ? "no" : "yes"}>
+                      {c.pay}
+                    </span>
+                  </span>
+                  <span className={s.what}>{c.what}</span>
+                  {c.id === "lfx" && data.lfx.length > 0 ? (
+                    <ul className={s.terms}>
+                      {data.lfx
+                        .filter((t) => !now || t.milestones.some((m) => Date.parse(`${m.end ?? m.start}T23:59:00Z`) >= now))
+                        .map((t) => (
+                          <li key={t.id}>
+                            <a href={t.url} target="_blank" rel="noreferrer">
+                              {t.label}
+                            </a>
+                            <span>{t.milestones.map((m) => `${m.label} ${fmtDate(m.start)}${m.end ? ` to ${fmtDate(m.end)}` : ""}`).join(" · ")}</span>
+                          </li>
+                        ))}
+                    </ul>
+                  ) : (
+                    <span className={s.check}>
+                      Dates: check the site
+                      {c.extra && (
+                        <>
+                          {" · "}
+                          <a href={c.extra.url} target="_blank" rel="noreferrer">
+                            {c.extra.label}
+                          </a>
+                        </>
+                      )}
+                    </span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className={p.panel}>
+          <div className={p.panelHead}>
+            <div>
+              <h2>Program news</h2>
+              <p>GSoC and Season of Docs posts from Google&rsquo;s Open Source blog, plus Outreachy, CNCF mentorship and Summer of Bitcoin, from the last six months.</p>
+            </div>
+          </div>
+          {data.news.length === 0 ? (
+            <p className={p.empty}>None of the feeds answered, or nothing new in six months.</p>
+          ) : (
+            <ul className={p.list}>
+              {data.news.map((n) => (
+                <li key={n.url} className={s.launch}>
+                  <div className={p.itemMain}>
+                    <a href={n.url} target="_blank" rel="noreferrer" className={p.itemTitle}>
+                      {n.title}
+                    </a>
+                    <span className={p.itemSub}>{n.source}</span>
+                  </div>
+                  <span className={p.mono}>{fmtDate(n.published)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
     </div>
   );
