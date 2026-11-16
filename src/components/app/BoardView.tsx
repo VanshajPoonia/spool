@@ -12,6 +12,7 @@ import { openPrsByOwner } from "@/lib/outsider";
 import { prioRank, threadKey, type Prio } from "@/lib/plan";
 import { planStoreFor, setPrio, snooze, togglePin, updateSettings, useMeta, useSettings } from "@/lib/store";
 import { useBoard } from "./BoardProvider";
+import { FirstRun } from "./FirstRun";
 import { TodayStrip } from "./Today";
 import { ThreadDetail } from "./ThreadDetail";
 import { ThreadRow } from "./ThreadRow";
@@ -464,6 +465,7 @@ export function BoardView() {
         <Loader />
       ) : (
         <>
+          <FirstRun />
           {pending.length > 0 && (
             <p className={s.pending} role="status">
               <span className="shimmer">Still reading {pending.join(", ")}…</span>

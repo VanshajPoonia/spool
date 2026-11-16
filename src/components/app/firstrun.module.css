@@ -1,0 +1,99 @@
+/* the first-run tour: one small card above the board, three steps */
+
+.card {
+  display: grid;
+  gap: 6px;
+  max-width: 640px;
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--accent) 8%, var(--bay-2));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 30%, transparent);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.count {
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-3);
+}
+
+.close:hover {
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
+  color: var(--ink);
+}
+
+.title {
+  margin: 0;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.body {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.next,
+.back {
+  height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.next {
+  background: var(--ink);
+  color: var(--console);
+}
+
+.back {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-2);
+}
+
+.dots {
+  display: flex;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rule-2);
+}
+
+.dots span[data-on] {
+  background: var(--accent);
+}
