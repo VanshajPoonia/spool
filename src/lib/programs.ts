@@ -100,10 +100,13 @@ export async function getGsoc(): Promise<Gsoc | null> {
 }
 
 function unescapeHtml(s: string) {
+  // &amp; first, so a double-escaped "&amp;apos;" comes out as an apostrophe too.
   return s
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
     .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&(#39|apos);/g, "'")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+    .replace(/&#x([\da-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">");
 }
