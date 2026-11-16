@@ -40,6 +40,10 @@ type Spec = {
   checks?: [string, "fail" | "wait"][];
   /** bot, state, when, inline comments */
   botReviews?: [string, string, number, number][];
+  /** claims: when you asked to take it, when you were assigned, other people's PRs for it */
+  ask?: number;
+  assignedAgo?: number;
+  prs?: [number, string][];
 };
 
 const ME = SAMPLE_LOGIN;
@@ -56,7 +60,7 @@ const SPECS: Spec[] = [
   { repo: "harbor-sh/harbor", num: 5051, kind: "issue", title: "Retry budget per host", author: ME, created: 30 * D, sources: ["myIssues"], comments: [["ilya", 19 * D], [ME, 17 * D]], lang: "Go" },
   { repo: "harbor-sh/harbor", num: 5133, kind: "pr", title: "Batch DNS lookups in the resolver", author: "ilya", created: 2 * D, sources: ["review"], commit: 1 * D, ci: "SUCCESS", reviewers: [ME], decision: "REVIEW_REQUIRED", lang: "Go" },
   { repo: `${ME}/dotfiles-sync`, num: 12, kind: "pr", title: "Support the XDG config directory", author: "kenji-w", created: 20 * H, sources: ["incoming"], commit: 20 * H, ci: "SUCCESS", lang: "Shell" },
-  { repo: "tinyorbit/orbit-cli", num: 84, kind: "issue", title: "--json output for status", author: "noor", created: 6 * D, sources: ["assigned"], assignees: [ME], comments: [["noor", 6 * D]], lang: "Go" },
+  { repo: "tinyorbit/orbit-cli", num: 84, kind: "issue", title: "--json output for status", author: "noor", created: 6 * D, sources: ["assigned"], assignees: [ME], comments: [["noor", 6 * D]], assignedAgo: 6 * D, lang: "Go" },
   { repo: "mossjs/moss", num: 1180, kind: "issue", title: "Drop Node 18 in the next major", author: "ana-r", created: 9 * D, sources: ["mentions", "commented"], comments: [[ME, 5 * D], ["ana-r", 2 * D]], lang: "JavaScript" },
   { repo: "vela-dev/vela", num: 655, kind: "issue", title: "Plugin API v2 RFC", author: "tomasz", created: 12 * D, sources: ["commented"], comments: [["lena", 4 * D], [ME, 2 * D]], lang: "TypeScript" },
   { repo: "fernlang/fern", num: 320, kind: "issue", title: "Async closures design", author: "kit-o", created: 10 * D, sources: ["commented"], comments: [[ME, 3 * D], ["kit-o", 10 * H]], lang: "Rust" },
@@ -69,6 +73,9 @@ const SPECS: Spec[] = [
   { repo: "ripple-rs/ripple", num: 97, kind: "pr", title: "Frame pacing with a fixed timestep", author: ME, created: 1 * D, sources: ["mine"], commit: 9 * H, ci: "SUCCESS", botReviews: [["review-bot", "COMMENTED", 7 * H, 3]], lang: "Rust" },
   { repo: "vela-dev/vela", num: 668, kind: "pr", title: "Stream large uploads to disk", author: ME, created: 5 * D, sources: ["mine"], comments: [[ME, 1 * D]], reviews: [["lena", "COMMENTED", 2 * D]], commit: 2 * D + 6 * H, ci: "SUCCESS", threads: [["lena", false], ["lena", false], ["lena", true]], lang: "TypeScript" },
   { repo: "fernlang/fern", num: 330, kind: "discussion", title: "Syntax for effect handlers", author: "kit-o", created: 11 * D, sources: ["discussions"], comments: [[ME, 3 * D], ["kit-o", 8 * H]], lang: "Rust" },
+  { repo: "harbor-sh/harbor", num: 5160, kind: "issue", title: "Expose pool stats on the metrics endpoint", author: "ilya", created: 7 * D, sources: ["commented"], comments: [[ME, 5 * D]], ask: 5 * D, lang: "Go" },
+  { repo: "lattice/lattice-ui", num: 915, kind: "issue", title: "Combobox: announce the result count", author: "devon", created: 15 * D, sources: ["commented", "assigned"], comments: [[ME, 13 * D], ["devon", 12 * D]], ask: 13 * D, assignees: [ME], assignedAgo: 12 * D, lang: "TypeScript" },
+  { repo: "mossjs/moss", num: 1188, kind: "issue", title: "Resolver: cache negative lookups", author: "ana-r", created: 10 * D, sources: ["commented"], comments: [[ME, 8 * D]], ask: 8 * D, prs: [[1192, "jin-l"]], lang: "JavaScript" },
 ];
 
 const human = (login: string) => ({ __typename: "User", login });
@@ -104,6 +111,14 @@ export function sampleBoard(now = Date.now()): RawBoard {
             threads: (sp.threads ?? []).map(([a, outdated]) => ({ isResolved: false, isOutdated: outdated, lastAuthor: human(a) })),
             ciApproval: !!sp.approval,
             checks: (sp.checks ?? []).map(([name, state]) => ({ name, state, url: null })),
+          }
+        : undefined,
+    claimDetail:
+      sp.kind === "issue" && sp.author !== ME && (sp.ask || sp.assignedAgo)
+        ? {
+            askedAt: sp.ask ? iso(sp.ask) : null,
+            assignedAt: sp.assignedAgo ? iso(sp.assignedAgo) : null,
+            prs: (sp.prs ?? []).map(([n, a]) => ({ number: n, url: `https://github.com/${sp.repo}/pull/${n}`, state: "OPEN", author: a })),
           }
         : undefined,
     reviewRequests: { nodes: (sp.reviewers ?? []).map((r) => ({ requestedReviewer: { login: r } })) },
