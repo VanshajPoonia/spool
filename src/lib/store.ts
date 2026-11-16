@@ -1,6 +1,8 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { diffBoards, snapOf, type Change, type Snap } from "./changes";
+import type { Thread } from "./classify";
 import { EMPTY_PLAN, SAMPLE_PLAN, taskKey, type Col, type Plan, type Prio } from "./plan";
 import { watchKey, type WatchedIssue, type WatchItem } from "./watch";
 
@@ -233,6 +235,48 @@ export const watchCacheStore = createStore<{ who: string | null; at: string | nu
   issues: {},
 });
 
+/* ---------- since you last looked: what changed between board loads, until you handle it ---------- */
+
+type ChangesBox = {
+  login: string | null;
+  /** the stalled limit the baseline was classified with; changing it re-baselines instead of reporting every thread */
+  staleDays: number | null;
+  baseline: Record<string, Snap> | null;
+  items: Record<string, Change>;
+  /** what the latest load found, so notifications fire once per load */
+  batch: { at: string; ids: string[] } | null;
+};
+
+export const changesStore = createStore<ChangesBox>("spool:changes", { login: null, staleDays: null, baseline: null, items: {}, batch: null });
+
+/** A fresh board joins the record: what changed since the last one is added, and it becomes the new baseline. */
+export function recordBoard(login: string, staleDays: number, threads: Thread[]) {
+  const at = new Date().toISOString();
+  changesStore.update((c) => {
+    const comparable = c.login === login && c.staleDays === staleDays && c.baseline;
+    const pending = c.login === login ? c.items : {};
+    const found = comparable ? diffBoards(c.baseline!, threads, login, at, pending) : [];
+    const items = { ...pending };
+    for (const ch of found) items[ch.id] = ch;
+    return {
+      login,
+      staleDays,
+      baseline: Object.fromEntries(threads.map((t) => [t.id, snapOf(t)])),
+      items,
+      batch: found.length ? { at, ids: found.map((f) => f.id) } : c.batch,
+    };
+  });
+}
+
+export function handleChanges(ids: string[] | "all") {
+  changesStore.update((c) => {
+    if (ids === "all") return { ...c, items: {} };
+    const items = { ...c.items };
+    for (const id of ids) delete items[id];
+    return { ...c, items };
+  });
+}
+
 /* ---------- GitHub usage, exactly as GitHub reports it on each response ---------- */
 
 export type RateWindow = { remaining: number; limit: number; resetAt: string; at: string };
@@ -347,6 +391,7 @@ export function wipeAll() {
   metaStore.clear();
   cacheStore.clear();
   watchCacheStore.clear();
+  changesStore.clear();
   usageStore.clear();
   planStore.clear();
   samplePlanStore.clear();

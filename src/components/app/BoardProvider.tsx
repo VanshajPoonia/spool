@@ -5,7 +5,7 @@ import { assignCodes } from "@/lib/carriers";
 import { classify, type Thread } from "@/lib/classify";
 import { fetchBoard, fetchHistory, GitHubError, type History, type RawBoard } from "@/lib/github";
 import { SAMPLE_LOGIN, sampleBoard, sampleHistory } from "@/lib/sample-board";
-import { cacheStore, markSeen, readMeta, updateSettings, useAuth, useMeta, useSettings } from "@/lib/store";
+import { cacheStore, markSeen, readMeta, readSettings, recordBoard, updateSettings, useAuth, useMeta, useSettings } from "@/lib/store";
 import { useHydrated, useNow } from "@/lib/time";
 
 /** live: your token. sample: invented board. guest: no token, public data only. none: before the browser store is read. */
@@ -98,6 +98,8 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         setRaw(b);
         setError(null);
         cacheStore.write({ board: b, at: b.fetchedAt, login });
+        const { staleDays } = readSettings();
+        recordBoard(login, staleDays, b.nodes.map((n) => classify(n, login, staleDays, Date.parse(b.fetchedAt))));
         // First ever load: treat everything already there as seen.
         if (Object.keys(readMeta().seen).length === 0) {
           markSeen(b.nodes.map((n) => ({ id: n.id, at: new Date().toISOString() })));
