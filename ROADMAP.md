@@ -178,7 +178,7 @@ From the tracker's board sweep. The PR signals live in `addPrDetail()` in `lib/g
 - [x] A failing CLA or DCO check says so, with a link to sign; other failing checks are named
 - [x] Checks waiting for a maintainer to approve the run are their move, not yours ("CI on hold")
 - [x] CLA Assistant's comments no longer count as a person having the last word
-- [ ] GitHub Discussions you started, commented on or were mentioned in
+- [x] GitHub Discussions you started, commented on or were mentioned in: a third kind of thread with its own label, filter, plan card and timeline. Lives in the `discussions` search and `fromDiscussion()` in `lib/github.ts`
 
 ### Phase 2: Since you last looked
 The watcher's inbox, without a server: compare the saved board with a fresh load.

@@ -55,12 +55,13 @@ Keyboard on the board: `j`/`k` move, `Enter` opens details, `o` opens on GitHub,
 
 - Your PR is **on you**, in this order, when it's a draft; a CLA or DCO check waits on you (with a link to sign); it conflicts with the base branch; checks are failing (named, when Spool could read them); changes were requested; someone else spoke last; a review thread on the current code waits on your reply; or a bot reviewed it with comments after your last push. Approved means waiting on a merge. Otherwise it's **on them**: `CI on hold` when a maintainer has to approve the workflow runs first, and `STALLED nD` past your stalled limit (default 14 days).
 - Your issue: someone else spoke last means on you; otherwise on them.
+- A discussion you started works like your issue, and counts as done once it's answered or closed. Discussions you only joined are watching. Discussions in archived repos are left out.
 - Review requested from you, a PR opened on your repo, an issue assigned to you, or a mention answered by someone else: on you.
 - Threads you only commented on: watching.
 
 ## Data sources
 
-- GitHub GraphQL and REST, from the browser with your token (`src/lib/github.ts`). Three searches load the board in parallel. Then one lookup by id reads your own open PRs' branch state, review threads, bot reviews, workflow approvals and check names. It's kept apart because searching your PRs alone uses about 8 of the 10 seconds GitHub allows a request.
+- GitHub GraphQL and REST, from the browser with your token (`src/lib/github.ts`). Three requests load the board in parallel, nine searches in all, one of them for discussions. Then one lookup by id reads your own open PRs' branch state, review threads, bot reviews, workflow approvals and check names. It's kept apart because searching your PRs alone uses about 8 of the 10 seconds GitHub allows a request.
 - GSoC: `summerofcode.withgoogle.com/api/program/` and `/api/program/<year>/organizations/`
 - YC: the batch and deadline fields on `ycombinator.com/apply`
 - Product Hunt: `producthunt.com/feed` (Atom)
