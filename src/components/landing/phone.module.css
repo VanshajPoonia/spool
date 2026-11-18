@@ -121,8 +121,10 @@
 
 /* ---------- the phone ----------
    A phone body in the window's materials: a raised rim lit along its top edge around one screen. */
+/* the phone sits against its copy, one section gap away, rather than out at the gutter */
 .stage {
   grid-area: stage;
+  justify-self: end;
 }
 
 .phone {
