@@ -382,6 +382,15 @@
   font-size: 13px;
 }
 
+/* every thread in the tour is invented, so the head says so */
+.headTag {
+  margin-left: auto;
+}
+
+.headTag + .sync {
+  margin-left: 0;
+}
+
 .sync {
   display: inline-flex;
   align-items: center;
@@ -1669,6 +1678,10 @@
   color: var(--ink-2);
 }
 
+.chapterNow {
+  display: none;
+}
+
 /* ---------- narrower ---------- */
 
 @media (max-width: 1080px) {
@@ -1707,6 +1720,14 @@
   }
   .chapterBody {
     display: none;
+  }
+  .chapterNow {
+    display: block;
+    max-width: 60ch;
+    margin-top: 10px;
+    color: var(--ink-2);
+    font-size: 14px;
+    line-height: 1.55;
   }
   .chapterTitle {
     font-size: 12.5px;

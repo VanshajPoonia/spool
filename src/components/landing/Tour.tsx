@@ -692,6 +692,7 @@ function BayView({ sc, rows }: { sc: Scene; rows: Row[] }) {
             {stalled} stalled
           </span>
         )}
+        <span className={`${sec.tag} ${s.headTag}`}>Sample data</span>
         <span className={s.sync} data-on={sc.syncing || undefined}>
           <RefreshCw size={13} strokeWidth={2} />
           {sc.syncing ? "Syncing…" : "Synced just now"}
@@ -965,6 +966,7 @@ function PlanView({ sc, rows }: { sc: Scene; rows: Row[] }) {
       <div className={s.head}>
         <p className={s.headTitle}>Plan</p>
         <span className={s.headNote}>Your plan stays in this browser.</span>
+        <span className={`${sec.tag} ${s.headTag}`}>Sample data</span>
       </div>
       <div className={s.next} key={pick.r.id}>
         <span className={s.nextLabel}>Work on next</span>
@@ -1340,6 +1342,7 @@ export function Tour() {
                 </li>
               ))}
             </ol>
+            <p className={s.chapterNow}>{CHAPTERS[ch].body}</p>
           </div>
         </div>
       </div>
