@@ -1,14 +1,15 @@
 /* Spool on a phone: the app 390 pixels wide in a phone, three steps beside it, the feedback link under them. */
 
+/* the same two columns as every section head, so the copy starts on the page's lede line */
 .layout {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-template-rows: auto auto 1fr;
   grid-template-areas:
     "stage head"
     "stage steps"
     "stage feedback";
-  column-gap: clamp(48px, 7vw, 120px);
+  column-gap: clamp(32px, 6vw, 96px);
   align-items: start;
 }
 
@@ -26,7 +27,7 @@
   grid-area: steps;
   display: grid;
   gap: 4px;
-  max-width: 480px;
+  max-width: 560px;
 }
 
 .step {
@@ -101,7 +102,7 @@
   display: grid;
   justify-items: start;
   gap: 16px;
-  max-width: 480px;
+  max-width: 560px;
   margin-top: 32px;
   padding-top: 24px;
   border-top: 1px solid var(--rule);
@@ -738,11 +739,7 @@
     justify-self: center;
   }
   .feedback {
-    justify-self: center;
-    justify-items: center;
-    text-align: center;
     margin-top: 40px;
-    border-top: 0;
   }
 }
 

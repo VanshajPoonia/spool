@@ -32,7 +32,7 @@ const STEPS = [
   {
     id: "follow",
     title: "Follows sit on two lines",
-    body: "The repo, org or person and its new issues on top, the rule underneath. Nothing scrolls sideways.",
+    body: "The repo, org or person and its new issues on top, the rule underneath, so each one fits the screen.",
     face: FACES.watch,
   },
   {
@@ -337,8 +337,8 @@ export function Phone() {
             The same bay on your phone.
           </h2>
           <p className={sec.lede}>
-            Spool fits a screen 390 pixels wide without scrolling sideways. On a wide screen this phone is drawn at that
-            size, with the sample bay from above.
+            Spool fits a screen 390 pixels wide, and the page never scrolls sideways. On a wide screen this phone is
+            drawn at that size, with the sample bay from above.
           </p>
         </div>
 
