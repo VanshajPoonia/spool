@@ -6,6 +6,7 @@ import { Gsoc } from "@/components/landing/Gsoc";
 import { Hero } from "@/components/landing/Hero";
 import { Inbound } from "@/components/landing/Inbound";
 import { MoodProvider } from "@/components/landing/mood";
+import { Phone } from "@/components/landing/Phone";
 import { Pickup } from "@/components/landing/Pickup";
 import { Principles } from "@/components/landing/Principles";
 import { Programs } from "@/components/landing/Programs";
@@ -64,6 +65,7 @@ export default async function Home() {
           <Programs data={programs} />
           <Gsoc data={programs.gsoc} fetchedAt={programs.fetchedAt} />
         </Chapter>
+        <Phone />
         <SignOn />
       </main>
       <Footer lines={footerLines(programs.yc)} />

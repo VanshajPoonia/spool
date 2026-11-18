@@ -1,0 +1,773 @@
+/* Spool on a phone: the app 390 pixels wide in a phone, three steps beside it, the feedback link under them. */
+
+.layout {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto 1fr;
+  grid-template-areas:
+    "stage head"
+    "stage steps"
+    "stage feedback";
+  column-gap: clamp(48px, 7vw, 120px);
+  align-items: start;
+}
+
+/* the head sits beside the phone here, not across the column, so it stacks title over lede */
+.head {
+  grid-area: head;
+  display: grid;
+  gap: 18px;
+  margin-bottom: clamp(24px, 3vw, 40px);
+}
+
+/* ---------- the steps ---------- */
+
+.steps {
+  grid-area: steps;
+  display: grid;
+  gap: 4px;
+  max-width: 480px;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 14px 0 16px 20px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-3);
+  text-align: left;
+  transition: color var(--dur-quick) var(--ease-quad);
+}
+
+.step:hover,
+.step[aria-selected="true"] {
+  color: var(--ink);
+}
+
+/* a rule down the left that lights for the picked step */
+.stepBar {
+  position: absolute;
+  top: 14px;
+  bottom: 16px;
+  left: 0;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--rule-2);
+  overflow: hidden;
+}
+
+.stepBar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 420ms var(--ease-out);
+}
+
+.step[aria-selected="true"] .stepBar::after {
+  transform: scaleY(1);
+}
+
+.stepTitle {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.stepBody {
+  color: var(--ink-3);
+  font-size: 14px;
+  line-height: 1.55;
+  transition: color var(--dur-quick) var(--ease-quad);
+}
+
+.step[aria-selected="true"] .stepBody {
+  color: var(--ink-2);
+}
+
+.stepNow {
+  display: none;
+}
+
+/* ---------- feedback ---------- */
+
+.feedback {
+  grid-area: feedback;
+  align-self: end;
+  display: grid;
+  justify-items: start;
+  gap: 16px;
+  max-width: 480px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+}
+
+.feedback p {
+  color: var(--ink-2);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.feedback strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* ---------- the phone ----------
+   A phone body in the window's materials: a raised rim lit along its top edge around one screen. */
+.stage {
+  grid-area: stage;
+}
+
+.phone {
+  position: relative;
+  width: 406px;
+  padding: 8px;
+  border-radius: 44px;
+  background: color-mix(in oklab, var(--console) 55%, var(--bay));
+  box-shadow:
+    inset 0 0 0 1px var(--rule-2),
+    inset 0 1px 0 color-mix(in oklab, var(--ink) 8%, transparent),
+    0 30px 60px -30px rgba(0, 0, 0, 0.8);
+}
+
+.screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 390px;
+  height: 720px;
+  border-radius: 36px;
+  background: var(--bay);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  text-align: left;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* the phone bar: brand, Search and sync, then the places in a strip whose far edge fades */
+.bar {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 4px;
+  padding: 14px 12px 6px 16px;
+  background: var(--glass);
+  backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow: 0 1px 0 var(--rule);
+}
+
+.barTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 15px;
+  font-weight: 590;
+  letter-spacing: -0.01em;
+}
+
+.face {
+  display: inline-grid;
+  place-items: center;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 6px;
+  background: var(--bay-3);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-2);
+  font-family: var(--font-print);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.barEnd {
+  display: flex;
+  gap: 4px;
+}
+
+.barBtn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 30px;
+  border-radius: 6px;
+  color: var(--ink-3);
+  transition:
+    background-color var(--dur-quick) var(--ease-quad),
+    color var(--dur-quick) var(--ease-quad);
+}
+
+.barBtn[data-on] {
+  background: color-mix(in oklab, var(--ink) 8%, transparent);
+  color: var(--ink);
+}
+
+.places {
+  display: flex;
+  gap: 2px;
+  margin: 0 -12px 0 -16px;
+  padding: 0 40px 0 12px;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent);
+}
+
+.place {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 6px;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 450;
+}
+
+.place svg {
+  color: var(--ink-3);
+}
+
+.place[data-on] {
+  background: color-mix(in oklab, var(--ink) 7%, transparent);
+  color: var(--ink);
+}
+
+.placeCount {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--move) 16%, transparent);
+  color: var(--move-text);
+  font-size: 11.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* the sample band, down to one line on a phone */
+.sample {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 12px 7px 16px;
+  border-bottom: 1px solid var(--rule);
+  background: color-mix(in oklab, var(--ink) 2.5%, transparent);
+}
+
+.sampleOut {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--quiet-bg);
+  box-shadow: var(--quiet-ring);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.content {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  animation: screen-in 380ms var(--ease-out) both;
+}
+
+@keyframes screen-in {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+
+/* ---------- a page, as the app pads it on a phone ---------- */
+
+.page {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 0 12px 16px;
+}
+
+.pageHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  margin: 0 -12px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+
+.pageTitle {
+  font-size: 18px;
+  font-weight: 510;
+  letter-spacing: -0.016em;
+}
+
+.pageNote {
+  color: var(--ink-3);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.segment {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: auto;
+  padding: 2px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+}
+
+.segment span {
+  display: grid;
+  place-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 6px;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.segment span[data-on] {
+  background: var(--surface-sel);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink);
+}
+
+.sectionHead {
+  padding: 6px 4px 0;
+  font-size: 14px;
+  font-weight: 510;
+}
+
+/* the board's toolbar wraps on a phone: the search takes its own row */
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.search,
+.tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+.search {
+  flex: 1 1 100%;
+  padding: 0 10px;
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
+  color: var(--ink-3);
+}
+
+.tool {
+  padding: 0 10px 0 11px;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+.tool svg {
+  color: var(--ink-3);
+}
+
+.tool b {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.lamp {
+  width: 7px;
+  height: 7px;
+}
+
+.lamp[data-k="stalled"] {
+  border-radius: 2px;
+  background: var(--pencil);
+}
+
+.lamp[data-k="new"] {
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Today: one line when folded, its tools down to icons */
+.todayCount {
+  color: var(--ink-2);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.todayTool {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  color: var(--ink-3);
+}
+
+.fold {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-3);
+  transition:
+    transform 260ms var(--ease-out),
+    background-color var(--dur-hover) var(--ease-quad),
+    color var(--dur-hover) var(--ease-quad);
+}
+
+.fold:hover {
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
+  color: var(--ink);
+}
+
+.fold[aria-expanded="false"] {
+  transform: rotate(-90deg);
+}
+
+.changes {
+  animation: screen-in 360ms var(--ease-out) both;
+}
+
+.changesHead {
+  padding: 8px 12px 2px;
+  color: var(--ink-3);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.changes ul {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.changes li {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 12px;
+}
+
+.changeLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.changeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--landed);
+}
+
+.changes li[data-kind="status"] .changeDot {
+  background: var(--pencil);
+}
+
+.changeTitle {
+  overflow: hidden;
+  font-size: 13px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.changeRef {
+  margin-right: 8px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.rack {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* rows come in one after another when a screen opens */
+.rowIn {
+  animation: screen-in 360ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+/* ---------- Following: each follow on two lines ---------- */
+
+.follows {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.follows li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 30px;
+  grid-template-areas:
+    "target fresh check"
+    "rule rule check";
+  align-items: center;
+  gap: 2px 8px;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.follows li:last-child {
+  border-bottom: 0;
+}
+
+.followTarget {
+  grid-area: target;
+  overflow: hidden;
+  font-family: var(--font-print);
+  font-size: 13.5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.followNew {
+  grid-area: fresh;
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.followBtn {
+  grid-area: check;
+  display: grid;
+  place-items: center;
+  height: 30px;
+  color: var(--ink-3);
+}
+
+.followRule {
+  grid-area: rule;
+  overflow: hidden;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Search: the palette over a dimmed bay ---------- */
+
+.dim {
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+.palette {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 2;
+  display: grid;
+  border-radius: 12px;
+  background: var(--bay-2);
+  box-shadow:
+    inset 0 0 0 1px var(--rule-2),
+    0 18px 40px -8px rgba(0, 0, 0, 0.6);
+  transform-origin: top center;
+  animation: pop 180ms var(--ease-out);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+.palField {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-3);
+}
+
+.palField input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 14px;
+  outline: none;
+  caret-color: var(--accent);
+}
+
+.palField input::placeholder {
+  color: var(--ink-3);
+}
+
+.palField:focus-within {
+  box-shadow: inset 0 -1px 0 var(--accent);
+}
+
+.palList {
+  display: grid;
+  gap: 2px;
+  max-height: 470px;
+  padding: 6px;
+  overflow: hidden;
+}
+
+.palGroup {
+  padding: 8px 8px 4px;
+  color: var(--ink-3);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.palItem {
+  display: grid;
+  gap: 1px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.palItem[data-on] {
+  background: color-mix(in oklab, var(--ink) 7%, transparent);
+}
+
+.palSub {
+  color: var(--ink-3);
+  font-size: 11.5px;
+}
+
+.palEmpty {
+  padding: 14px 8px;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+/* ---------- narrower ---------- */
+
+@media (max-width: 1080px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-template-areas:
+      "head"
+      "steps"
+      "now"
+      "stage"
+      "feedback";
+  }
+  .head {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 18px clamp(32px, 6vw, 96px);
+    margin-bottom: clamp(32px, 4vw, 56px);
+  }
+  .steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(8px, 1.6vw, 20px);
+    max-width: none;
+  }
+  .step {
+    padding: 12px 0 4px;
+  }
+  .stepBar {
+    top: 0;
+    bottom: auto;
+    right: 0;
+    width: auto;
+    height: 2px;
+  }
+  .stepBar::after {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .step[aria-selected="true"] .stepBar::after {
+    transform: scaleX(1);
+  }
+  .stepBody {
+    display: none;
+  }
+  .stepNow {
+    grid-area: now;
+    display: block;
+    max-width: 60ch;
+    margin: 12px 0 28px;
+    color: var(--ink-2);
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+  .stage {
+    justify-self: center;
+  }
+  .feedback {
+    justify-self: center;
+    justify-items: center;
+    text-align: center;
+    margin-top: 40px;
+    border-top: 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* on a phone the drawing is the screen itself: no rim, the full column wide */
+@media (max-width: 560px) {
+  .stage {
+    justify-self: stretch;
+  }
+  .phone {
+    width: 100%;
+    padding: 5px;
+    border-radius: 22px;
+  }
+  .screen {
+    width: 100%;
+    height: 640px;
+    border-radius: 17px;
+  }
+  .stepTitle {
+    font-size: 13.5px;
+  }
+}
