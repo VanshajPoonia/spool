@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useRef } from "react";
+import { ReactNode, useRef, useState, type CSSProperties } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { Bay, Strip, type StripState } from "@/components/kit/Strip";
 import { PrintText } from "@/components/print/PrintText";
@@ -53,7 +53,14 @@ export function Programs({ data }: { data: ProgramsData }) {
   const yc = data.yc;
   const ycDeadline = yc && now ? parseMonthDay(yc.deadline, now, yc.afterDeadline) : null;
   const hf = now ? hacktoberfest(now) : null;
-  const launches = [...data.launches].sort((a, b) => b.published.localeCompare(a.published)).slice(0, 5);
+  const [feed, setFeed] = useState<"programs" | "launches">("programs");
+  const items =
+    feed === "programs"
+      ? data.news.slice(0, 5).map((n) => ({ url: n.url, title: n.title, sub: n.source, published: n.published }))
+      : [...data.launches]
+          .sort((a, b) => b.published.localeCompare(a.published))
+          .slice(0, 5)
+          .map((l) => ({ url: l.url, title: l.title, sub: l.tagline, published: l.published }));
 
   const entries: Entry[] = [];
   if (yc) {
@@ -100,10 +107,10 @@ export function Programs({ data }: { data: ProgramsData }) {
 
   return (
     <section ref={ref} id="programs" className={sec.section} aria-labelledby="programs-title">
-      <SectionHead id="programs-title" title="Deadlines and launches, on one schedule.">
+      <SectionHead id="programs-title" title="Deadlines and news, in one place.">
         The dates open source people plan around: Y Combinator&rsquo;s application deadline, Hacktoberfest and each Google
-        Summer of Code milestone, counted down from today, plus what just launched on Product Hunt. All of it is live and
-        refreshed every few hours.
+        Summer of Code milestone, counted down from today. Beside them, news from the programs and what just launched on
+        Product Hunt. All of it is live and refreshed every few hours.
       </SectionHead>
 
       <div className={s.layout}>
@@ -130,28 +137,50 @@ export function Programs({ data }: { data: ProgramsData }) {
           </ul>
         </Bay>
 
+        {/* the app's News panel: program news and Product Hunt behind one switch */}
         <article className={`${sec.panel} ${s.ph}`} data-shine>
           <header className={s.moduleHead}>
-            <h3>Just launched on Product Hunt</h3>
-            <a href="https://www.producthunt.com" target="_blank" rel="noreferrer" className={s.moduleLink}>
-              Product Hunt
-              <ArrowUpRight size={16} aria-hidden="true" />
-            </a>
+            <h3 id="news-title">News</h3>
+            <span className={s.seg} role="group" aria-label="Which news">
+              <button type="button" aria-pressed={feed === "programs"} onClick={() => setFeed("programs")}>
+                Programs
+              </button>
+              <button type="button" aria-pressed={feed === "launches"} onClick={() => setFeed("launches")}>
+                Product Hunt
+              </button>
+            </span>
           </header>
-          {launches.length ? (
-            <ol className={s.launches}>
-              {launches.map((l) => (
-                <li key={l.url}>
-                  <a href={l.url} target="_blank" rel="noreferrer">
+          <p className={s.newsNote}>
+            {feed === "programs" ? (
+              "GSoC and Season of Docs posts from Google's Open Source blog, plus Outreachy, CNCF mentorship and Summer of Bitcoin."
+            ) : (
+              <>
+                What just launched, from{" "}
+                <a href="https://www.producthunt.com" target="_blank" rel="noreferrer">
+                  Product Hunt
+                  <ArrowUpRight size={13} aria-hidden="true" />
+                </a>
+              </>
+            )}
+          </p>
+          {items.length ? (
+            <ol className={s.launches} key={feed} aria-labelledby="news-title">
+              {items.map((l, i) => (
+                <li key={l.url} style={{ "--i": i } as CSSProperties}>
+                  <a href={l.url} target="_blank" rel="noreferrer" title={l.title}>
                     <span className={s.lTitle}>{l.title}</span>
-                    <span className={s.lTag}>{l.tagline}</span>
+                    <span className={s.lTag}>{l.sub}</span>
                   </a>
                   <span className={s.lDate}>{fmtDate(l.published)}</span>
                 </li>
               ))}
             </ol>
           ) : (
-            <p className={s.down}>Product Hunt&rsquo;s feed didn&rsquo;t answer just now.</p>
+            <p className={s.down}>
+              {feed === "programs"
+                ? "None of the program feeds answered, or nothing new in six months."
+                : "Product Hunt’s feed didn’t answer just now."}
+            </p>
           )}
         </article>
       </div>
