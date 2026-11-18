@@ -42,11 +42,15 @@ Lives in `components/app/FirstRun.tsx`, the phone styles of `today.module.css` a
 - [x] A feedback link that opens a new issue on the repo, in Settings and in Cmd+K
 
 ### Phase 11: The landing page catches up
-Lives in `components/landing/Pickup.tsx` (the new section after Stalled), the Catch up and Plan chapters of `Tour.tsx`, and the footer links, which now come from `NAV`.
+Lives in `components/landing/Pickup.tsx` (the new section after Stalled), `Tour.tsx` (the toolbar, the first load and the first-run card), the News panel in `Programs.tsx`, `Phone.tsx` (the new section before the close), and the footer links, which now come from `NAV`. The first-run steps moved to `components/app/firstRunSteps.ts` and `FEEDBACK_URL` to `lib/site.ts`, so the landing shares them with the app.
 
 - [x] "From a free issue to a merged PR": Follow, Check, Claim and Count beside a window drawn in the app's tab names. The follow's rule filters its issues, the outsider report switches between a repo outsiders land work in and one they don't, Claims show every state, and the logbook's bars read out on hover
 - [x] The tour's fourth chapter is Catch up: two days later the Today strip lists what changed. The Plan chapter opens through Cmd+K
 - [x] Old tab names gone: the hero's guest line says Find, and the footer lists the six tabs
+- [x] The tour's bay has the one-row toolbar: Triage opens Filter and picks PRs, and Catch up turns on Stalled so only the quiet thread is left
+- [x] Sign on paints the bay part by part with the Still reading line, and the first-run card shows with the first threads; the pointer clicks through its three steps
+- [x] The Programs section has the app's News panel: program news and Product Hunt behind one switch
+- [x] "The same bay on your phone": a phone drawn at 390 pixels with Today folded to a line, follows on two lines and Search in the top bar. Today folds and the search filters as you type. Send feedback sits under it
 
 ## Waiting on you
 
