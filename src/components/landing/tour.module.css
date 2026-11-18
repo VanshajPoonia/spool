@@ -1790,9 +1790,14 @@
     gap: 10px;
     padding: 0 12px 0 14px;
   }
+  /* the toolbar's Stalled count says it on a phone, so the head keeps to one line */
   .headCount:nth-of-type(2),
+  .headStalled,
   .headNote {
     display: none;
+  }
+  .headTitle {
+    flex: none;
   }
   .sync {
     font-size: 0;
