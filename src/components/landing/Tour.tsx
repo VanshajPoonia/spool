@@ -19,7 +19,9 @@ import {
   RefreshCw,
   Search,
   SlidersHorizontal,
+  X,
 } from "lucide-react";
+import { FIRST_RUN_STEPS } from "@/components/app/firstRunSteps";
 import { NAV } from "@/components/app/nav";
 import { PriorityTag } from "@/components/app/Priority";
 import { StateMark, type MarkState } from "@/components/kit/Kit";
@@ -157,6 +159,10 @@ type Scene = {
   back: boolean;
   /** Cmd+K is open with this query typed */
   palette: string | null;
+  /** how much of the first load has landed: 1 your PRs, 2 every search, 3 PR details and claims too */
+  part: number;
+  /** the first-run tour's step, or null once it's closed */
+  firstRun: number | null;
   filterMenu: boolean;
   kind: "all" | "pr";
   stalledOnly: boolean;
@@ -183,6 +189,8 @@ const START: Scene = {
   face: FACES.wink,
   back: false,
   palette: null,
+  part: 0,
+  firstRun: null,
   filterMenu: false,
   kind: "all",
   stalledOnly: false,
@@ -205,7 +213,7 @@ type Step = {
 const CHAPTERS = [
   {
     title: "Sign on",
-    body: "Paste a read-only token once. The bay fills in seconds.",
+    body: "Paste a read-only token once. Threads show as each search lands, then a three-step tour.",
   },
   {
     title: "Triage",
@@ -232,8 +240,20 @@ const STEPS: Step[] = [
   { ch: 0, ms: 1150, set: { typed: true } },
   { ch: 0, ms: 700, to: "signon" },
   { ch: 0, ms: 340, click: "tap", set: { focus: false } },
-  { ch: 0, ms: 1500, set: { view: "loading", face: FACES.focus } },
-  { ch: 0, ms: 1800, set: { view: "bay", face: FACES.glad } },
+  { ch: 0, ms: 900, set: { view: "loading", face: FACES.focus } },
+  // the bay paints as each search lands, and the tour card shows with the first threads
+  {
+    ch: 0,
+    ms: 1000,
+    set: { view: "bay", part: 1, firstRun: 0, face: FACES.watch },
+  },
+  { ch: 0, ms: 1000, set: { part: 2 } },
+  { ch: 0, ms: 900, set: { part: 3, face: FACES.glad } },
+  { ch: 0, ms: 700, to: "fr-next" },
+  { ch: 0, ms: 1000, click: "tap", set: { firstRun: 1 } },
+  { ch: 0, ms: 400, to: "fr-next" },
+  { ch: 0, ms: 1000, click: "tap", set: { firstRun: 2 } },
+  { ch: 0, ms: 900, click: "tap", set: { firstRun: null } },
 
   { ch: 1, ms: 750, to: "filter", set: { face: FACES.calm } },
   { ch: 1, ms: 520, click: "tap", set: { filterMenu: true } },
@@ -374,10 +394,15 @@ type Row = Thread & {
   status: string;
 };
 
+// Your own PRs land first; reviews, issues and assignments come with the next searches.
+const FIRST_SEARCH = ["limit", "cache", "guards"];
+
 // Once the two days have passed, the approved PR has merged and left the bay.
 function rowsOf(sc: Scene): Row[] {
   const open = Object.entries(THREADS).filter(
-    ([id]) => !(sc.back && id === "cache"),
+    ([id]) =>
+      !(sc.back && id === "cache") &&
+      (sc.part !== 1 || FIRST_SEARCH.includes(id)),
   );
   return open.map(([id, t]) => {
     if (id === "limit" && sc.answered)
@@ -477,10 +502,38 @@ function Loading({ sc }: { sc: Scene }) {
       <span className={s.connectFace}>
         <PrintText value={sc.face} length={5} decorative />
       </span>
-      <span className="shimmer">
-        Reading your PRs, issues, reviews and mentions from GitHub…
-      </span>
+      <span className="shimmer">Reading your PRs from GitHub…</span>
     </div>
+  );
+}
+
+/* The first-run tour as the board shows it once, above the bays; the pointer clicks through its three steps. */
+function FirstRunCard({ step }: { step: number }) {
+  const last = step === FIRST_RUN_STEPS.length - 1;
+  return (
+    <section className={s.firstRun}>
+      <p className={s.frTop}>
+        <span>
+          {step + 1} of {FIRST_RUN_STEPS.length}
+        </span>
+        <X size={15} />
+      </p>
+      <div className={s.frText} key={step}>
+        <p className={s.frTitle}>{FIRST_RUN_STEPS[step].title}</p>
+        <p className={s.frBody}>{FIRST_RUN_STEPS[step].body}</p>
+      </div>
+      <p className={s.frActions}>
+        {step > 0 && <span className={s.frBack}>Back</span>}
+        <span className={s.frNext} data-tour="fr-next" data-aim="0.5 0.55">
+          {last ? "Got it" : "Next"}
+        </span>
+        <span className={s.frDots}>
+          {FIRST_RUN_STEPS.map((_, i) => (
+            <span key={i} data-on={i === step || undefined} />
+          ))}
+        </span>
+      </p>
+    </section>
   );
 }
 
@@ -578,7 +631,7 @@ function BayView({ sc, rows }: { sc: Scene; rows: Row[] }) {
   const stalled = allTheirs.filter((r) => r.state === "stalled").length;
   useFlip(
     listRef,
-    `${mine.map((r) => r.id).join()}|${theirs.map((r) => r.id).join()}`,
+    `${mine.map((r) => r.id).join()}|${theirs.map((r) => r.id).join()}|${sc.part}|${sc.firstRun === null}`,
   );
 
   const strip = (r: Row, i: number) => (
@@ -646,6 +699,18 @@ function BayView({ sc, rows }: { sc: Scene; rows: Row[] }) {
       </div>
       <Toolbar sc={sc} rows={rows} />
       <div ref={listRef} className={s.list}>
+        {sc.firstRun !== null && <FirstRunCard step={sc.firstRun} />}
+        {sc.part > 0 && sc.part < 3 && (
+          <p className={s.pending}>
+            <span className="shimmer">
+              Still reading{" "}
+              {sc.part === 1
+                ? "your issues, reviews and assignments, mentions, comments and discussions, PR details and claims"
+                : "PR details and claims"}
+              …
+            </span>
+          </p>
+        )}
         {sc.back && <TodayStrip />}
         <Bay
           name="Your move"
