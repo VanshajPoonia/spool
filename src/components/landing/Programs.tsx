@@ -56,10 +56,10 @@ export function Programs({ data }: { data: ProgramsData }) {
   const [feed, setFeed] = useState<"programs" | "launches">("programs");
   const items =
     feed === "programs"
-      ? data.news.slice(0, 5).map((n) => ({ url: n.url, title: n.title, sub: n.source, published: n.published }))
+      ? data.news.slice(0, 3).map((n) => ({ url: n.url, title: n.title, sub: n.source, published: n.published }))
       : [...data.launches]
           .sort((a, b) => b.published.localeCompare(a.published))
-          .slice(0, 5)
+          .slice(0, 3)
           .map((l) => ({ url: l.url, title: l.title, sub: l.tagline, published: l.published }));
 
   const entries: Entry[] = [];
@@ -130,6 +130,7 @@ export function Programs({ data }: { data: ProgramsData }) {
                   state={stateFor(e.days)}
                   href={e.href}
                   external
+                  data={{ "data-wrap-title": "", "data-wrap-note": "" }}
                   label={`${e.event}, ${e.date}${e.days !== null ? `, in ${e.days} days` : ""}. Opens ${e.program}.`}
                 />
               </li>
@@ -137,10 +138,13 @@ export function Programs({ data }: { data: ProgramsData }) {
           </ul>
         </Bay>
 
-        {/* the app's News panel: program news and Product Hunt behind one switch */}
-        <article className={`${sec.panel} ${s.ph}`} data-shine>
-          <header className={s.moduleHead}>
-            <h3 id="news-title">News</h3>
+        {/* the app's News panel: program news and Product Hunt behind one switch, headed like the schedule */}
+        <Bay
+          name="News"
+          which="plain"
+          id="news"
+          className={s.ph}
+          tools={
             <span className={s.seg} role="group" aria-label="Which news">
               <button type="button" aria-pressed={feed === "programs"} onClick={() => setFeed("programs")}>
                 Programs
@@ -149,40 +153,43 @@ export function Programs({ data }: { data: ProgramsData }) {
                 Product Hunt
               </button>
             </span>
-          </header>
-          <p className={s.newsNote}>
-            {feed === "programs" ? (
-              "GSoC and Season of Docs posts from Google's Open Source blog, plus Outreachy, CNCF mentorship and Summer of Bitcoin."
-            ) : (
-              <>
-                What just launched, from{" "}
-                <a href="https://www.producthunt.com" target="_blank" rel="noreferrer">
-                  Product Hunt
-                  <ArrowUpRight size={13} aria-hidden="true" />
-                </a>
-              </>
-            )}
-          </p>
-          {items.length ? (
-            <ol className={s.launches} key={feed} aria-labelledby="news-title">
-              {items.map((l, i) => (
-                <li key={l.url} style={{ "--i": i } as CSSProperties}>
-                  <a href={l.url} target="_blank" rel="noreferrer" title={l.title}>
-                    <span className={s.lTitle}>{l.title}</span>
-                    <span className={s.lTag}>{l.sub}</span>
+          }
+        >
+          <div className={s.news}>
+            <p className={s.newsNote}>
+              {feed === "programs" ? (
+                "From Google's Open Source blog, Outreachy, CNCF mentorship and Summer of Bitcoin."
+              ) : (
+                <>
+                  What just launched on{" "}
+                  <a href="https://www.producthunt.com" target="_blank" rel="noreferrer">
+                    Product Hunt
+                    <ArrowUpRight size={13} aria-hidden="true" />
                   </a>
-                  <span className={s.lDate}>{fmtDate(l.published)}</span>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <p className={s.down}>
-              {feed === "programs"
-                ? "None of the program feeds answered, or nothing new in six months."
-                : "Product Hunt’s feed didn’t answer just now."}
+                </>
+              )}
             </p>
-          )}
-        </article>
+            {items.length ? (
+              <ol className={s.launches} key={feed}>
+                {items.map((l, i) => (
+                  <li key={l.url} style={{ "--i": i } as CSSProperties}>
+                    <a href={l.url} target="_blank" rel="noreferrer" title={l.title}>
+                      <span className={s.lTitle}>{l.title}</span>
+                      <span className={s.lTag}>{l.sub}</span>
+                    </a>
+                    <span className={s.lDate}>{fmtDate(l.published)}</span>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className={s.down}>
+                {feed === "programs"
+                  ? "None of the program feeds answered, or nothing new in six months."
+                  : "Product Hunt’s feed didn’t answer just now."}
+              </p>
+            )}
+          </div>
+        </Bay>
       </div>
 
       <p className={s.fetched}>

@@ -360,6 +360,10 @@ button.paper {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 4;
   }
+  /* and rows whose title is the point (a deadline) may wrap it */
+  .holder[data-wrap-title] .title {
+    white-space: normal;
+  }
   .holder[data-size] .paper {
     --idw: var(--row-idw-narrow, 0);
     gap: 10px;
