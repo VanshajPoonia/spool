@@ -4,7 +4,7 @@
    With motion on, the stage and its chapters pin under the nav while a tall runway scrolls past; how far along
    it the page is decides which moment of the morning the window shows. */
 .runway[data-pin] {
-  height: 340svh;
+  height: 380svh;
 }
 
 .runway[data-pin] .frame {
@@ -351,7 +351,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  height: 52px;
+  height: 46px;
   padding: 0 16px 0 20px;
   border-bottom: 1px solid var(--rule);
   white-space: nowrap;
@@ -400,6 +400,161 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* the board's toolbar: search, the Filter menu, then Stalled and New, each a 30px control with its lamp and count */
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 200px;
+  min-width: 0;
+  height: 30px;
+  padding: 0 5px 0 10px;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+.search svg {
+  flex: none;
+}
+
+.searchText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search kbd {
+  padding: 1px 6px;
+  font-size: 11px;
+}
+
+.tool {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 7px;
+  height: 30px;
+  padding: 0 10px 0 11px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  color: var(--ink-2);
+  font-size: 12.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  transition:
+    color var(--dur-quick) var(--ease-quad),
+    background-color var(--dur-quick) var(--ease-quad),
+    box-shadow var(--dur-quick) var(--ease-quad),
+    opacity var(--dur-quick) var(--ease-quad);
+}
+
+.tool svg {
+  color: var(--ink-3);
+}
+
+.tool :global(.print) {
+  font-family: var(--font-ui);
+  font-weight: 500;
+}
+
+/* picked reads as on from across the bar: Surface Sel with an Ink 3 ring */
+.tool[data-on] {
+  background: var(--surface-sel);
+  box-shadow: inset 0 0 0 1px var(--ink-3);
+  color: var(--ink);
+}
+
+.tool[data-off] {
+  opacity: 0.45;
+}
+
+.lamp {
+  width: 7px;
+  height: 7px;
+}
+
+.lamp[data-k="stalled"] {
+  border-radius: 2px;
+  background: var(--pencil);
+}
+
+.lamp[data-k="new"] {
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.filterWrap {
+  position: relative;
+  display: flex;
+}
+
+.filterMenu {
+  position: absolute;
+  z-index: 3;
+  top: calc(100% + 6px);
+  left: 0;
+  display: grid;
+  width: 188px;
+  padding: 5px;
+  border-radius: 10px;
+  background: var(--bay-2);
+  box-shadow:
+    inset 0 0 0 1px var(--rule-2),
+    0 18px 40px -8px rgba(0, 0, 0, 0.55);
+  transform-origin: top left;
+  animation: pop 160ms var(--ease-out);
+}
+
+.filterHead {
+  padding: 7px 10px 3px;
+  color: var(--ink-3);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.filterItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.filterItem[data-hover] {
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
+}
+
+.filterItem svg {
+  color: var(--accent);
+  opacity: 0;
+}
+
+.filterItem svg[data-on] {
+  opacity: 1;
+}
+
+.empty {
+  margin: 0;
+  padding: 9px 12px;
+  color: var(--ink-3);
+  font-size: 13px;
 }
 
 .list {
@@ -1525,6 +1680,25 @@
   }
   .sync {
     font-size: 0;
+  }
+  /* on a phone the search folds to its icon so the toolbar keeps to one row */
+  .tools {
+    gap: 5px;
+    padding: 7px 8px;
+  }
+  .search {
+    flex: none;
+    justify-content: center;
+    width: 30px;
+    padding: 0;
+  }
+  .searchText,
+  .search kbd {
+    display: none;
+  }
+  .tool {
+    gap: 6px;
+    padding: 0 9px;
   }
   .list {
     padding: 6px;

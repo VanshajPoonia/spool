@@ -10,13 +10,15 @@ import {
   type CSSProperties,
 } from "react";
 import {
+  AlarmClock,
   ArrowUpRight,
+  Check,
   ChevronDown,
   Clock3,
   Pin,
   RefreshCw,
-  AlarmClock,
   Search,
+  SlidersHorizontal,
 } from "lucide-react";
 import { NAV } from "@/components/app/nav";
 import { PriorityTag } from "@/components/app/Priority";
@@ -155,6 +157,11 @@ type Scene = {
   back: boolean;
   /** Cmd+K is open with this query typed */
   palette: string | null;
+  filterMenu: boolean;
+  kind: "all" | "pr";
+  stalledOnly: boolean;
+  /** threads opened since they last moved, so New no longer counts them */
+  seen: string[];
 };
 
 const START: Scene = {
@@ -176,6 +183,10 @@ const START: Scene = {
   face: FACES.wink,
   back: false,
   palette: null,
+  filterMenu: false,
+  kind: "all",
+  stalledOnly: false,
+  seen: [],
 };
 
 type Step = {
@@ -198,7 +209,7 @@ const CHAPTERS = [
   },
   {
     title: "Triage",
-    body: "J and K walk the list, Enter opens a thread, a priority is one click.",
+    body: "Filter keeps type and goal in one menu. J and K walk the list, and a priority is one click.",
   },
   {
     title: "Answer",
@@ -206,7 +217,7 @@ const CHAPTERS = [
   },
   {
     title: "Catch up",
-    body: "Today says what changed while you were away. Fourteen quiet days turn a thread red.",
+    body: "Today says what changed. Fourteen quiet days turn a thread red, and Stalled shows only those.",
   },
   {
     title: "Plan",
@@ -224,14 +235,23 @@ const STEPS: Step[] = [
   { ch: 0, ms: 1500, set: { view: "loading", face: FACES.focus } },
   { ch: 0, ms: 1800, set: { view: "bay", face: FACES.glad } },
 
+  { ch: 1, ms: 750, to: "filter", set: { face: FACES.calm } },
+  { ch: 1, ms: 520, click: "tap", set: { filterMenu: true } },
+  { ch: 1, ms: 560, to: "kind-pr", set: { hover: "kind-pr" } },
   {
     ch: 1,
-    ms: 700,
-    key: ["J", "Next thread"],
-    set: { sel: "dns", face: FACES.calm },
+    ms: 1100,
+    click: "tap",
+    set: { filterMenu: false, kind: "pr", hover: null },
   },
+  { ch: 1, ms: 700, key: ["J", "Next thread"], set: { sel: "dns" } },
   { ch: 1, ms: 700, key: ["J", "Next thread"], set: { sel: "limit" } },
-  { ch: 1, ms: 1000, key: ["Enter", "Open details"], set: { open: "limit" } },
+  {
+    ch: 1,
+    ms: 1000,
+    key: ["Enter", "Open details"],
+    set: { open: "limit", seen: ["limit"] },
+  },
   { ch: 1, ms: 750, to: "prio" },
   { ch: 1, ms: 520, click: "tap", set: { menu: true } },
   { ch: 1, ms: 560, to: "prio-1" },
@@ -265,10 +285,15 @@ const STEPS: Step[] = [
     set: { open: null, sel: null },
   },
 
+  // a new visit: filters aren't kept between visits
   {
     ch: 3,
     ms: 1000,
-    set: { skip: "Two days later, you open Spool again", face: FACES.watch },
+    set: {
+      skip: "Two days later, you open Spool again",
+      face: FACES.watch,
+      kind: "all",
+    },
   },
   { ch: 3, ms: 850, set: { quiet: 13 } },
   {
@@ -277,8 +302,10 @@ const STEPS: Step[] = [
     set: { quiet: STALL, skip: null, back: true, face: FACES.alarm },
   },
   { ch: 3, ms: 1300, to: "today" },
-  { ch: 3, ms: 800, to: "row-panic" },
-  { ch: 3, ms: 1900, set: { hover: "panic", face: FACES.side } },
+  { ch: 3, ms: 700, to: "stalled" },
+  { ch: 3, ms: 900, click: "tap", set: { stalledOnly: true } },
+  { ch: 3, ms: 700, to: "row-panic" },
+  { ch: 3, ms: 1700, set: { hover: "panic", face: FACES.side } },
 
   {
     ch: 4,
@@ -457,18 +484,98 @@ function Loading({ sc }: { sc: Scene }) {
   );
 }
 
+/* The board's one-row toolbar: search, the Filter menu for type and goal, then Stalled and New with their counts. */
+function Toolbar({ sc, rows }: { sc: Scene; rows: Row[] }) {
+  const stalled = rows.filter((r) => r.state === "stalled").length;
+  // New counts threads someone else moved last that you haven't opened since
+  const fresh = rows.filter(
+    (r) => r.who !== "@sample-dev" && !sc.seen.includes(r.id),
+  ).length;
+  const kinds: [string, string][] = [
+    ["all", "All"],
+    ["pr", "PRs"],
+    ["issue", "Issues"],
+  ];
+  return (
+    <div className={s.tools}>
+      <span className={s.search}>
+        <Search size={14} />
+        <span className={s.searchText}>Filter by title, repo, person</span>
+        <kbd>/</kbd>
+      </span>
+      <span className={s.filterWrap}>
+        <span
+          className={s.tool}
+          data-tour="filter"
+          data-aim="0.45 0.55"
+          data-on={sc.kind !== "all" || undefined}
+        >
+          <SlidersHorizontal size={14} />
+          Filter{sc.kind !== "all" ? " · 1" : ""}
+        </span>
+        {sc.filterMenu && (
+          <span className={s.filterMenu}>
+            <span className={s.filterHead}>Type</span>
+            {kinds.map(([k, label]) => (
+              <span
+                key={k}
+                className={s.filterItem}
+                data-tour={`kind-${k}`}
+                data-aim="0.3 0.5"
+                data-hover={sc.hover === `kind-${k}` || undefined}
+              >
+                <Check size={14} data-on={sc.kind === k || undefined} />
+                {label}
+              </span>
+            ))}
+            <span className={s.filterHead}>Goal</span>
+            {["Any goal", "GSoC", "For fun"].map((g, i) => (
+              <span key={g} className={s.filterItem}>
+                <Check size={14} data-on={i === 0 || undefined} />
+                {g}
+              </span>
+            ))}
+          </span>
+        )}
+      </span>
+      <span
+        className={s.tool}
+        data-tour="stalled"
+        data-aim="0.4 0.55"
+        data-on={sc.stalledOnly || undefined}
+        data-off={!stalled || undefined}
+      >
+        <span className={s.lamp} data-k="stalled" />
+        Stalled
+        <PrintText value={String(stalled)} length={1} label={`${stalled}`} />
+      </span>
+      <span className={`${s.tool} ${s.toolNew}`} data-off={!fresh || undefined}>
+        <span className={s.lamp} data-k="new" />
+        New
+        <PrintText value={String(fresh)} length={1} label={`${fresh}`} />
+      </span>
+    </div>
+  );
+}
+
 function BayView({ sc, rows }: { sc: Scene; rows: Row[] }) {
   const listRef = useRef<HTMLDivElement>(null);
-  const mine = rows.filter((r) => r.next === "you");
+  // a review request is a PR too; Stalled shows only threads past the limit
+  const shows = (r: Row) =>
+    (sc.kind === "all" || r.kind === "pr" || r.kind === "review") &&
+    (!sc.stalledOnly || r.state === "stalled");
+  const allMine = rows.filter((r) => r.next === "you");
+  const allTheirs = rows.filter((r) => r.next === "them");
+  const mine = allMine.filter(shows);
   // stalled first, then the most recent move
-  const theirs = rows
-    .filter((r) => r.next === "them")
+  const theirs = allTheirs
+    .filter(shows)
     .sort(
       (a, b) =>
         Number(b.state === "stalled") - Number(a.state === "stalled") ||
         Number(b.id === "limit") - Number(a.id === "limit"),
     );
-  const stalled = theirs.filter((r) => r.state === "stalled").length;
+  const stalled = allTheirs.filter((r) => r.state === "stalled").length;
   useFlip(
     listRef,
     `${mine.map((r) => r.id).join()}|${theirs.map((r) => r.id).join()}`,
@@ -513,17 +620,17 @@ function BayView({ sc, rows }: { sc: Scene; rows: Row[] }) {
         <p className={s.headTitle}>Your bay</p>
         <span className={s.headCount}>
           <PrintText
-            value={String(mine.length)}
+            value={String(allMine.length)}
             length={1}
-            label={`${mine.length}`}
+            label={`${allMine.length}`}
           />{" "}
           on you
         </span>
         <span className={s.headCount}>
           <PrintText
-            value={String(theirs.length)}
+            value={String(allTheirs.length)}
             length={1}
-            label={`${theirs.length}`}
+            label={`${allTheirs.length}`}
           />{" "}
           on them
         </span>
@@ -537,6 +644,7 @@ function BayView({ sc, rows }: { sc: Scene; rows: Row[] }) {
           {sc.syncing ? "Syncing…" : "Synced just now"}
         </span>
       </div>
+      <Toolbar sc={sc} rows={rows} />
       <div ref={listRef} className={s.list}>
         {sc.back && <TodayStrip />}
         <Bay
@@ -552,7 +660,11 @@ function BayView({ sc, rows }: { sc: Scene; rows: Row[] }) {
           }
           hint="Someone answered or asked."
         >
-          <ul className={s.rack}>{mine.map(strip)}</ul>
+          {mine.length ? (
+            <ul className={s.rack}>{mine.map(strip)}</ul>
+          ) : (
+            <p className={s.empty}>Nothing on you matches the filter.</p>
+          )}
         </Bay>
         <Bay
           name="Their move"
