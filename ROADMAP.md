@@ -55,7 +55,7 @@ Lives in `components/landing/Pickup.tsx` (the new section after Stalled), `Tour.
 ## Waiting on you
 
 - **Server `GITHUB_TOKEN`:** steps in the README under Deploy. Without it, guest searches share 10 a minute for the whole site.
-- **Launch:** the drafts are ready. Six posts sit in Postroom under the Spool brand, which has no X or Instagram account yet. The DEV post on keeping the token in the browser is in `docs/launch/dev-post.md` and the Product Hunt listing in `docs/launch/product-hunt.md`. Still yours: the accounts, the byline and the day. Nothing gets posted without your go-ahead.
+- **Launch:** decided 2026-11-18, Spool launches as your own project: your accounts, your byline, and spool.vanshajpoonia.com stays. The six launch posts moved in Postroom from the Spool brand to Personal, rewritten in first person (three for X, three for Instagram). The DEV post on keeping the token in the browser is in `docs/launch/dev-post.md` and the Product Hunt listing in `docs/launch/product-hunt.md`, both under your name. Still yours: the day, a few [bracketed] lines only you can fill, and spool.vanshajpoonia.com in your Instagram bio for the "link in bio" posts. Nothing gets posted without your go-ahead.
 - **Page-view counts:** Vercel's analytics is cookieless and reports to Spool's own address, but it's a new dependency.
 
 ## After launch, only if users ask
