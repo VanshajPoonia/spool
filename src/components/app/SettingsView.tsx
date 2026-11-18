@@ -7,6 +7,7 @@ import { downloadIcs } from "@/lib/ics";
 import { PrintText } from "@/components/print/PrintText";
 import { verifyToken } from "@/lib/github";
 import { setPrefs, usePrefs } from "@/lib/prefs";
+import { FEEDBACK_URL } from "@/lib/site";
 import {
   cacheStore,
   changesStore,
@@ -27,7 +28,6 @@ import {
 } from "@/lib/store";
 import { fmtDate, useHydrated, useNow } from "@/lib/time";
 import { notifyPermission, sendTestNotification } from "./Alerts";
-import { FEEDBACK_URL } from "./CommandPalette";
 import { Interests } from "./Interests";
 import { useAllDeadlines } from "./useDeadlines";
 import p from "./page.module.css";

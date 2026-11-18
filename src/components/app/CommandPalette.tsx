@@ -5,6 +5,7 @@ import { KeyboardEvent as ReactKeyboardEvent, useEffect, useMemo, useRef, useSta
 import { Search } from "lucide-react";
 import { statusLabel } from "@/lib/format";
 import { setPrefs, usePrefs } from "@/lib/prefs";
+import { FEEDBACK_URL } from "@/lib/site";
 import { planStoreFor, updateSettings, useMeta } from "@/lib/store";
 import { useBoard } from "./BoardProvider";
 import { NAV } from "./nav";
@@ -18,7 +19,6 @@ import s from "./palette.module.css";
 type Item = { id: string; group: string; title: string; sub?: string; keys?: string; onYou?: boolean; run: () => void };
 
 const OPEN = "spool:palette";
-export const FEEDBACK_URL = "https://github.com/VanshajPoonia/spool/issues/new";
 export const openPalette = () => window.dispatchEvent(new Event(OPEN));
 
 const isMac = () => typeof navigator !== "undefined" && /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
