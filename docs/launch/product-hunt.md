@@ -1,6 +1,6 @@
 # Product Hunt listing (draft)
 
-Not submitted. Launching needs a Product Hunt maker account and a launch day, both the owner's call.
+Not submitted. Spool launches as Vanshaj's own project: Vanshaj is the maker, from their own Product Hunt account, and the site stays at spool.vanshajpoonia.com. The launch day is still open.
 
 ## Name
 
@@ -32,8 +32,9 @@ Open Source, GitHub, Developer Tools
 4. "From a free issue to a merged PR": the outsider report on quarry-db/quarry.
 5. The Claims step, every state a claim can be in.
 6. The Plan tab with Work on next.
+7. "The same bay on your phone": the phone section with Today folded to a line.
 
-All six can be shot from the landing page and `/board?demo=1`, so no real account shows.
+All seven can be shot from the landing page and `/board?demo=1`, so no real account shows.
 
 ## Thumbnail (240x240)
 
@@ -41,12 +42,12 @@ The letter face chip from the nav, (o_o), on the console colour.
 
 ## First comment
 
-[One line on who you are and why you made it, in your own words.]
+Hi, I'm Vanshaj. I contribute to open source on the way to GSoC, and my work is spread across a lot of repos. [One line, in your own words, on the moment you decided to build this.]
 
-Spool started from a simple problem: open source work spreads across a dozen repos, and GitHub doesn't tell you which of your threads are waiting on you. Spool reads your PRs, issues, review requests and mentions and sorts them by who owes the next reply. A thread nobody has answered for 14 days turns red and moves to the top.
+I built Spool for a simple problem: GitHub doesn't tell you which of your threads are waiting on you. Spool reads your PRs, issues, review requests and mentions and sorts them by who owes the next reply. A thread nobody has answered for 14 days turns red and moves to the top.
 
-It also tracks issues you asked to take (with a warning before a claim goes cold), follows repos and maintainers for new issues, checks whether a repo actually merges outsiders, and keeps GSoC, YC and other program dates on one page.
+It also tracks issues you asked to take (with a warning before a claim goes cold), follows repos and maintainers for new issues, checks whether a repo actually merges outsiders, and keeps GSoC, YC and other program dates on one page. It works on a phone too.
 
 There's no account and no server holding your token. You paste a read-only token, it stays in your browser, and every call goes straight to GitHub. Without a token you can still browse as a guest or open the sample board.
 
-What would make it worth opening every morning for you?
+What would make it worth opening every morning for you? Send feedback in Settings opens an issue on the repo, and I read every one.

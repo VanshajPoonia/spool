@@ -1,12 +1,12 @@
 ---
 title: A GitHub dashboard that never sends your token to its own server
 tags: github, security, webdev, opensource
-status: draft, not posted. Byline and account are the owner's call.
+status: draft, not posted. Byline Vanshaj Poonia, from Vanshaj's own DEV account. The day is still open.
 ---
 
-Spool lists every PR, issue, review request and mention you have open on GitHub, sorted by whose move it is. To do that it has to read GitHub as you, which usually means an OAuth app and a server that keeps your token in a database.
+I built Spool to list every PR, issue, review request and mention you have open on GitHub, sorted by whose move it is. To do that it has to read GitHub as you, which usually means an OAuth app and a server that keeps your token in a database.
 
-Spool has no such server. You paste a token once, it stays in your browser, and every call goes from your browser straight to `api.github.com`. Here is how that works, what the browser enforces, and what it costs.
+I didn't want that server. In Spool you paste a token once, it stays in your browser, and every call goes from your browser straight to `api.github.com`. Here is how that works, what the browser enforces, and what it costs.
 
 ## The token stays in localStorage
 
@@ -25,7 +25,7 @@ query Board($prs: String!, $issues: String!) {
 }
 ```
 
-The board runs one aliased search per kind of thread (yours, assigned to you, review requests, mentions, threads you commented on, discussions), paints each group as it lands, then fills in PR details and claims. Follows go eight searches to a request. A refresh reuses details for threads that haven't changed, which took a refresh from 6 requests to 3.
+The board runs one aliased search per kind of thread (yours, assigned to you, review requests, mentions, threads you commented on, discussions), paints each group as it lands, then fills in PR details and claims. On my own account that brought the first threads from about 13 seconds to about 4. Follows go eight searches to a request. A refresh reuses details for threads that haven't changed, which took a refresh from 6 requests to 3.
 
 Every response carries `x-ratelimit-remaining`, and Spool keeps the latest numbers so Settings can show your allowance and the app can stay under it.
 
@@ -61,3 +61,5 @@ Guests without a token also get good first issues and young repos through the se
 The sample board needs no token: [spool.vanshajpoonia.com/board?demo=1](https://spool.vanshajpoonia.com/board?demo=1). With a token, paste it on the landing page and watch your network tab. Every request goes to Spool's own pages or to `api.github.com`.
 
 The code is public: [github.com/VanshajPoonia/spool](https://github.com/VanshajPoonia/spool). The policy lives in `next.config.ts`, and the GitHub client in `src/lib/github.ts`.
+
+If something's missing or broken, Send feedback in Settings or Cmd+K opens an issue on the repo. I read every one.
