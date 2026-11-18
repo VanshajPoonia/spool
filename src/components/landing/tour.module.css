@@ -561,11 +561,9 @@
 .pending {
   margin: 0;
   padding: 0 4px;
-  overflow: hidden;
   color: var(--ink-3);
   font-size: 12.5px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  line-height: 1.45;
 }
 
 /* ---------- first run ----------
