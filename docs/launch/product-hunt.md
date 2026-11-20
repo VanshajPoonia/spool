@@ -42,7 +42,7 @@ The letter face chip from the nav, (o_o), on the console colour.
 
 ## First comment
 
-Hi, I'm Vanshaj. I contribute to open source on the way to GSoC, and my work is spread across a lot of repos. [One line, in your own words, on the moment you decided to build this.]
+Hi, I'm Vanshaj. I contribute to open source on the way to GSoC, and my work is spread across a lot of repos. Right now that's 52 open PRs and 32 open issues in 43 repos.
 
 I built Spool for a simple problem: GitHub doesn't tell you which of your threads are waiting on you. Spool reads your PRs, issues, review requests and mentions and sorts them by who owes the next reply. A thread nobody has answered for 14 days turns red and moves to the top.
 
