@@ -34,7 +34,7 @@ Open Source, GitHub, Developer Tools
 6. The Plan tab with Work on next.
 7. "The same bay on your phone": the phone section with Today folded to a line.
 
-All seven can be shot from the landing page and `/board?demo=1`, so no real account shows.
+All seven can be shot from the landing page and `/board?demo=1`, so no real account shows. They're in `gallery/`, numbered in this order, at 2540x1520 (2x, same shape as 1270x760). Taken from the live site on 2026-11-20.
 
 ## Thumbnail (240x240)
 
