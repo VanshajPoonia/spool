@@ -38,7 +38,7 @@ All seven can be shot from the landing page and `/board?demo=1`, so no real acco
 
 ## Thumbnail (240x240)
 
-The letter face chip from the nav, (o_o), on the console colour.
+The letter face chip from the nav, (o_o), on the console colour. In `gallery/0-thumbnail.png` (480x480).
 
 ## First comment
 
