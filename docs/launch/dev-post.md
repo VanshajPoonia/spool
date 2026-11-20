@@ -1,7 +1,7 @@
 ---
 title: A GitHub dashboard that never sends your token to its own server
 tags: github, security, webdev, opensource
-status: draft, not posted. Byline Vanshaj Poonia, from Vanshaj's own DEV account. The day is still open.
+status: draft, not posted. Byline Vanshaj Poonia, from Vanshaj's own DEV account. Goes out on launch day, Thursday 26 November 2026.
 ---
 
 I built Spool to list every PR, issue, review request and mention you have open on GitHub, sorted by whose move it is. To do that it has to read GitHub as you, which usually means an OAuth app and a server that keeps your token in a database.

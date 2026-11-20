@@ -1,6 +1,6 @@
 # Product Hunt listing (draft)
 
-Not submitted. Spool launches as Vanshaj's own project: Vanshaj is the maker, from their own Product Hunt account, and the site stays at spool.vanshajpoonia.com. The launch day is still open.
+Not submitted. Spool launches as Vanshaj's own project: Vanshaj is the maker, from their own Product Hunt account, and the site stays at spool.vanshajpoonia.com. Launch day is Thursday 26 November 2026. Product Hunt days start at 12:01 AM PT, which is 1:31 PM IST.
 
 ## Name
 
