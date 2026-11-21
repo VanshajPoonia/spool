@@ -33,10 +33,10 @@ Live at https://spool.vanshajpoonia.com. Vercel project `spool` under vanshaj-po
 
 Production responses carry a content security policy (`next.config.ts`). Its `connect-src` allows only Spool and api.github.com, and its `img-src` only Spool, GitHub avatars and GSoC logos, so the browser stops a script sending the token anywhere else in a request or an image URL. A policy can't cover everything (a script could still navigate the page away), which is why Spool also loads no third-party scripts.
 
-**Still to do: the server token.** Production runs without `GITHUB_TOKEN` for now. To add it:
+**The server token.** Production has `GITHUB_TOKEN`, a classic token with no scopes. With it, guest search goes through GraphQL. REST search hits GitHub's secondary limit after about 8 quick calls, and guests would see empty lists. Without the token, guest search falls back to REST. To replace the token:
 
 1. Create a classic token with no scopes: https://github.com/settings/tokens/new?description=Spool%20server%20(no%20scopes). No scopes is enough to search public data.
-2. In this folder, run `vercel env add GITHUB_TOKEN production` and paste it when asked.
+2. In this folder, run `vercel env rm GITHUB_TOKEN production`, then `vercel env add GITHUB_TOKEN production` and paste it when asked.
 3. Push to `main`, or run `vercel redeploy <production deployment URL> --target production`, so the new value is picked up.
 
 ## What's where

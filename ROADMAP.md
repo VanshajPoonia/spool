@@ -54,7 +54,6 @@ Lives in `components/landing/Pickup.tsx` (the new section after Stalled), `Tour.
 
 ## Waiting on you
 
-- **Server `GITHUB_TOKEN`:** steps in the README under Deploy. Without it, guest searches share 10 a minute for the whole site.
 - **Launch:** decided 2026-11-18, Spool launches as your own project: your accounts, your byline, and spool.vanshajpoonia.com stays. The six launch posts moved in Postroom from the Spool brand to Personal, rewritten in first person (three for X, three for Instagram). The DEV post on keeping the token in the browser is in `docs/launch/dev-post.md` and the Product Hunt listing in `docs/launch/product-hunt.md`, both under your name. Launch day set on 2026-11-20: Thursday 26 November, with Product Hunt live at 1:31 PM IST. Product Hunt was scheduled for that day on 2026-11-21 (producthunt.com/posts/spool-5). The bracketed lines are filled from real counts (recount them that morning). spool.vanshajpoonia.com went into the Instagram bio links on 2026-11-21, and the captions write the address out too. On 2026-11-21 you said go. The X launch post goes out through Postroom's poster at 9 PM IST on 26 November and the X thread at 9 PM on 27 November, both with the Product Hunt link. The three Instagram posts are scheduled on Instagram itself for 9 PM on 26, 27 and 28 November. The DEV post waits until DEV is signed in again.
 - **Page-view counts:** Vercel's analytics is cookieless and reports to Spool's own address, but it's a new dependency.
 
@@ -86,7 +85,7 @@ Each lives in a place that already exists.
 - Notifications only fire while a Spool tab is open, because there's no server or service worker. Push to a closed browser would need a service worker plus a push service, which is a bigger decision.
 - Years in GSoC go back only as far as the program API publishes org lists (2022 today).
 - A guest's 60 calls an hour are per network, not per person: people behind one office or campus address share them.
-- Without a `GITHUB_TOKEN` on the server, guest searches share GitHub's 10 searches a minute for the whole site. Results are cached for an hour, and a failed search isn't cached, but a busy cold start can show "rate-limiting, try again in a minute". Set `GITHUB_TOKEN` (no scopes needed) when deploying.
+- Guest searches on the server use the `GITHUB_TOKEN` owner's GraphQL allowance, 5,000 points an hour at a point a search. Results are cached for an hour, and a failed search isn't cached. Without the token they fall back to REST search, where the whole site shares 10 searches a minute and a busy cold start can show "rate-limiting, try again in a minute".
 - Good first issues, for guests and tokens alike, are sorted by activity before the 30-star filter, because sorting by age let one repo filing issues in bulk fill the list. Busy issues may already have someone asking for them; watch one to find out.
 - A guest's October count sees public PRs only, and GitHub allows 10 searches a minute without a token, shared by everyone on the same network.
 - The plan only sees what the board loads: a thread that drops off the board (say, merged more than 21 days ago) leaves the plan too, though its placement and priority stay saved.
@@ -106,7 +105,7 @@ Drawn up on 2026-11-16, partly from the owner's own open source setup: the `oss`
 Started 2026-11-16. Details in the README under Deploy.
 
 - [x] Deploy on Vercel: project `spool`, connected to the repo, so `main` deploys production
-- [ ] `GITHUB_TOKEN` (no scopes) on the server, so guest searches don't share 10 a minute. Left for later on 2026-11-16; the steps are in the README under Deploy
+- [x] `GITHUB_TOKEN` (no scopes) on the server since 2026-11-21. Guest searches go through GraphQL with it, because REST search hit GitHub's secondary limit after about 8 quick calls
 - [x] spool.vanshajpoonia.com: a DNS-only CNAME in Cloudflare to the Vercel project, live since 2026-11-16, and set as the repo's homepage
 - [x] Open Graph and Twitter metadata, with a generated share card (`app/opengraph-image.tsx`)
 - [x] A content security policy whose `connect-src` allows only Spool itself and api.github.com, so the browser enforces "your token goes only to GitHub"
