@@ -425,10 +425,43 @@ export function topicQualifier(topic: string) {
   return LANGS.has(t) ? `language:${t}` : `topic:${t}`;
 }
 
+type RepoNode = {
+  nameWithOwner: string;
+  description: string | null;
+  url: string;
+  stargazerCount: number;
+  createdAt: string;
+  primaryLanguage: { name: string } | null;
+  repositoryTopics: { nodes: { topic: { name: string } }[] };
+};
+
 export async function discoverTopic(topic: string, sinceDay: string): Promise<FoundRepo[] | null> {
   "use cache";
   cacheLife("hours");
   const q = `${topicQualifier(topic)} created:>${sinceDay} stars:>25 archived:false`;
+  if (process.env.GITHUB_TOKEN) {
+    try {
+      const data = await gql<{ search: { nodes: RepoNode[] } }>(
+        `query($q: String!) { search(query: $q, type: REPOSITORY, first: 8) { nodes { ... on Repository {
+          nameWithOwner description url stargazerCount createdAt primaryLanguage { name } repositoryTopics(first: 20) { nodes { topic { name } } }
+        } } } }`,
+        { q: `${q} sort:stars-desc` },
+      );
+      return data.search.nodes
+        .filter((r) => r?.nameWithOwner)
+        .map((r) => ({
+          full: r.nameWithOwner,
+          description: r.description ?? "",
+          stars: r.stargazerCount,
+          language: r.primaryLanguage?.name ?? null,
+          created: r.createdAt,
+          url: r.url,
+          topics: r.repositoryTopics.nodes.map((n) => n.topic.name),
+        }));
+    } catch {
+      return null;
+    }
+  }
   const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(q)}&sort=stars&order=desc&per_page=8`;
   const headers: Record<string, string> = { ...UA, Accept: "application/vnd.github+json" };
   if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
@@ -486,7 +519,7 @@ export async function discover(topics: string[]): Promise<Discovery> {
   };
 }
 
-/* ---------- good first issues for guests (unauthenticated search, cached per language) ---------- */
+/* ---------- good first issues for guests (server search, cached per language) ---------- */
 
 type SearchIssue = {
   node_id: string;
@@ -504,6 +537,20 @@ function ghHeaders() {
   return headers;
 }
 
+// Only with the server token. REST search hits GitHub's secondary limit after about 8 quick calls; GraphQL search doesn't.
+async function gql<T>(query: string, variables: Record<string, string>): Promise<T> {
+  const res = await fetch("https://api.github.com/graphql", {
+    method: "POST",
+    headers: { ...UA, Authorization: `Bearer ${process.env.GITHUB_TOKEN}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ query, variables }),
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!res.ok) throw new Error(`graphql ${res.status}`);
+  const json = (await res.json()) as { data?: T; errors?: { message: string }[] };
+  if (!json.data) throw new Error(json.errors?.[0]?.message ?? "graphql returned no data");
+  return json.data;
+}
+
 /*
  * Same rules as the signed-in search: unassigned, opened in the last 45 days, repo with 30+ stars.
  * Issue search can't filter by stars, so one repository search with repo: qualifiers looks them up.
@@ -514,6 +561,16 @@ async function firstIssuesFor(lang: string, sinceDay: string): Promise<FirstIssu
   "use cache";
   cacheLife("hours");
   const q = `is:issue is:open label:"good first issue" no:assignee language:${lang} created:>${sinceDay}`;
+  // GraphQL brings each repo's stars with the issue, so one call instead of up to four searches.
+  if (process.env.GITHUB_TOKEN) {
+    const data = await gql<{ search: { nodes: FirstIssue[] } }>(
+      `query($q: String!) { search(query: $q, type: ISSUE, first: 40) { nodes { ... on Issue {
+        id number title url createdAt comments { totalCount } repository { nameWithOwner stargazerCount primaryLanguage { name } }
+      } } } }`,
+      { q: `${q} sort:interactions-desc` },
+    );
+    return data.search.nodes.filter((i) => i?.id);
+  }
   const res = await get(`https://api.github.com/search/issues?q=${encodeURIComponent(q)}&sort=interactions&order=desc&per_page=40`, ghHeaders());
   if (!res.ok) throw new Error(`issue search ${res.status}`);
   const items = ((await res.json()) as { items: SearchIssue[] }).items;
